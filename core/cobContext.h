@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : llContext.h
+// Name        : cobContext.h
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
@@ -9,23 +9,20 @@
 #ifndef __COB_CONTEXT_H__
 #define __COB_CONTEXT_H__
 
-#include <string>
-#include <list>
+#include "lianli.h"
 #include "cobConst.h"
 
 NS_COB_BEGIN
 
-class Context
+class Context : public lianli::Context
 {
 public:
     Context(const std::string& name);
-    static const Context& getDefault() {return DEFAULT;};
 
 protected:
-    std::list<FSM*> mFsmList;
+    std::list<lianli::FSM*> mBinList;
 
 private:
-    static Context DEFAULT;
 };
 
 NS_COB_END

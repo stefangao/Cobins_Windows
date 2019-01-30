@@ -1,19 +1,29 @@
 //============================================================================
-// Name        : llContext.cpp
+// Name        : cobContext.h
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
 // Description :
 //============================================================================
 
-#include "cobContext.h"
+#ifndef __COB_PROBE_H__
+#define __COB_PROBE_H__
+
+#include "cobConst.h"
 
 NS_COB_BEGIN
 
-Context::Context(const std::string& name)
-  : lianli::Context(name)
+class Probe
 {
+public:
+	Probe(const std::string& name);
 
-}
+protected:
+
+
+private:
+};
 
 NS_COB_END
+
+#endif

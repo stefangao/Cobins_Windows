@@ -27,7 +27,6 @@ NS_COB_BEGIN
 
 #define COB_DEBUG
 
-
 NS_COB_END
 
 #endif

@@ -1,17 +1,16 @@
 //============================================================================
-// Name        : llContext.cpp
+// Name        : cobProbe.cpp
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
 // Description :
 //============================================================================
 
-#include "cobContext.h"
+#include "cobProbe.h"
 
 NS_COB_BEGIN
 
-Context::Context(const std::string& name)
-  : lianli::Context(name)
+Probe::Probe(const std::string& name)
 {
 
 }

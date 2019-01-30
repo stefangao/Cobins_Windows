@@ -14,15 +14,23 @@
 
 NS_COB_BEGIN
 
+class Bin;
 class Context : public lianli::Context
 {
 public:
     Context(const std::string& name);
+    static const Context& getDefault() {return DEFAULT;};
+
+    Bin* getBin(const std::string& name);
 
 protected:
     std::list<lianli::FSM*> mBinList;
 
-private:
+    virtual void add(lianli::FSM* fsm);
+    virtual void remove(lianli::FSM* fsm);
+
+public:
+    static Context DEFAULT;
 };
 
 NS_COB_END

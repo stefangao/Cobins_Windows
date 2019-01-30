@@ -11,6 +11,41 @@
 NS_COB_BEGIN
 
 Probe::Probe(const std::string& name)
+  : mName(name)
+{
+	mBin = nullptr;
+}
+
+bool Probe::bind(const std::string& config)
+{
+
+	return true;
+}
+
+bool Probe::unbind()
+{
+	return true;
+}
+
+bool Probe::request(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData)
+{
+
+
+	return true;
+}
+
+void Probe::onRequest(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData)
+{
+
+
+}
+
+void Probe::onResponse(const std::string& evtName, lianli::EvtData& retData)
+{
+
+}
+
+void Probe::onNotify(const std::string& evtName, const lianli::EvtData& evtData)
 {
 
 }

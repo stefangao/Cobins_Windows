@@ -216,8 +216,8 @@
     <Image Include="res\mmi_exe.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\core\build\core.vcxproj">
-      <Project>{df480582-16c7-3b5b-ab54-b320ace6057b}</Project>
+    <ProjectReference Include="..\core\core.vcxproj">
+      <Project>{7006c004-578a-4c28-84ef-3a088f59f681}</Project>
     </ProjectReference>
     <ProjectReference Include="..\llfsm\build\llfsm.vcxproj">
       <Project>{581a59f2-7929-3643-b0ff-d34bbe7658a0}</Project>

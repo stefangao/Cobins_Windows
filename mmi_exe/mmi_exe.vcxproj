@@ -95,7 +95,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)llfsm\;$(SolutionDir)inc\;$(SolutionDir)winutils</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\MyVc\cobins\llfsm\;$(SolutionDir)inc\;$(SolutionDir)winutils;D:\MyVc\cobins\winutils\..\llfsm</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -216,14 +216,14 @@
     <Image Include="res\mmi_exe.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\core\core.vcxproj">
-      <Project>{7006c004-578a-4c28-84ef-3a088f59f681}</Project>
+    <ProjectReference Include="..\core\build\core.vcxproj">
+      <Project>{df480582-16c7-3b5b-ab54-b320ace6057b}</Project>
     </ProjectReference>
     <ProjectReference Include="..\llfsm\build\llfsm.vcxproj">
       <Project>{581a59f2-7929-3643-b0ff-d34bbe7658a0}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\winutils\winutils.vcxproj">
-      <Project>{0f4dc01f-0654-44bb-9ca0-2e9533f78acd}</Project>
+    <ProjectReference Include="..\winutils\build\winutils.vcxproj">
+      <Project>{af9dbbd9-8e6c-320c-8bd8-2886077179b5}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

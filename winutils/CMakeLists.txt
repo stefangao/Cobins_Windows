@@ -10,6 +10,6 @@ include_directories(${PROJECT_SOURCE_DIR}/../llfsm)
 
 aux_source_directory(. DIR_LIB_SRCS)
 
-add_library (core ${DIR_LIB_SRCS})
+add_library (winutils ${DIR_LIB_SRCS})
 
 

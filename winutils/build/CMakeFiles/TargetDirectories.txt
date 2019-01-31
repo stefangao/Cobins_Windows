@@ -1,0 +1,3 @@
+D:/MyVc/cobins/winutils/build/CMakeFiles/winutils.dir
+D:/MyVc/cobins/winutils/build/CMakeFiles/ALL_BUILD.dir
+D:/MyVc/cobins/winutils/build/CMakeFiles/ZERO_CHECK.dir

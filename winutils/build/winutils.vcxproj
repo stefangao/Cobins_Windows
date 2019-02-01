@@ -269,6 +269,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\MagicSearch.cpp" />
+    <ClCompile Include="..\MusicPlayer.cpp" />
+    <ClCompile Include="..\wndshm.cpp" />
     <ClCompile Include="D:\MyVc\cobins\winutils\BindPipe.cpp" />
     <ClCompile Include="D:\MyVc\cobins\winutils\Pipe.cpp" />
   </ItemGroup>
@@ -279,6 +282,13 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\BindPipe.h" />
+    <ClInclude Include="..\MagicSearch.h" />
+    <ClInclude Include="..\MusicPlayer.h" />
+    <ClInclude Include="..\Pipe.h" />
+    <ClInclude Include="..\wndshm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

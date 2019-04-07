@@ -10,6 +10,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${SOLUTION_ROOT_DIR}/inc)
 include_directories(${SOLUTION_ROOT_DIR}/llfsm)
+include_directories(${SOLUTION_ROOT_DIR}/winutils)
 
 file(GLOB_RECURSE DIR_HEADERS  *.h)
 source_group("Include" FILES ${DIR_HEADERS}) 

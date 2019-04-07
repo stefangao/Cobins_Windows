@@ -95,7 +95,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\MyVc\cobins\llfsm\;$(SolutionDir)inc\;$(SolutionDir)winutils;$(SolutionDir)kbhook</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)llfsm;$(SolutionDir)inc;$(SolutionDir)winutils;$(SolutionDir)kbhook</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

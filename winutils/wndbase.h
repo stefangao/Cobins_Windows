@@ -3,10 +3,9 @@
 
 #include <windows.h>
 #include <stdio.h>
-/*
-#include "cntt_timer.h"
-#include <libxml\parser.h> 
-#include <libxml\xpath.h>*/
+//#include "cntt_timer.h"
+//#include <libxml\parser.h> 
+//#include <libxml\xpath.h>
 
 /** @defgroup groupwndbase wndbase
  *  This is a module implementing utilities related to windows.
@@ -73,8 +72,6 @@ typedef enum
     WSH_MSG_MAX,
 
 }WSH_CMD;
-
-typedef void* CNTT_HANDLE;
 
 
 BOOL WBS_GetScreenPixel( POINT pt, COLORREF& clr );

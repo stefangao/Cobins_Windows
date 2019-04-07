@@ -1,8 +1,0 @@
-D:/MyVc/cobins/mmi_exe/build/CMakeFiles/mmi_cobins.dir
-D:/MyVc/cobins/mmi_exe/build/CMakeFiles/ALL_BUILD.dir
-D:/MyVc/cobins/mmi_exe/build/CMakeFiles/ZERO_CHECK.dir
-D:/MyVc/cobins/mmi_exe/build/winutils/CMakeFiles/winutils.dir
-D:/MyVc/cobins/mmi_exe/build/winutils/CMakeFiles/ALL_BUILD.dir
-D:/MyVc/cobins/mmi_exe/build/core/CMakeFiles/core.dir
-D:/MyVc/cobins/mmi_exe/build/llfsm/CMakeFiles/llfsm.dir
-D:/MyVc/cobins/mmi_exe/build/llfsm/CMakeFiles/ALL_BUILD.dir

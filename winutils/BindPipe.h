@@ -5,7 +5,7 @@
 
 typedef void (*OnPipeReceiveProc_t)(void*, int);
 
-class CBindPipe : public CPipe
+class  __declspec(dllexport) CBindPipe : public CPipe
 {
 
 typedef struct

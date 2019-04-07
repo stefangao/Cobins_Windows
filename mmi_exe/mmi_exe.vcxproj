@@ -95,7 +95,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\MyVc\cobins\llfsm\;$(SolutionDir)inc\;$(SolutionDir)winutils;D:\MyVc\cobins\winutils\..\llfsm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\MyVc\cobins\llfsm\;$(SolutionDir)inc\;$(SolutionDir)winutils;$(SolutionDir)kbhook</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -216,8 +216,8 @@
     <Image Include="res\mmi_exe.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\core\core.vcxproj">
-      <Project>{7006c004-578a-4c28-84ef-3a088f59f681}</Project>
+    <ProjectReference Include="..\core\build\core.vcxproj">
+      <Project>{df480582-16c7-3b5b-ab54-b320ace6057b}</Project>
     </ProjectReference>
     <ProjectReference Include="..\llfsm\build\llfsm.vcxproj">
       <Project>{581a59f2-7929-3643-b0ff-d34bbe7658a0}</Project>

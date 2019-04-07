@@ -1,11 +1,12 @@
-#include "wndbase.h"
+//#include "stdafx.h"
 #include <math.h>
-/*#include "cntt_util.h"
-#include "cntt_string.h"*/
+#include "wndbase.h"
+//#include "cntt_util.h"
+//#include "cntt_string.h"
 #include "wtermin.h"
-#include "MusicPlayer.h"
+//#include "MusicPlayer.h"
 
-static CMusicPlayer m_AlertPlayer;
+//static CMusicPlayer m_AlertPlayer;
 
 BOOL WBS_GetWindowPixel(HWND hWnd, POINT pt, COLORREF& clr)
 {
@@ -422,6 +423,7 @@ BOOL WBS_MakeScreenMark(POINT pt, int width)
     return TRUE;
 }
 
+/*
 void WBS_AlertPlay(LPCTSTR lpszWaveFileName)
 {
     m_AlertPlayer.Play(lpszWaveFileName);
@@ -438,7 +440,7 @@ BOOL WBS_IsAlertPlaying()
         return TRUE;
     
     return FALSE;
-}
+}*/
 
 void WBS_Alert(LPCSTR lpAudioPath, BOOL bRestart)
 {
@@ -463,7 +465,7 @@ typedef struct
 
 }GUIWaitInfo_T;
 
-static void  GUIWait_TimeOut(CNTT_HANDLE handle, unsigned long ulParam)
+static void CALLBACK GUIWait_TimeOut(HANDLE handle, unsigned long ulParam)
 {
     GUIWaitInfo_T *waitinfo = (GUIWaitInfo_T*)ulParam;
     if (!waitinfo)
@@ -472,8 +474,9 @@ static void  GUIWait_TimeOut(CNTT_HANDLE handle, unsigned long ulParam)
     waitinfo->timeout = 1;
 }
 
-static void  GUIWait_CheckProc(CNTT_HANDLE handle, unsigned long ulParam)
+static void CALLBACK GUIWait_CheckProc(HANDLE handle, unsigned long ulParam)
 {
+#if 0
     GUIWaitInfo_T *waitinfo = (GUIWaitInfo_T*)ulParam;
     if (!waitinfo)
         return;
@@ -484,15 +487,17 @@ static void  GUIWait_CheckProc(CNTT_HANDLE handle, unsigned long ulParam)
         waitinfo->matched = 1;
         return;
     }
+#endif
 }
 
 static BOOL GUIWait(DWORD dwMilliseconds, MatchFunc_T matchfunc, unsigned long param, int result)
 {
+#if 0
   	MSG msg;
-    CNTT_HANDLE waithdl = NULL, chkhdl = NULL;
+    HANDLE waithdl = NULL, chkhdl = NULL;
 
-    GUIWaitInfo_T *waitinfo = (GUIWaitInfo_T*)malloc(sizeof(GUIWaitInfo_T));
-    memset(waitinfo, 0, sizeof(GUIWaitInfo_T));
+    GUIWaitInfo_T *waitinfo = (GUIWaitInfo_T*)cntt_malloc(sizeof(GUIWaitInfo_T));
+    cntt_memset(waitinfo, 0, sizeof(GUIWaitInfo_T));
 
     if (!dwMilliseconds && !matchfunc)
         return FALSE;
@@ -501,7 +506,7 @@ static BOOL GUIWait(DWORD dwMilliseconds, MatchFunc_T matchfunc, unsigned long p
     {
         if ((waithdl = cntt_SetTimer(dwMilliseconds, GUIWait_TimeOut, (unsigned long)waitinfo, CNTT_TIME_ONESHOT)) == NULL)
         {
-            free(waitinfo);
+            cntt_free(waitinfo);
             return FALSE;
         }
 
@@ -513,7 +518,7 @@ static BOOL GUIWait(DWORD dwMilliseconds, MatchFunc_T matchfunc, unsigned long p
     {
         if ((chkhdl = cntt_SetTimer(5, GUIWait_CheckProc, (unsigned long)waitinfo, 0)) == NULL)
         {
-            free(waitinfo);
+            cntt_free(waitinfo);
             return FALSE;
         }
 
@@ -531,7 +536,7 @@ static BOOL GUIWait(DWORD dwMilliseconds, MatchFunc_T matchfunc, unsigned long p
             if (!waitinfo->timeout && waithdl)
                 cntt_KillTimer(waithdl);
 
-            free(waitinfo);
+            cntt_free(waitinfo);
             {
                return TRUE;
             }
@@ -541,7 +546,7 @@ static BOOL GUIWait(DWORD dwMilliseconds, MatchFunc_T matchfunc, unsigned long p
             if (!waitinfo->matched && chkhdl)
                 cntt_KillTimer(chkhdl);
 
-            free(waitinfo);
+            cntt_free(waitinfo);
 
             return FALSE;
         }
@@ -561,7 +566,8 @@ static BOOL GUIWait(DWORD dwMilliseconds, MatchFunc_T matchfunc, unsigned long p
             }
         }
     }
-
+#endif
+	return TRUE;
 }
 
 BOOL WBS_GUIWaitTrue(DWORD dwMilliseconds, MatchFunc_T matchfunc, unsigned long param)
@@ -583,9 +589,9 @@ BOOL WBS_GUIWait(DWORD dwMilliseconds)
 static BOOL GUIWaitM(DWORD dwMilliseconds, DWORD dwMsg, WaitMFunc_T waitmfunc, unsigned long userdata)
 {
   	MSG msg;
-    CNTT_HANDLE waithdl = NULL, chkhdl = NULL;
+    HANDLE waithdl = NULL, chkhdl = NULL;
 
-    GUIWaitInfo_T *waitinfo = (GUIWaitInfo_T*)malloc(sizeof(GUIWaitInfo_T));
+    GUIWaitInfo_T *waitinfo = (GUIWaitInfo_T*)cntt_malloc(sizeof(GUIWaitInfo_T));
     cntt_memset(waitinfo, 0, sizeof(GUIWaitInfo_T));
 
     if (!dwMilliseconds || !waitmfunc || !dwMsg)
@@ -595,7 +601,7 @@ static BOOL GUIWaitM(DWORD dwMilliseconds, DWORD dwMsg, WaitMFunc_T waitmfunc, u
     {
         if ((waithdl = cntt_SetTimer(dwMilliseconds, GUIWait_TimeOut, (unsigned long)waitinfo, CNTT_TIMER_ONCE)) == NULL)
         {
-            free(waitinfo);
+            cntt_free(waitinfo);
             return FALSE;
         }
 
@@ -628,7 +634,7 @@ static BOOL GUIWaitM(DWORD dwMilliseconds, DWORD dwMsg, WaitMFunc_T waitmfunc, u
             if (!waitinfo->matched && chkhdl)
                 cntt_KillTimer(chkhdl);
 
-            free(waitinfo);
+            cntt_free(waitinfo);
             return FALSE;
         }
     }
@@ -647,7 +653,7 @@ typedef struct
 
 }GUIWaitMsg_t;
 
-static void  GUIWaitMsg_TimeOut(CNTT_HANDLE handle, unsigned long ulParam)
+static void CALLBACK GUIWaitMsg_TimeOut(HANDLE handle, unsigned long ulParam)
 {
     GUIWaitMsg_t *waitmsg = (GUIWaitMsg_t*)ulParam;
     if (waitmsg == NULL)
@@ -658,17 +664,18 @@ static void  GUIWaitMsg_TimeOut(CNTT_HANDLE handle, unsigned long ulParam)
 
 BOOL WBS_WaitMessage(DWORD dwMilliSeconds, UINT uMessage, LPMSG lpMsg)
 {
+#if 0
   	MSG msg;
-    CNTT_HANDLE waithdl = NULL;
+    HANDLE waithdl = NULL;
 
-    GUIWaitMsg_t *waitmsg = (GUIWaitMsg_t*)malloc(sizeof(GUIWaitMsg_t));
+    GUIWaitMsg_t *waitmsg = (GUIWaitMsg_t*)cntt_malloc(sizeof(GUIWaitMsg_t));
     waitmsg->timeout = 0;
 
     if (dwMilliSeconds > 0)
     {
         if ((waithdl = cntt_SetTimer(dwMilliSeconds, GUIWaitMsg_TimeOut, (unsigned long)waitmsg, CNTT_TIME_ONESHOT)) == NULL)
         {
-            free(waitmsg);
+            cntt_free(waitmsg);
             return FALSE;
         }
     }
@@ -694,15 +701,16 @@ BOOL WBS_WaitMessage(DWORD dwMilliSeconds, UINT uMessage, LPMSG lpMsg)
                 cntt_KillTimer(waithdl);
             }
 
-            free(waitmsg);
+            cntt_free(waitmsg);
             return TRUE;
         }
         else if (waitmsg->timeout)
         {
-            free(waitmsg);
+            cntt_free(waitmsg);
             return FALSE;
         }
     }
+#endif
 
     return FALSE;
 }
@@ -714,7 +722,7 @@ static DWORD WINAPI GUIBlock_CheckProc(LPVOID lpParameter)
 
     WT_Trace("GUIWait_CheckProc Begin\n");
 
-	cntt_assert(pThread);
+	//Assert(pThread);
 
 	while (!pThread->timeout)
 	{
@@ -738,9 +746,10 @@ static DWORD WINAPI GUIBlock_CheckProc(LPVOID lpParameter)
 
 static BOOL GUIBlock(DWORD dwMilliseconds, MatchFunc_T matchfunc, unsigned long param, int result)
 {
+#if 0
 	GUIWaitThread_T *pThread;
 	
-	pThread = (GUIWaitThread_T*)malloc(sizeof(GUIWaitThread_T));
+	pThread = (GUIWaitThread_T*)cntt_malloc(sizeof(GUIWaitThread_T));
 	if(pThread == NULL)
 	{
 		return FALSE;
@@ -780,6 +789,7 @@ static BOOL GUIBlock(DWORD dwMilliseconds, MatchFunc_T matchfunc, unsigned long 
     CloseHandle((HANDLE) pThread->hEvent);
  
     free(pThread);
+#endif
 
     return TRUE;  //be probem, TBD
 }
@@ -825,11 +835,14 @@ void WBS_WinShutdown(UINT ShutdownFlag)
 
 BOOL WBS_PreTranslateMessage(MSG &msg)
 {
+#if 0
     CWinThread *pThread = AfxGetThread();
     if (!pThread)
         return FALSE;
         
     return pThread->PreTranslateMessage(&msg);
+#endif
+	return TRUE;
 }
 
 HWND WBS_FindWindow(HWND hwndParent, LPCSTR lpTitle, LPCSTR lpClass)
@@ -881,36 +894,6 @@ float WBS_ReadFloat(HANDLE hProcess, const void *lpBaseAddress)
         return 0;
 
     return *(float*)Buf;
-}
-
-xmlXPathObjectPtr WBS_GetXPathNodeset(xmlDocPtr doc, const xmlChar *xpath)
-{  
-    xmlXPathContextPtr context;
-    xmlXPathObjectPtr result;
-
-    context = xmlXPathNewContext(doc);
-    if (context == NULL) 
-    {
-        printf("context is NULL\n");
-        return NULL; 
-    }
-    
-    result = xmlXPathEvalExpression(xpath, context);
-    xmlXPathFreeContext(context);
-    if (result == NULL) 
-    {
-        printf("xmlXPathEvalExpression return NULL\n"); 
-        return NULL;  
-    }
-    
-    if (xmlXPathNodeSetIsEmpty(result->nodesetval))
-    {
-        xmlXPathFreeObject(result);
-        printf("nodeset is empty\n");
-        return NULL;
-    }
-    
-    return result;
 }
 
 //截图
@@ -1228,7 +1211,7 @@ static int Transfer(WORD *color24bit, int len, BYTE *Index, RGBQUAD *mainColor)
 	i = 0;
 	for (i=0; i<len; i++)
 	{
-		cntt_assert(color24bit[i] < 4096);
+		//cntt_assert(color24bit[i] < 4096);
 		usedTimes[color24bit[i]]++;
 	}
 	int numberOfColors = 0;
@@ -1281,7 +1264,7 @@ static int Transfer(WORD *color24bit, int len, BYTE *Index, RGBQUAD *mainColor)
 	//记录各点颜色数据的索引值，即256色位图的颜色数据
 	for (i=0; i<len; i++)
 	{
-		cntt_assert(colorIndex[color24bit[i]] < 256);
+		//cntt_assert(colorIndex[color24bit[i]] < 256);
 		Index[i] = colorIndex[color24bit[i]];
 	}
 	return 1;

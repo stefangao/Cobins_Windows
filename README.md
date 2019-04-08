@@ -1,2 +1,2 @@
 # cobins
-To detect the information of the target process and change the behaviors of it.
+To spy the status and data of the target process and manage to control the behaviors of it.

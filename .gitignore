@@ -1,1 +1,4 @@
 .vs/
+llfsm/build/
+core/build/
+winutils/build/

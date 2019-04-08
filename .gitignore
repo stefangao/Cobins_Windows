@@ -4,3 +4,7 @@ core/build/
 winutils/build/
 bin/
 mmi_exe/Debug/
+core/lib/
+winutils/lib/
+spy_dll/build/
+spy_dll/lib/

@@ -5,6 +5,7 @@
 #include "MusicPlayer.h"
 #include  "vfw.h."
 
+#pragma comment(lib, "winmm.lib")
 
 #ifdef _DEBUG
 #undef THIS_FILE

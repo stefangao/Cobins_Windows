@@ -11,6 +11,7 @@
 #include "BindPipe.h"
 #include "kbhook.h"
 #include "wndbase.h"
+#include "LibInjectMng.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -74,6 +75,7 @@ BEGIN_MESSAGE_MAP(CmmiexeDlg, CDialogEx)
     ON_BN_CLICKED(IDC_BUTTON3, &CmmiexeDlg::OnBnClickedButton3)
     ON_BN_CLICKED(IDC_BUTTON4, &CmmiexeDlg::OnBnClickedButton4)
     ON_MESSAGE(WSH_MSG_KEY, &CmmiexeDlg::OnWshMsgKey)
+    ON_BN_CLICKED(IDC_BUTTON5, &CmmiexeDlg::OnBnClickedButton5)
 END_MESSAGE_MAP()
 
 
@@ -109,6 +111,7 @@ BOOL CmmiexeDlg::OnInitDialog()
     SetIcon(m_hIcon, FALSE);		// 设置小图标
 
     // TODO: 在此添加额外的初始化代码
+    KB_StartHook(m_hWnd);
 
     return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -162,7 +165,16 @@ HCURSOR CmmiexeDlg::OnQueryDragIcon()
     return static_cast<HCURSOR>(m_hIcon);
 }
 
+HWND CmmiexeDlg::GetWndByCursor()
+{
+    HWND hGameWnd = NULL;
 
+    POINT point;
+    GetCursorPos(&point);
+    hGameWnd = WBS_GetWindowFromPoint(NULL, point, 0);
+
+    return hGameWnd;
+}
 
 void CmmiexeDlg::OnBnClickedButton1()
 {
@@ -190,7 +202,7 @@ void CmmiexeDlg::OnBnClickedButton3()
 
 void CmmiexeDlg::OnBnClickedButton4()
 {
-    KB_StartHook(m_hWnd);
+
 }
 
 
@@ -204,17 +216,66 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
         {
         case 'H':
         {
+            if (GetKeyState(VK_CONTROL) & 0x8000)
+            {
+                HWND hGameWnd = GetWndByCursor();
 
+                WT_Trace("hGameWnd=%x\n", hGameWnd);
+                if (hGameWnd)
+                {
+                    HINSTANCE handle = LoadLibraryA("spy_dll.dll");
+                    if (handle) //判读句柄内dll是否可用
+                    {
+                        typedef BOOL(*HookWnd_t) (HWND);
+                        HookWnd_t HookWnd = (HookWnd_t)GetProcAddress(handle, "HookWnd");
+                        if (HookWnd) //还是判断一下函数指针是否有效
+                        {
+                            BOOL result = HookWnd(hGameWnd);
+                            printf("HookWnd result=%d\n", result);
+                        }
+                        FreeLibrary(handle); //卸载句柄，，
+                    }
+                }
+            }
         }
         break;
 
-        case 'U':
+        case 'T':
         {
+            if (GetKeyState(VK_CONTROL) & 0x8000)
+            {
+                HWND hGameWnd = GetWndByCursor();
 
+                WT_Trace("hGameWnd=%x\n", hGameWnd);
+                if (hGameWnd)
+                {
+                    //char exeGame[] = "GmbsManager.dll";
+                    char exeGame[] = "spy_dll.dll";
+                    bool exist = LIM_IsDllExist(exeGame, hGameWnd);
+                    WT_Trace("hGameWnd: isExist=%d\n", exist);
+                }
+            }
         }
         break;
         }
     }
 
     return 0;
+}
+
+
+void CmmiexeDlg::OnBnClickedButton5()
+{
+    // TODO: 在此添加控件通知处理程序代码
+    HWND hGameWnd = GetWndByCursor();
+
+    WT_Trace("hGameWnd=%x\n", hGameWnd);
+    if (hGameWnd)
+    {
+        char wszTitle[256];
+        GetWindowTextA(hGameWnd, wszTitle, 256);
+        WT_Trace("Game Caption=%s\n", wszTitle);
+    }
+
+    int a = 1;
 }

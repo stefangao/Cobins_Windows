@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
-set(LIB_NAME core)
 
-project(${LIB_NAME})
+project(core)
 
 add_compile_options(-std=c++11)
 
@@ -17,5 +16,5 @@ source_group("Include" FILES ${DIR_HEADERS})
 
 aux_source_directory(. DIR_LIB_SRCS)
 
-add_library (${LIB_NAME} ${DIR_LIB_SRCS} ${DIR_HEADERS})
+add_library (${PROJECT_NAME} ${DIR_LIB_SRCS} ${DIR_HEADERS})
 

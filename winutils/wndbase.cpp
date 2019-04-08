@@ -4,9 +4,9 @@
 //#include "cntt_util.h"
 //#include "cntt_string.h"
 #include "wtermin.h"
-//#include "MusicPlayer.h"
+#include "MusicPlayer.h"
 
-//static CMusicPlayer m_AlertPlayer;
+static CMusicPlayer m_AlertPlayer;
 
 BOOL WBS_GetWindowPixel(HWND hWnd, POINT pt, COLORREF& clr)
 {
@@ -423,7 +423,6 @@ BOOL WBS_MakeScreenMark(POINT pt, int width)
     return TRUE;
 }
 
-/*
 void WBS_AlertPlay(LPCTSTR lpszWaveFileName)
 {
     m_AlertPlayer.Play(lpszWaveFileName);
@@ -440,7 +439,7 @@ BOOL WBS_IsAlertPlaying()
         return TRUE;
     
     return FALSE;
-}*/
+}
 
 void WBS_Alert(LPCSTR lpAudioPath, BOOL bRestart)
 {

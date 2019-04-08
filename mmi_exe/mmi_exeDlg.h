@@ -36,6 +36,11 @@ public:
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton3();
 	afx_msg void OnBnClickedButton4();
+
+    HWND GetWndByCursor();
+
 protected:
 	afx_msg LRESULT OnWshMsgKey(WPARAM wParam, LPARAM lParam);
+public:
+    afx_msg void OnBnClickedButton5();
 };

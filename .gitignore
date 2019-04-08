@@ -2,3 +2,5 @@
 llfsm/build/
 core/build/
 winutils/build/
+bin/
+mmi_exe/Debug/

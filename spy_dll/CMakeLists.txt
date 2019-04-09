@@ -19,3 +19,8 @@ source_group("Include" FILES ${DIR_HEADERS})
 aux_source_directory(. DIR_LIB_SRCS)
 
 add_library (${PROJECT_NAME} SHARED ${DIR_LIB_SRCS} ${DIR_HEADERS})
+
+ADD_CUSTOM_COMMAND(
+          TARGET ${PROJECT_NAME}
+          COMMAND ${CMAKE_COMMAND} -E copy ${LIBRARY_OUTPUT_PATH}/Debug/${PROJECT_NAME}.dll ${SOLUTION_ROOT_DIR}/bin
+)

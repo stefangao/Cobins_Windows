@@ -4,6 +4,10 @@ bin/
 lib/
 mmi_exe/Debug/
 llfsm/lib/
+llfsm/build/
 core/lib/
+core/build/
 winutils/lib/
+winutils/build/
 spy_dll/lib/
+spy_dll/build/

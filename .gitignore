@@ -1,10 +1,9 @@
 .vs/
-llfsm/build/
-core/build/
-winutils/build/
+build/
 bin/
+lib/
 mmi_exe/Debug/
+llfsm/lib/
 core/lib/
 winutils/lib/
-spy_dll/build/
 spy_dll/lib/

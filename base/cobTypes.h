@@ -6,14 +6,11 @@
 // Description :
 //============================================================================
 
-#ifndef __COB_CONST_H__
-#define __COB_CONST_H__
+#ifndef __COB_BASE_H__
+#define __COB_BASE_H__
 
-#include <vector>
-#include <queue>
-#include <string>
-#include <cobMacros.h>
-#include <cobTypes.h>
-
+#include "cobMacros.h"
+#include "cobUtils.h"
+#include "cobValue.h"
 
 #endif

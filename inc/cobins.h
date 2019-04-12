@@ -12,8 +12,6 @@
 #include <vector>
 #include <queue>
 #include <string>
-#include <cobMacros.h>
-#include <cobTypes.h>
-
+#include "core/cobBin.h"
 
 #endif

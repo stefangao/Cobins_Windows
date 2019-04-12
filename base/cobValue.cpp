@@ -586,7 +586,7 @@ float Value::asFloat() const
 
     if (_type == Type::STRING)
     {
-        return atof(_field.strVal->c_str());
+        return (float)atof(_field.strVal->c_str());
     }
 
     if (_type == Type::INTEGER)
@@ -1114,7 +1114,7 @@ ValueVector ValueMapUtil::convertValueVectorFromJsonString(const std::string& co
                     return ValueVectorNull;
 
                 auto index = atoi(key.c_str());
-                if (index >= ret.size())
+                if (index >= (int)ret.size())
                     ret.resize(index + 1);
 
                 ret[index] = iter->second;

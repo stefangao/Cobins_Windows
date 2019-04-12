@@ -15,5 +15,4 @@
 #include <cobMacros.h>
 #include <cobTypes.h>
 
-
 #endif

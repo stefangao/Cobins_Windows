@@ -11,6 +11,10 @@
 #include <stdarg.h>
 #include "cobUtils.h"
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 NS_COB_BEGIN
 
 const char* LL_STRING_EMPTY = "";

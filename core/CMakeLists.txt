@@ -8,6 +8,8 @@ set(SOLUTION_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${SOLUTION_ROOT_DIR}/inc)
+include_directories(${SOLUTION_ROOT_DIR}/external)
+include_directories(${SOLUTION_ROOT_DIR}/base)
 include_directories(${SOLUTION_ROOT_DIR}/llfsm)
 include_directories(${SOLUTION_ROOT_DIR}/winutils)
 

@@ -7,6 +7,7 @@
 #include "mmi_exeDlg.h"
 #include "afxdialogex.h"
 #include "lianli.h"
+#include "cobins.h"
 #include "test3.h"
 #include "BindPipe.h"
 #include "kbhook.h"
@@ -202,7 +203,15 @@ void CmmiexeDlg::OnBnClickedButton3()
 
 void CmmiexeDlg::OnBnClickedButton4()
 {
+    cobins::ValueMap vm;
+    vm["test1"] = 2;
+    vm["test2"] = "hello";
+    auto str = vm.makeJsonString();
+    COBLOG(str.c_str());
 
+    cobins::Value val(2);
+
+    lianli::FSM fsm;
 }
 
 
@@ -211,7 +220,7 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
     if (lParam & 0x80000000)  //when key up
     {
         UINT keyCode = wParam;
-        WT_Trace("OnWshMsgKey: keyCode=%x", keyCode);
+        COBLOG("OnWshMsgKey: keyCode=%x", keyCode);
         switch (keyCode)
         {
         case 'H':
@@ -220,7 +229,7 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
             {
                 HWND hGameWnd = GetWndByCursor();
 
-                WT_Trace("hGameWnd=%x\n", hGameWnd);
+                COBLOG("hGameWnd=%x\n", hGameWnd);
                 if (hGameWnd)
                 {
                     HINSTANCE handle = LoadLibraryA("spy_dll.dll");
@@ -246,13 +255,13 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
             {
                 HWND hGameWnd = GetWndByCursor();
 
-                WT_Trace("hGameWnd=%x\n", hGameWnd);
+                COBLOG("hGameWnd=%x\n", hGameWnd);
                 if (hGameWnd)
                 {
                     //char exeGame[] = "GmbsManager.dll";
                     char exeGame[] = "spy_dll.dll";
                     bool exist = LIM_IsDllExist(exeGame, hGameWnd);
-                    WT_Trace("hGameWnd: isExist=%d\n", exist);
+                    COBLOG("hGameWnd: isExist=%d\n", exist);
                 }
             }
         }
@@ -269,12 +278,12 @@ void CmmiexeDlg::OnBnClickedButton5()
     // TODO: 在此添加控件通知处理程序代码
     HWND hGameWnd = GetWndByCursor();
 
-    WT_Trace("hGameWnd=%x\n", hGameWnd);
+    COBLOG("hGameWnd=%x\n", hGameWnd);
     if (hGameWnd)
     {
         char wszTitle[256];
         GetWindowTextA(hGameWnd, wszTitle, 256);
-        WT_Trace("Game Caption=%s\n", wszTitle);
+        COBLOG("Game Caption=%s\n", wszTitle);
     }
 
     int a = 1;

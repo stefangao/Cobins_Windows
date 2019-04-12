@@ -13,6 +13,8 @@ add_definitions(-DUNICODE -D_UNICODE)
 
 include_directories(
 ${SOLUTION_ROOT_DIR}/inc
+${SOLUTION_ROOT_DIR}/external
+${SOLUTION_ROOT_DIR}/base
 ${SOLUTION_ROOT_DIR}/core
 ${SOLUTION_ROOT_DIR}/llfsm
 ${SOLUTION_ROOT_DIR}/winutils
@@ -20,6 +22,7 @@ ${SOLUTION_ROOT_DIR}/winutils
 
 link_directories(
 ${SOLUTION_ROOT_DIR}/lib
+${SOLUTION_ROOT_DIR}/base/lib
 ${SOLUTION_ROOT_DIR}/llfsm/lib
 ${SOLUTION_ROOT_DIR}/core/lib
 ${SOLUTION_ROOT_DIR}/winutils/lib
@@ -33,6 +36,7 @@ aux_source_directory(. DIR_SRCS)
 add_executable(${PROJECT_NAME} WIN32 ${DIR_SRCS} ${DIR_HEADERS})
 
 target_link_libraries(${PROJECT_NAME} llfsm)
+target_link_libraries(${PROJECT_NAME} base)
 target_link_libraries(${PROJECT_NAME} core)
 target_link_libraries(${PROJECT_NAME} winutils)
 

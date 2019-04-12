@@ -62,7 +62,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 	if (m_RpcReturnCntx.bNeed && !m_RpcReturnCntx.bDone)
 	{
 		RpcReturn(NULL, 0, TRUE);
-		WT_Trace("------------------------ RpcSend: 解锁------------------------\n");
+		COBLOG("------------------------ RpcSend: 解锁------------------------\n");
 	}
 
 	RpcSendLock();
@@ -96,7 +96,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 			else
 			{
 				RpcSendUnlock();
-				//WT_Trace("============================== 仍然在锁定 ==============================\n");
+				//COBLOG("============================== 仍然在锁定 ==============================\n");
 			}
 		}
 	}
@@ -114,7 +114,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 		}
 		else
 		{
-			WT_Error("[%s]RpcSend: Wrong Answer (nResultDataLen=%d)\n", m_strPrefix, nResultDataLen);
+			COBLOG("[%s]RpcSend: Wrong Answer (nResultDataLen=%d)\n", m_strPrefix, nResultDataLen);
 		}
 	}
 
@@ -123,7 +123,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 		RpcSendLock();
 		SetRpcState(0);
 		RpcSendUnlock();
-		WT_Error("[%s]RpcSend: 执行失败\n", m_strPrefix);
+		COBLOG("[%s]RpcSend: 执行失败\n", m_strPrefix);
 	}
 
 	//WT_Printf("[%s]RpcSend2222\n", m_strPrefix);
@@ -153,7 +153,7 @@ int Bin::RpcReturn(PBYTE pResultData, int nResultDataLen, BOOL bRightNow)
 		}
 		else
 		{
-			WT_Error("Bin::RpcReturn: Buffer不够\n");
+			COBLOG("Bin::RpcReturn: Buffer不够\n");
 			return -1;
 		}
 	}
@@ -214,7 +214,7 @@ int Bin::RpcSendMessage(LPCSTR receiver, LPCSTR msgname, PBYTE msgdata, int msgd
 	int nSentLen = RpcSendData(m_RpcMsgTxdBuf, nMsgLen);
 	if (nSentLen != nMsgLen)
 	{
-		WT_Trace("RpcSendMessage: error (%d != %d\n", nSentLen, nMsgLen);
+		COBLOG("RpcSendMessage: error (%d != %d\n", nSentLen, nMsgLen);
 		nSentLen = -1;
 	}
 
@@ -251,7 +251,7 @@ int Bin::RpcSendMessage(LPCSTR receiver, LPCSTR msgname, PBYTE msgdata, int msgd
 	int nSentLen = RpcSendData(m_RpcMsgTxdBuf, nMsgLen);
 	if (nSentLen != nMsgLen)
 	{
-		WT_Error("RpcSendMessage: error (%d != %d\n", nSentLen, nMsgLen);
+		COBLOG("RpcSendMessage: error (%d != %d\n", nSentLen, nMsgLen);
 		nSentLen = -1;
 	}
 
@@ -269,7 +269,7 @@ int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msg
 	{
 		if (GetTickCount() > dwStartTicks + 8000)
 		{
-			WT_Error("[%s]:=====等待应答超时=====\n", m_strPrefix);
+			COBLOG("[%s]:=====等待应答超时=====\n", m_strPrefix);
 			msgdatalen = 0;
 			return -1;
 		}
@@ -298,7 +298,7 @@ int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msg
 			msgdatalen = 0;
 			nResult = -1;
 
-			WT_Error("[%s]:RpcRecvAnswer: 错误应答: (%s)!=%s (%s)!=%s\n (%d)!=%d ctr=%x\n", m_strPrefix, MSGRCVR(pMsgInfo), receiver,
+			COBLOG("[%s]:RpcRecvAnswer: 错误应答: (%s)!=%s (%s)!=%s\n (%d)!=%d ctr=%x\n", m_strPrefix, MSGRCVR(pMsgInfo), receiver,
 				MSGNAME(pMsgInfo), msgname, pMsgHeader->frameno, m_nRpcFrameNo, pMsgHeader->ctrcode);
 		}
 	}
@@ -343,12 +343,12 @@ int Bin::RpcSendData(PBYTE pData, int nDataLen)
 		nLen = m_RpcPipe.Send(pData + nTotalLen, nDataLen - nTotalLen);
 		if (nLen < 0)
 		{
-			WT_Error("Pipe异常\n");
+			COBLOG("Pipe异常\n");
 			return -2;
 		}
 		else if (nLen == 0)
 		{
-			WT_Error("Pipe发送失败\n");
+			COBLOG("Pipe发送失败\n");
 			return -3;
 		}
 
@@ -364,7 +364,7 @@ int Bin::RpcRecvData(PBYTE pDataBuf, int nBufLen)
 
 	if (m_RpcPipe.GetDataSize() <= 0)
 	{
-		WT_Error("----------------RpcRecvData无数据-------------------\n");
+		COBLOG("----------------RpcRecvData无数据-------------------\n");
 	}
 
 	nRecvLen = m_RpcPipe.Receive(pDataBuf, nBufLen);
@@ -380,7 +380,7 @@ int Bin::RpcRecvDataEx(PBYTE pDataBuf, int nBufLen)
 		nLen = m_RpcPipe.Receive(pDataBuf + nRecvLen, nBufLen - nRecvLen);
 		if (nLen <= 0)
 		{
-			WT_Error("CGmbsThread::RpcRecvDataEx: error\n");
+			COBLOG("CGmbsThread::RpcRecvDataEx: error\n");
 			break;
 		}
 

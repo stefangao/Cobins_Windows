@@ -8,24 +8,6 @@
      HWND  ghHostWnd = NULL;       //host window handle
 #pragma data_seg()
 
-extern "C" int APIENTRY
-DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
-{
-	// Remove this if you use lpReserved
-	UNREFERENCED_PARAMETER(lpReserved);
-
-	if (dwReason == DLL_PROCESS_ATTACH)
-	{
-		glhInstance = hInstance; //插入保存DLL实例句柄
-	}
-	else if (dwReason == DLL_PROCESS_DETACH)
-	{
-
-    }
-
-	return 1;   // ok
-}
-
 //Hook 底层键盘钩子(2009.10.1发现普通键盘钩子在家里台式机的联众四国军旗中失效)
 static LRESULT WINAPI MouseProc(int nCode,WPARAM wparam,LPARAM lparam)
 {

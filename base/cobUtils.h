@@ -32,7 +32,7 @@ extern const char* LL_STRING_EMPTY;
 #endif
 
 #ifdef COB_DEBUG
-    #define COBLOG(format,...) Utils::__log(format, ##__VA_ARGS__)
+    #define COBLOG(format,...) cobins::Utils::__log(format, ##__VA_ARGS__)
 #else
     #define COBLOG(format)
 #endif

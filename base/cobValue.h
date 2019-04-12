@@ -268,6 +268,11 @@ private:
 class ValueMap : public __ValueMap
 {
 public:
+    ValueMap() {};
+    explicit ValueMap(const __ValueMap& other)
+    {
+        *this = (ValueMap&)other;
+    }
     void createWithJsonString(const std::string& content);
     void createWithJsonFile(const std::string& filename);
     std::string makeJsonString();
@@ -276,12 +281,6 @@ public:
     inline bool set(const std::string &path, const Value& value);
     inline bool set(const std::string &path, const std::string& value);
     bool replaceEmbeddedValue();
-
-    ValueMap& operator= (const ValueMap& other)
-    {
-        *this = (ValueMap&)other;
-        return *this;
-    }
 
     ValueMap& operator+= (const ValueMap& other);
 

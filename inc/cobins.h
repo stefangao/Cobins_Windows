@@ -9,9 +9,7 @@
 #ifndef __COB_CONST_H__
 #define __COB_CONST_H__
 
-#include <vector>
-#include <queue>
-#include <string>
-#include "core/cobBin.h"
+#include "../base/cobUtils.h"
+#include "../base/cobValue.h"
 
 #endif

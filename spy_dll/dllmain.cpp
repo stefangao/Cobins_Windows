@@ -9,7 +9,7 @@ extern "C"
     //消息回调函数
     LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
     {
-        //WT_Trace("---GetMsgProc-----\n");
+        //COBLOG("---GetMsgProc-----\n");
         return CallNextHookEx(g_hHook, nCode, wParam, lParam);
     }
 
@@ -17,17 +17,17 @@ extern "C"
     {
         if (g_hHook == NULL)
         {
-            WT_Trace("Target window thread = 0x%08x, g_hinstDll=%x\r\n", ThreadId, g_hinstDll);
+            COBLOG("Target window thread = 0x%08x, g_hinstDll=%x\r\n", ThreadId, g_hinstDll);
 
             g_hHook = SetWindowsHookEx(WH_GETMESSAGE, GetMsgProc, g_hinstDll, ThreadId);
             if (g_hHook == NULL)
             {
-                WT_Trace("Hook error!\n");
+                COBLOG("Hook error!\n");
                 return FALSE;
             }
             else
             {
-                WT_Trace("Hook target thread Successfully\r\n");
+                COBLOG("Hook target thread Successfully\r\n");
             }
         }
 
@@ -46,17 +46,17 @@ extern "C"
         if (dwThreadId == NULL)
             return NULL;
 
-        WT_Trace("Target window thread = 0x%08x, g_hinstDll=%x\r\n", dwThreadId, g_hinstDll);
+        COBLOG("Target window thread = 0x%08x, g_hinstDll=%x\r\n", dwThreadId, g_hinstDll);
 
         g_hHook = SetWindowsHookEx(WH_GETMESSAGE, GetMsgProc, g_hinstDll, dwThreadId);
         if (g_hHook == NULL)
         {
-            WT_Trace("Hook error!\n");
+            COBLOG("Hook error!\n");
             return FALSE;
         }
         else
         {
-            WT_Trace("Hook target thread Successfully\r\n");
+            COBLOG("Hook target thread Successfully\r\n");
         }
 
         return TRUE;
@@ -70,7 +70,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
     {
     case DLL_PROCESS_ATTACH:
     {
-        WT_Trace("***** DLL_PROCESS_ATTACH: process=%x, hinstDLL=%x\n", GetCurrentProcessId(), hinstDLL);
+        COBLOG("***** DLL_PROCESS_ATTACH: process=%x, hinstDLL=%x\n", GetCurrentProcessId(), hinstDLL);
 
         g_hinstDll = hinstDLL;
     }
@@ -84,7 +84,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 
     case DLL_PROCESS_DETACH:
     {
-        WT_Trace("***** DLL_PROCESS_DETACH: process=%x, hinstDLL=%x\n", GetCurrentProcessId(), hinstDLL);
+        COBLOG("***** DLL_PROCESS_DETACH: process=%x, hinstDLL=%x\n", GetCurrentProcessId(), hinstDLL);
     }
     break;
     }

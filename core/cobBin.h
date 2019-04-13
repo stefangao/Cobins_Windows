@@ -73,13 +73,15 @@ typedef struct
 
 class Probe;
 class Robot;
-class Bin : public lianli::FSM
+class Bin
 {
 public:
-	Bin();
-    bool create(const std::string& name, Context& context = Context::DEFAULT);
+    Bin();
 
-    bool connect();
+    bool create(int portId);
+    void destroy();
+
+    bool connect(int portId);
     bool disconnect();
 
     bool install(Probe& probe);
@@ -87,8 +89,6 @@ public:
 
     Probe* getProbe(const std::string& probeName);
     Robot* getRobot(const std::string& robotName);
-
-
 
 	int RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMsgDataLen, PBYTE& pResultData, int& nResultDataLen);
 	int RpcPost(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMsgDataLen);
@@ -105,6 +105,7 @@ public:
 protected:
     std::map<const std::string, Probe*> mProbeMap;
 
+    void onPipeReceiveData(int nErrCode);
 
 private:
 	GmbsReturnCntx_t m_RpcReturnCntx;
@@ -125,6 +126,7 @@ protected: //should be private
 protected:
 	BYTE m_RpcMsgTxdBuf[RPCBUF_MAXLEN];
 
+public: //TBD
 	int RpcSendData(PBYTE pData, int nDataLen);
 	int RpcRecvData(PBYTE pDataBuf, int nBufLen);
 	int RpcRecvDataEx(PBYTE pDataBuf, int nBufLen);

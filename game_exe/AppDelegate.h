@@ -2,9 +2,10 @@
 #define __APP_DELEGATE_H__
 
 #include "cobApplication.h"
-USING_NS_COB;
 
-class AppDelegate : public cobins::Application
+NS_COB_BEGIN
+
+class AppDelegate : public Application
 {
 public:
     AppDelegate();
@@ -17,8 +18,9 @@ protected:
     virtual void onDestroy(const lianli::Context& context) override;
 
 protected:
-public:
-    cobins::Bin mBin;
+    Bin mBin;
 };
+
+NS_COB_END
 
 #endif

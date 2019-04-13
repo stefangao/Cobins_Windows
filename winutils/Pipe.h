@@ -24,6 +24,8 @@ private:
 	BOOL    m_bConnected;
     HANDLE  m_hSendEvent;
     HANDLE  m_hRecvEvent;
+    HANDLE  m_hListenEvent;
+    HANDLE  m_hListenThread;
 
 protected:
     BOOL Listen();

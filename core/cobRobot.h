@@ -2,7 +2,7 @@
 #define __COB_ROBOT_H__
 
 #include "lianli.h"
-#include "cobConst.h"
+#include "cobMacros.h"
 #include "cobContext.h"
 #include "cobProbe.h"
 

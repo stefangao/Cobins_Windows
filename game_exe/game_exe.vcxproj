@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{B9AAC537-283B-492A-BAD5-64D82AB4A783}</ProjectGuid>
+    <ProjectGuid>{40F88E33-A59C-4873-9359-079C6356FE14}</ProjectGuid>
     <Keyword>MFCProj</Keyword>
-    <RootNamespace>mmiexe</RootNamespace>
+    <RootNamespace>gameexe</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -76,7 +76,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)lib\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
     <OutDir>$(SolutionDir)bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -95,11 +94,9 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)external;$(SolutionDir)llfsm;$(SolutionDir)winutils;$(SolutionDir)core;$(SolutionDir)kbhook;$(SolutionDir)base</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>../base/lib/Debug/base.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -187,47 +184,30 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AppDelegate.h" />
-    <ClInclude Include="mmi_exe.h" />
-    <ClInclude Include="mmi_exeDlg.h" />
+    <ClInclude Include="game_exe.h" />
+    <ClInclude Include="game_exeDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="test3.h" />
-    <ClInclude Include="TestCase.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AppDelegate.cpp" />
-    <ClCompile Include="mmi_exe.cpp" />
-    <ClCompile Include="mmi_exeDlg.cpp" />
+    <ClCompile Include="game_exe.cpp" />
+    <ClCompile Include="game_exeDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="test3.cpp" />
-    <ClCompile Include="TestCase.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="mmiexe.rc" />
+    <ResourceCompile Include="gameexe.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\mmiexe.rc2" />
+    <None Include="res\gameexe.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\mmi_exe.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\core\build\core.vcxproj">
-      <Project>{df480582-16c7-3b5b-ab54-b320ace6057b}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\llfsm\build\llfsm.vcxproj">
-      <Project>{581a59f2-7929-3643-b0ff-d34bbe7658a0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\winutils\build\winutils.vcxproj">
-      <Project>{af9dbbd9-8e6c-320c-8bd8-2886077179b5}</Project>
-    </ProjectReference>
+    <Image Include="res\game_exe.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

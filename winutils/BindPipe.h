@@ -2,8 +2,7 @@
 #define BINDPIPE_H__
 
 #include "Pipe.h"
-
-typedef void (*OnPipeReceiveProc_t)(void*, int);
+#include <functional>
 
 class  __declspec(dllexport) CBindPipe : public CPipe
 {
@@ -17,8 +16,7 @@ typedef struct
 
 private:
     HWND  m_hBindWnd;
-    OnPipeReceiveProc_t m_OnPipeReceiveProc;
-    void *m_UserData;
+    std::function<void(int)> m_OnPipeReceiveDataProc;
 
 public:
     CBindPipe();
@@ -28,7 +26,7 @@ public:
 	virtual void OnClose(int nErrorCode);
 
     void BindWindow(HWND hWnd) {m_hBindWnd = hWnd;};
-    BOOL RegisterRxd(OnPipeReceiveProc_t OnPipeReceiveProc, void* userdata);
+    BOOL RegisterRxd(std::function<void(int)> callback);
 
     long RecvMessage(LPCSTR receiver, LPCSTR msgname, PBYTE msgdata, int msgdatalen);
 };

@@ -1,5 +1,6 @@
-#include "stdafx.h"
 #include "AppDelegate.h"
+
+NS_COB_BEGIN
 
 AppDelegate::AppDelegate()
 {
@@ -33,3 +34,5 @@ void AppDelegate::onDestroy(const lianli::Context& context)
 {
 
 }
+
+NS_COB_END

@@ -179,8 +179,7 @@ HWND CmmiexeDlg::GetWndByCursor()
 void CmmiexeDlg::OnBnClickedButton1()
 {
     // TODO: 在此添加控件通知处理程序代码
-
-    m_pipe.BindPipe(1234);
+    mAppDelegate.mBin.connect(1234);
 }
 
 
@@ -188,15 +187,24 @@ void CmmiexeDlg::OnBnClickedButton2()
 {
     // TODO: 在此添加控件通知处理程序代码
     char buf[] = "hello123";
-    m_pipe.Send((BYTE*)buf, 9);
+    mAppDelegate.mBin.RpcSendData((BYTE*)buf, 9);
 }
 
 
 void CmmiexeDlg::OnBnClickedButton3()
 {
-    // TODO: 在此添加控件通知处理程序代码
-    CBindPipe pipe;
-    pipe.BindPipe(123);
+    HINSTANCE handle = LoadLibraryA("spy_dll.dll");
+    if (handle) //判读句柄内dll是否可用
+    {
+        typedef BOOL(*UnHookWnd_t) (HWND);
+        UnHookWnd_t UnHookWnd = (UnHookWnd_t)GetProcAddress(handle, "UnHookWnd");
+        if (UnHookWnd) //还是判断一下函数指针是否有效
+        {
+            BOOL result = UnHookWnd(NULL);
+            printf("UnHookWnd result=%d\n", result);
+        }
+        FreeLibrary(handle); //卸载句柄，，
+    }
 }
 
 void CmmiexeDlg::OnBnClickedButton4()

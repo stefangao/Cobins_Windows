@@ -8,7 +8,9 @@ CPipe::CPipe()
     m_hEvent = CreateEvent(0, FALSE, FALSE, NULL);
     m_hSendEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
     m_hRecvEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+    m_hListenEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
     m_bConnected = FALSE;
+    m_hListenThread = NULL;
 }
 
 CPipe::~CPipe()
@@ -16,6 +18,7 @@ CPipe::~CPipe()
     CloseHandle(m_hEvent);
     CloseHandle(m_hSendEvent);
     CloseHandle(m_hRecvEvent);
+    CloseHandle(m_hListenEvent);
 }
 
 static DWORD WINAPI PipeClientListenProc(LPVOID lParam)
@@ -25,6 +28,8 @@ static DWORD WINAPI PipeClientListenProc(LPVOID lParam)
     
     SetEvent(pPipe->m_hEvent);  //make parent thread continue
     pPipe->Listen();
+
+    WT_Trace("PipeClientListenProc: Exit\n");
     
     return 0;	
 }
@@ -40,7 +45,7 @@ static DWORD WINAPI PipeServerListenProc(LPVOID lParam)
         pPipe->Listen();            //等待数据到达
     }
 
-    //WT_Trace("Exit PipeServerListenProc\n");
+    WT_Trace("PipeServerListenProc: Exit\n");
     
     return 0;	
 }
@@ -156,6 +161,7 @@ int CPipe::Receive(BYTE *pBuf, int nBufLen)
 BOOL CPipe::PipeCheck()
 {
     DWORD dwLastError = GetLastError();
+    WT_Trace("PipeCheck：lastErr=%d", dwLastError);
      
     if (dwLastError == ERROR_BROKEN_PIPE ||
         dwLastError == ERROR_NO_DATA || 
@@ -180,6 +186,9 @@ BOOL CPipe::ConnectPipe()
     DWORD dwRead;
     BOOL bResult = FALSE;
     DWORD lasterr = 0;
+
+    if (m_hPipe == INVALID_HANDLE_VALUE)
+        return FALSE;
     
     if (OVERLAPPED_IO)
     {
@@ -237,11 +246,13 @@ BOOL CPipe::Listen()
     if (OVERLAPPED_IO)  /*if overlapped, prepare OVERLAPPED structure */
     {
         memset(&ol, 0, sizeof(ol));
-        ol.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+        ol.hEvent = m_hListenEvent;
     }
    
     while (m_bConnected)
     {
+        WT_Trace("Listen new loop [%x]\n", GetCurrentProcessId());
+
         bSuccess = ReadFile(m_hPipe, NULL, 0, &dwReadLen, OVERLAPPED_IO ? &ol : NULL);
         if (bSuccess && GetDataSize() > 0)
         {
@@ -250,16 +261,20 @@ BOOL CPipe::Listen()
         }
         else if (GetLastError() == ERROR_IO_PENDING)
         {
+            /*
             //最多等3秒
             //WT_Trace("pipe[%x] listen: wait 3000 ...\n", this);
-            DWORD dwResult = WaitForSingleObject(ol.hEvent, 5000);
+            DWORD dwResult = WaitForSingleObject(ol.hEvent, 8000);
             if (dwResult != WAIT_OBJECT_0)
             {
-                //WT_Trace("CPipe::Listen: wait nothing\n");
-            }
-            //WT_Trace("pipe[%x] listen: wait ok\n", this);
+                WT_Trace("CPipe::Listen: wait nothing\n");
+            }*/
+            //WT_Trace("pipe[%x] listen: wait end (%d)\n", this, dwResult);
+
+            WT_Trace("GetOverlappedResult000 [%x]\n", GetCurrentProcessId());
             
-            bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwReadLen, FALSE);
+            bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwReadLen, TRUE);
+            WT_Trace("GetOverlappedResult：bSucc=%d, len=%d [%x]\n", bSuccess, dwReadLen, GetCurrentProcessId());
             if (bSuccess && GetDataSize() > 0)
             {
                 OnReceive(0);
@@ -280,11 +295,8 @@ BOOL CPipe::Listen()
         }
     }
 
-    if (OVERLAPPED_IO)  /*if overlapped, prepare OVERLAPPED structure */
-    {
-        CloseHandle(ol.hEvent);
-    }
-    
+    WT_Trace("Listen end [%x]\n", GetCurrentProcessId());
+ 
     return -1;	
 }
 
@@ -314,7 +326,8 @@ BOOL CPipe::CreatePipe(const char* pipename)
         return FALSE;
     }
     
-    CreateThread(0, 0, PipeServerListenProc, this, 0, 0);
+    m_hListenThread = CreateThread(0, 0, PipeServerListenProc, this, 0, 0);
+    WT_Trace("CPipe::CreatePipe: listen thread=%x", m_hListenThread);
     WaitForSingleObject(m_hEvent, 2000);    //wait child thread running
 
     return TRUE;
@@ -338,7 +351,7 @@ BOOL CPipe::OpenPipe(const char* pipename)
     }
     
     m_bConnected = TRUE;
-    CreateThread(0, 0, PipeClientListenProc, this, 0, 0);
+    m_hListenThread = CreateThread(0, 0, PipeClientListenProc, this, 0, 0);
     WaitForSingleObject(m_hEvent, 2000);        //wait child thread running
 
     return TRUE;
@@ -384,9 +397,15 @@ BOOL CPipe::BindPipe(DWORD dwPortId)
 
 BOOL CPipe::DestroyPipe()
 {
+    WT_Trace("DestroyPipe111: m_hPipe=%x\n", m_hPipe);
     if (m_hPipe != INVALID_HANDLE_VALUE)
     {
         OnClose(0);
+        SetEvent(m_hListenEvent);
+        WT_Trace("CPipe::DestroyPipe->111: listen thread=%x", m_hListenThread);
+        //WaitForSingleObject(m_hListenThread, INFINITE);
+        //TerminateThread(m_hListenThread, 0);
+        WT_Trace("CPipe::DestroyPipe->222: listen thread=%x", m_hListenThread);
 
         m_bConnected = FALSE;
         DisconnectNamedPipe(m_hPipe);
@@ -396,6 +415,7 @@ BOOL CPipe::DestroyPipe()
 
         WT_Trace("DestroyPipe: this=%p\n", this);
     }
+    WT_Trace("DestroyPipe222: m_hPipe=%x\n", m_hPipe);
        
     return TRUE;
 }

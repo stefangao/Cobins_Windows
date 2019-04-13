@@ -10,18 +10,40 @@ Bin::Bin()
 
 }
 
-bool Bin::create(const std::string& name, Context& context)
+bool Bin::create(int portId)
 {
-    if (!lianli::FSM::create(name, context))
-        return false;
-
-
-    return true;
+    bool ret = false;
+    if (!m_RpcPipe.IsPipe())
+    {
+        ret = m_RpcPipe.CreatePipe(portId);
+        if (ret)
+        {
+            std::function<void(int)> callback = std::bind(&Bin::onPipeReceiveData, this, std::placeholders::_1);
+            m_RpcPipe.RegisterRxd(callback);
+        }
+    }
+    return ret;
 }
 
-bool Bin::connect()
+bool Bin::connect(int portId)
 {
-	return true;
+    bool ret = false;
+    if (!m_RpcPipe.IsPipe())
+    {
+        ret = m_RpcPipe.OpenPipe(portId);
+        if (ret)
+        {
+            std::function<void(int)> callback = std::bind(&Bin::onPipeReceiveData, this, std::placeholders::_1);
+            m_RpcPipe.RegisterRxd(callback);
+
+            COBLOG("Bin::connect: success");
+        }
+        else
+        {
+            COBLOG("Bin::connect: failed");
+        }
+    }
+    return ret;
 }
 
 bool Bin::disconnect()
@@ -389,6 +411,98 @@ int Bin::RpcRecvDataEx(PBYTE pDataBuf, int nBufLen)
 	} while (nRecvLen < nBufLen);
 
 	return nRecvLen;
+}
+
+void Bin::onPipeReceiveData(int nErrCode)
+{
+    if (nErrCode == 0)
+    {
+        char buf[256];
+        int len = m_RpcPipe.Receive((BYTE*)buf, 256);
+        if (len > 0)
+            WT_Trace("Bin::onPipeReceiveData: len=%d buf=%s\n", len, buf);
+    }
+
+#if 0
+    CGmbsThread *pGmbsThread;
+    RpcMsgHeader_t MsgHeader;
+    PBYTE pMsgInfo = NULL;
+    int nMsgInfoLen = 0;
+    int nRecvLen = 0;
+    int nLen = 0;
+
+    if (nErrCode == -1)
+    {
+        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_PIPEBROKEN, NULL, NULL);
+        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_EXIT, NULL, NULL);
+
+        WT_Error("_OnPipeReceiveProc: Pipe broken\n");
+        return;
+    }
+
+    nLen = pGmbsThread->RpcRecvDataEx((PBYTE)&MsgHeader, sizeof(MsgHeader));
+    if (nLen != sizeof(MsgHeader))
+    {
+        WT_Error("----------丢弃Pipe当前所有数据[MsgHead长度不够]-------------\n");
+        return;
+    }
+
+    if (MsgHeader.start != 0xA2B3C4E5)
+    {
+        BYTE bTemBuf[256];
+        do
+        {
+            nLen = pGmbsThread->RpcRecvDataEx(bTemBuf, sizeof(bTemBuf));
+
+        } while (nLen == sizeof(bTemBuf));
+
+        WT_Error("----------丢弃Pipe当前所有数据[启动码不对start=%x]-------------\n", MsgHeader.start);
+
+        return;
+    }
+
+    nMsgInfoLen = sizeof(RpcMsgHeader_t) + MsgHeader.rcvrlen + MsgHeader.namelen + MsgHeader.datalen;
+    pMsgInfo = (PBYTE)cntt_malloc(nMsgInfoLen);
+    if (pMsgInfo == NULL)
+    {
+        WT_Error("_OnPipeReceiveProc: 内存不足\n");
+        return;
+    }
+
+    memcpy(pMsgInfo, &MsgHeader, sizeof(MsgHeader));
+    nRecvLen += sizeof(MsgHeader);
+
+    nLen = pGmbsThread->RpcRecvDataEx(pMsgInfo + nRecvLen, nMsgInfoLen - nRecvLen);
+    if (nLen != nMsgInfoLen - nRecvLen)
+    {
+        WT_Error("----------丢弃Pipe当前所有数据[消息长度不够]-------------\n");
+        return;
+    }
+
+    if ((MsgHeader.ctrcode & RMFL_SYNC) == RMFL_SYNC)
+    {
+        //WT_Printf("%s:-pipedata_send-[%d]\n", ((CGmbsContainer*)pGmbsThread)->m_strPrefix, MsgHeader.frameno);
+        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCSEND, (WPARAM)pMsgInfo, nMsgInfoLen);
+    }
+    else if ((MsgHeader.ctrcode & RMFL_ANSWER) == RMFL_ANSWER)
+    {
+        //WT_Printf("%s:-pipedata_answ-[%d]\n", ((CGmbsContainer*)pGmbsThread)->m_strPrefix, MsgHeader.frameno);
+        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCANSWER, (WPARAM)pMsgInfo, nMsgInfoLen);
+    }
+    else if ((MsgHeader.ctrcode & RMFL_USERMSG) == RMFL_USERMSG)
+    {
+        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_USERMSG, (WPARAM)pMsgInfo, nMsgInfoLen);
+    }
+    else
+    {
+        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCPOST, (WPARAM)pMsgInfo, nMsgInfoLen);
+    }
+#endif
+}
+
+void Bin::destroy()
+{
+    m_RpcPipe.DestroyPipe();
 }
 
 NS_COB_END

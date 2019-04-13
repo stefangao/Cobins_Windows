@@ -17,7 +17,6 @@ protected:
     virtual void onDestroy(const lianli::Context& context) override;
 
 protected:
-public:
     cobins::Bin mBin;
 };
 

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "BindPipe.h"
+#include "AppDelegate.h"
 
 // CmmiexeDlg 对话框
 class CmmiexeDlg : public CDialogEx
@@ -21,7 +21,7 @@ public:
 protected:
 	HICON m_hIcon;
 
-    CBindPipe m_pipe;
+    AppDelegate mAppDelegate;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();

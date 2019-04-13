@@ -4,30 +4,27 @@
 
 CBindPipe::CBindPipe()
 {
-    m_OnPipeReceiveProc = NULL;
-    m_UserData = NULL;
+    m_OnPipeReceiveDataProc = NULL;
 }
 
-BOOL CBindPipe::RegisterRxd(OnPipeReceiveProc_t OnPipeReceiveProc, void* UserData)
+BOOL CBindPipe::RegisterRxd(std::function<void(int)> callback)
 {
-    m_OnPipeReceiveProc = OnPipeReceiveProc;
-    m_UserData = UserData;
-
+    m_OnPipeReceiveDataProc = callback;
     return TRUE;
 }
 
 void CBindPipe::OnReceive(int nErrorCode)
 {
-    if (m_OnPipeReceiveProc != NULL)
+    if (m_OnPipeReceiveDataProc != nullptr)
     {
-        m_OnPipeReceiveProc(m_UserData, nErrorCode);
+        m_OnPipeReceiveDataProc(nErrorCode);
     }
     else //test
     {
         char buf[256];
         int len = Receive((BYTE*)buf, 256);
         if (len > 0)
-            WT_Trace("OnReceive: len=%d buf=%s\n", len, buf);
+            WT_Trace("[TEST] OnReceive: len=%d buf=%s\n", len, buf);
     }
 }
 

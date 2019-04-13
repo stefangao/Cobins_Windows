@@ -8,9 +8,11 @@ set(SOLUTION_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${SOLUTION_ROOT_DIR}/inc)
+include_directories(${SOLUTION_ROOT_DIR}/llfsm)
 include_directories(${SOLUTION_ROOT_DIR}/external)
 include_directories(${SOLUTION_ROOT_DIR}/winutils)
 include_directories(${SOLUTION_ROOT_DIR}/core)
+include_directories(${SOLUTION_ROOT_DIR}/base)
 
 link_directories(${SOLUTION_ROOT_DIR}/lib)
 
@@ -25,6 +27,7 @@ target_link_libraries(${PROJECT_NAME} llfsm)
 target_link_libraries(${PROJECT_NAME} base)
 target_link_libraries(${PROJECT_NAME} winutils)
 target_link_libraries(${PROJECT_NAME} core)
+target_link_libraries(${PROJECT_NAME} base)
 
 add_custom_command(
     TARGET ${PROJECT_NAME}

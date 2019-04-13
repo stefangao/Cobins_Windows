@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "AppDelegate.h"
 
 AppDelegate::AppDelegate()
@@ -31,5 +30,5 @@ void AppDelegate::onStop()
 
 void AppDelegate::onDestroy(const lianli::Context& context)
 {
-
+    mBin.destroy();
 }

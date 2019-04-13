@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mmi_exe.h">
+    <ClInclude Include="game_exe.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="mmi_exeDlg.h">
+    <ClInclude Include="game_exeDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -30,48 +30,30 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="test3.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="TestCase.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="AppDelegate.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mmi_exe.cpp">
+    <ClCompile Include="game_exe.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="mmi_exeDlg.cpp">
+    <ClCompile Include="game_exeDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="test3.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="TestCase.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="AppDelegate.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="mmiexe.rc">
+    <ResourceCompile Include="gameexe.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\mmiexe.rc2">
+    <None Include="res\gameexe.rc2">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\mmi_exe.ico">
+    <Image Include="res\game_exe.ico">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

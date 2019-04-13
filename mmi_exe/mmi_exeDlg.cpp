@@ -180,16 +180,15 @@ void CmmiexeDlg::OnBnClickedButton1()
 {
     // TODO: 在此添加控件通知处理程序代码
 
-    TestCase3::create();
+    m_pipe.BindPipe(1234);
 }
 
 
 void CmmiexeDlg::OnBnClickedButton2()
 {
     // TODO: 在此添加控件通知处理程序代码
-
-    CBindPipe pipe;
-    pipe.BindPipe(123);
+    char buf[] = "hello123";
+    m_pipe.Send((BYTE*)buf, 9);
 }
 
 

@@ -1,15 +1,29 @@
 ﻿#include "windows.h"
-#include "wtermin.h"
+#include "BindPipe.h"
+#include "cobins.h"
 
 extern "C" 
 {
     static HHOOK     g_hHook = NULL;	    //the handle to the hook procedure
     static HINSTANCE g_hinstDll = NULL;     //the handle to DLL module
 
+    static BOOL g_hostFlag = FALSE;
+    static BOOL g_hooked = FALSE;
+    static CBindPipe g_pipe;
+
     //消息回调函数
     LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
     {
         //COBLOG("---GetMsgProc-----\n");
+        if (!g_hooked)
+        {
+            WT_Trace("OnHooked: process=%x,hinstDLL=%x,g_hostFlag=%d\n", GetCurrentProcessId(), g_hinstDll, g_hostFlag);
+            g_hooked = true;
+            if (!g_hostFlag)
+            {
+                g_pipe.BindPipe(1234);
+            }
+        }
         return CallNextHookEx(g_hHook, nCode, wParam, lParam);
     }
 
@@ -48,6 +62,7 @@ extern "C"
 
         COBLOG("Target window thread = 0x%08x, g_hinstDll=%x\r\n", dwThreadId, g_hinstDll);
 
+        g_hostFlag = TRUE;
         g_hHook = SetWindowsHookEx(WH_GETMESSAGE, GetMsgProc, g_hinstDll, dwThreadId);
         if (g_hHook == NULL)
         {

@@ -1,9 +1,5 @@
-﻿
-// mmi_exeDlg.h: 头文件
-//
-
-#pragma once
-
+﻿#pragma once
+#include "BindPipe.h"
 
 // CmmiexeDlg 对话框
 class CmmiexeDlg : public CDialogEx
@@ -24,6 +20,8 @@ public:
 // 实现
 protected:
 	HICON m_hIcon;
+
+    CBindPipe m_pipe;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();

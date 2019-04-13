@@ -8,6 +8,7 @@ set(SOLUTION_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${SOLUTION_ROOT_DIR}/inc)
+include_directories(${SOLUTION_ROOT_DIR}/external)
 include_directories(${SOLUTION_ROOT_DIR}/winutils)
 include_directories(${SOLUTION_ROOT_DIR}/core)
 
@@ -21,6 +22,7 @@ aux_source_directory(. DIR_LIB_SRCS)
 add_library(${PROJECT_NAME} SHARED ${DIR_LIB_SRCS} ${DIR_HEADERS})
 
 target_link_libraries(${PROJECT_NAME} llfsm)
+target_link_libraries(${PROJECT_NAME} base)
 target_link_libraries(${PROJECT_NAME} winutils)
 target_link_libraries(${PROJECT_NAME} core)
 

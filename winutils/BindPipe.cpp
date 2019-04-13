@@ -22,6 +22,13 @@ void CBindPipe::OnReceive(int nErrorCode)
     {
         m_OnPipeReceiveProc(m_UserData, nErrorCode);
     }
+    else //test
+    {
+        char buf[256];
+        int len = Receive((BYTE*)buf, 256);
+        if (len > 0)
+            WT_Trace("OnReceive: len=%d buf=%s\n", len, buf);
+    }
 }
 
 void CBindPipe::OnClose(int nErrorCode) 

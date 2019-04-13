@@ -18,8 +18,7 @@
 #define new DEBUG_NEW
 #endif
 
-
-// 用于应用程序“关于”菜单项的 CAboutDlg 对话框
+USING_NS_COB;
 
 class CAboutDlg : public CDialogEx
 {
@@ -203,15 +202,16 @@ void CmmiexeDlg::OnBnClickedButton3()
 
 void CmmiexeDlg::OnBnClickedButton4()
 {
-    cobins::ValueMap vm;
-    vm["test1"] = 2;
-    vm["test2"] = "hello";
-    auto str = vm.makeJsonString();
+    ValueMap vm;
+    ValueVector vv;
+    vv.push_back(Value(1));
+    vv.push_back(Value(3));
+    vv.push_back(Value(5));
+    vm.at("test2") = "hello";
+    vm.at("test1/kkk") = Value(89);
+    vm.at("test1/ddd") = vv;
+    auto str = vm.makeJsonString() + "\n";
     COBLOG(str.c_str());
-
-    cobins::Value val(2);
-
-    lianli::FSM fsm;
 }
 
 

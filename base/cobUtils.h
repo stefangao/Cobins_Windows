@@ -11,6 +11,9 @@
 
 #include <string>
 #include "cobMacros.h"
+#if defined(WIN32) && defined(WT_TRACE)
+#include "wtermin.h"
+#endif
 
 NS_COB_BEGIN
 
@@ -32,7 +35,11 @@ extern const char* LL_STRING_EMPTY;
 #endif
 
 #ifdef COB_DEBUG
-    #define COBLOG(format,...) cobins::Utils::__log(format, ##__VA_ARGS__)
+    #if defined(WIN32) && defined(WT_TRACE)
+        #define COBLOG(format,...) WT_Trace(format, ##__VA_ARGS__)
+    #else
+        #define COBLOG(format,...) cobins::Utils::__log(format, ##__VA_ARGS__)
+    #endif
 #else
     #define COBLOG(format)
 #endif

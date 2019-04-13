@@ -20,6 +20,7 @@
 #endif
 
 #define COB_DEBUG
+#define WT_TRACE
 
 #define COB_SAFE_DELETE(p)    do { delete (p); (p) = nullptr; } while(0)
 

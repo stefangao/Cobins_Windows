@@ -62,6 +62,7 @@ public:
     static ValueVector convertValueVectorFromJsonString(const std::string& content);
 
 public:
+    static Value& at(ValueMap& valueMap, const std::string &path);
     static const Value& get(const ValueMap& valueMap, const std::string &path);
     static bool set(ValueMap& valueMap, const std::string &path, const Value& value);
     static bool replaceEmbeddedValue(ValueMap& valueMap);
@@ -276,10 +277,12 @@ public:
     void createWithJsonString(const std::string& content);
     void createWithJsonFile(const std::string& filename);
     std::string makeJsonString();
-    inline const Value& get(const std::string &path) const;
-    inline bool get(const std::string &path, ValueVector& vv) const;
-    inline bool set(const std::string &path, const Value& value);
-    inline bool set(const std::string &path, const std::string& value);
+    const Value& get(const std::string &path) const;
+    Value& at(const std::string &path);
+
+    bool get(const std::string &path, ValueVector& vv) const;
+    bool set(const std::string &path, const Value& value);
+    bool set(const std::string &path, const std::string& value);
     bool replaceEmbeddedValue();
 
     ValueMap& operator+= (const ValueMap& other);

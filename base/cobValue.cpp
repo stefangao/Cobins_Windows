@@ -1251,6 +1251,41 @@ std::string ValueMapUtil::makeJsonFromValueVector(const ValueVector& valueVector
     return buffer.GetString();
 }
 
+Value& ValueMapUtil::at(ValueMap& valueMap, const std::string &path)
+{
+    size_t pos1 = 0;
+    size_t pos2 = 0;
+    Value* temp = nullptr;
+    while ((pos2 = path.find_first_of('/', pos1)) != std::string::npos)
+    {
+        std::string section = path.substr(pos1, pos2 - pos1);
+        if (!section.empty())
+        {
+            if (temp)
+                temp = &temp->asValueMap()[section];
+            else
+                temp = &valueMap[section];
+
+            if (temp->getType() != Value::Type::MAP)
+            {
+                *temp = ValueMapNull;
+            }
+        }
+        pos1 = pos2 + 1;
+    }
+
+    std::string section = path.substr(pos1, path.size() - pos1);
+    if (!section.empty())
+    {
+        if (temp)
+            temp = &(*temp).asValueMap()[section];
+        else
+            temp = &valueMap[section];
+    }
+    return *temp;
+}
+
+
 const Value& ValueMapUtil::get(const ValueMap& valueMap, const std::string &path)
 {
     const ValueMap* tempMap = &valueMap;
@@ -1348,7 +1383,7 @@ bool ValueMapUtil::replaceEmbeddedValue(ValueMap& valueMap)
                     ValueMap dict;//FileUtils::getInstance()->getValueMapFromFile(plistFile.c_str());
                     COBASSERT(!dict.empty(), "HeroDefs: file is empty");
 
-                    auto& value2 = get(dict, ppath);
+                    auto& value2 = at(dict, ppath);
                     COBASSERT(!value2.isNull(), "value is null");
 
                     valueMap.erase(iter++);
@@ -1413,12 +1448,17 @@ std::string ValueMap::makeJsonString()
     return ValueMapUtil::makeJsonFromValueMap(*this);
 }
 
-inline const Value& ValueMap::get(const std::string &path) const
+const Value& ValueMap::get(const std::string &path) const
 {
     return ValueMapUtil::get(*this, path);
 }
 
-inline bool ValueMap::get(const std::string &path, ValueVector& vv) const
+Value& ValueMap::at(const std::string &path)
+{
+    return ValueMapUtil::at(*this, path);
+}
+
+bool ValueMap::get(const std::string &path, ValueVector& vv) const
 {
     auto &val = get(path);
     if (val.isNull())
@@ -1438,12 +1478,12 @@ inline bool ValueMap::get(const std::string &path, ValueVector& vv) const
     return true;
 }
 
-inline bool ValueMap::set(const std::string &path, const Value& value)
+bool ValueMap::set(const std::string &path, const Value& value)
 {
     return ValueMapUtil::set(*this, path, value);
 }
 
-inline bool ValueMap::set(const std::string &path, const std::string& value)
+bool ValueMap::set(const std::string &path, const std::string& value)
 {
     return ValueMapUtil::set(*this, path, Value(value));
 }

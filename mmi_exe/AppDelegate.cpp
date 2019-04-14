@@ -16,7 +16,7 @@ bool AppDelegate::create(const std::string& name, Context& context)
 
 void AppDelegate::onCreate(const lianli::Context& context)
 {
-    mBin.create(1234);
+    mBin.create(NULL, 1234);
 }
 
 void AppDelegate::onStart()

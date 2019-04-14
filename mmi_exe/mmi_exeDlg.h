@@ -22,6 +22,7 @@ protected:
 	HICON m_hIcon;
 
     AppDelegate mAppDelegate;
+    HHOOK m_hHook;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();

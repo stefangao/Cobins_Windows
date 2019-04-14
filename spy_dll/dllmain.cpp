@@ -11,6 +11,7 @@ extern "C"
     static BOOL g_hooked = FALSE;
     static CBindPipe g_pipe;
     static AppDelegate gAppDelegate;
+    static HWND g_mainWnd = NULL;
 
     //消息回调函数
     LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
@@ -22,8 +23,10 @@ extern "C"
             g_hooked = true;
             if (!g_hostFlag)
             {
-                //g_pipe.BindPipe(1234);
-                gAppDelegate.create("embed123");
+                MSG *lpMsg;
+                lpMsg = (MSG*)lParam;
+
+                gAppDelegate.create(lpMsg->hwnd, "embed123");
             }
         }
         return CallNextHookEx(g_hHook, nCode, wParam, lParam);
@@ -37,7 +40,7 @@ extern "C"
             g_hooked = true;
             if (!g_hostFlag)
             {
-                gAppDelegate.create("embed123");
+                gAppDelegate.create(g_mainWnd, "embed123");
             }
         }
     }
@@ -63,8 +66,9 @@ extern "C"
         return TRUE;
     }
 
-    _declspec(dllexport) BOOL HookWnd(HWND hDestWnd)
+    _declspec(dllexport) HHOOK HookWnd(HWND hDestWnd)
     {
+        HHOOK hHook = NULL;
         DWORD dwProcessId = NULL;
         DWORD dwThreadId = NULL;
 
@@ -78,31 +82,20 @@ extern "C"
         COBLOG("Target window thread = 0x%08x, g_hinstDll=%x\r\n", dwThreadId, g_hinstDll);
 
         g_hostFlag = TRUE;
-        g_hHook = SetWindowsHookEx(WH_GETMESSAGE, GetMsgProc, g_hinstDll, dwThreadId);
-        if (g_hHook == NULL)
+        g_mainWnd = hDestWnd;
+        hHook = SetWindowsHookEx(WH_GETMESSAGE, GetMsgProc, g_hinstDll, dwThreadId);
+        if (hHook == NULL)
         {
             COBLOG("Hook error!\n");
-            return FALSE;
+            return NULL;
         }
         else
         {
             COBLOG("Hook target thread Successfully\r\n");
         }
 
-        return TRUE;
-    }
-
-    _declspec(dllexport) BOOL UnHookWnd(HWND hDestWnd)
-    { 
-        BOOL ret = false;
-        g_hostFlag = TRUE;
-        if (g_hHook != NULL)
-        {
-            ret = UnhookWindowsHookEx(g_hHook);
-            g_hHook = NULL;
-            return FALSE;
-        }
-        return ret;
+        g_hHook = hHook;
+        return hHook;
     }
 }
 
@@ -122,6 +115,9 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
         break;
 
     case DLL_THREAD_DETACH:
+    {
+
+    }
         break;
 
     case DLL_PROCESS_DETACH:
@@ -129,7 +125,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
         COBLOG("DLL_PROCESS_DETACH111: process=%x, hinstDLL=%x\n", GetCurrentProcessId(), hinstDLL);
         if (!g_hostFlag)
         {
-            gAppDelegate.destroy();
+            //gAppDelegate.destroy();
         }
         COBLOG("DLL_PROCESS_DETACH222: process=%x, hinstDLL=%x\n", GetCurrentProcessId(), hinstDLL);
     }

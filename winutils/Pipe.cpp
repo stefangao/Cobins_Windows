@@ -43,6 +43,7 @@ static DWORD WINAPI PipeServerListenProc(LPVOID lParam)
     while (pPipe->ConnectPipe())    //等待client连接
     {
         pPipe->Listen();            //等待数据到达
+        WT_Trace("PipeServerListenProc listen end");
     }
 
     WT_Trace("PipeServerListenProc: Exit\n");
@@ -187,6 +188,8 @@ BOOL CPipe::ConnectPipe()
     BOOL bResult = FALSE;
     DWORD lasterr = 0;
 
+    WT_Trace("ConnectPipe：E\n");
+
     if (m_hPipe == INVALID_HANDLE_VALUE)
         return FALSE;
     
@@ -233,7 +236,7 @@ BOOL CPipe::ConnectPipe()
     {
         CloseHandle(ol.hEvent);
     }
-
+    WT_Trace("ConnectPipe：X ret=%d\n", bResult);
     return bResult;
 }
 
@@ -274,11 +277,14 @@ BOOL CPipe::Listen()
             WT_Trace("GetOverlappedResult000 [%x]\n", GetCurrentProcessId());
             
             bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwReadLen, TRUE);
-            WT_Trace("GetOverlappedResult：bSucc=%d, len=%d [%x]\n", bSuccess, dwReadLen, GetCurrentProcessId());
+            WT_Trace("GetOverlappedResult：bSucc=%d, len=%d [%x]\n", bSuccess, GetDataSize(), GetCurrentProcessId());
             if (bSuccess && GetDataSize() > 0)
             {
+                WT_Trace("OnReceive E");
                 OnReceive(0);
+                WT_Trace("OnReceive X1");
                 WaitForSingleObject(m_hEvent, 10000);
+                WT_Trace("OnReceive X2");
             }
         }
 
@@ -293,6 +299,7 @@ BOOL CPipe::Listen()
             OnReceive(-1);
             break;
         }
+        WT_Trace("Listen loop end [%d]\n", m_bConnected);
     }
 
     WT_Trace("Listen end [%x]\n", GetCurrentProcessId());
@@ -327,7 +334,7 @@ BOOL CPipe::CreatePipe(const char* pipename)
     }
     
     m_hListenThread = CreateThread(0, 0, PipeServerListenProc, this, 0, 0);
-    WT_Trace("CPipe::CreatePipe: listen thread=%x", m_hListenThread);
+    WT_Trace("CPipe::CreatePipe: listen thread=%x\n", m_hListenThread);
     WaitForSingleObject(m_hEvent, 2000);    //wait child thread running
 
     return TRUE;
@@ -422,6 +429,15 @@ BOOL CPipe::DestroyPipe()
 
 BOOL CPipe::ClosePipe()
 {
+    WT_Trace("SetEvent listen: E\n");
+    m_bConnected = FALSE;
+    CloseHandle(m_hPipe);
+    SetEvent(m_hListenEvent);
+    WT_Trace("SetEvent listen: X\n");
+    SetEvent(m_hEvent);
+    WaitForSingleObject(m_hListenThread, INFINITE);
+    WT_Trace("WaitForSingleObject End proc=%x\n", GetCurrentProcessId());
+    /*
     if (m_hPipe != INVALID_HANDLE_VALUE)
     {
         OnClose(0);
@@ -432,7 +448,7 @@ BOOL CPipe::ClosePipe()
         SetEvent(m_hEvent);
 
         WT_Trace("ClosePipe\n");
-    }
+    }*/
     
     return TRUE;
 }

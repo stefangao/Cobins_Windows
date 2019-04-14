@@ -10,7 +10,7 @@ Bin::Bin()
 
 }
 
-bool Bin::create(int portId)
+bool Bin::create(HWND hWnd, int portId)
 {
     bool ret = false;
     if (!m_RpcPipe.IsPipe())
@@ -22,6 +22,8 @@ bool Bin::create(int portId)
             m_RpcPipe.RegisterRxd(callback);
         }
     }
+    m_hMainWnd = hWnd;
+    m_MsgCallback.SetWndProc(hWnd);
     return ret;
 }
 
@@ -417,10 +419,36 @@ void Bin::onPipeReceiveData(int nErrCode)
 {
     if (nErrCode == 0)
     {
-        char buf[256];
-        int len = m_RpcPipe.Receive((BYTE*)buf, 256);
-        if (len > 0)
+        COBLOG("-*-postCallback begin mainwnd=%x\n", m_hMainWnd);
+        m_MsgCallback.post([this]() {
+            char buf[256];
+            int len = m_RpcPipe.Receive((BYTE*)buf, 256);
             WT_Trace("Bin::onPipeReceiveData: len=%d buf=%s\n", len, buf);
+            if (strcmp(buf, "cmd_unhook") == 0)
+            {
+                COBLOG("Bin::destroy: begin\n");
+                destroy();
+                COBLOG("Bin::destroy: end\n");
+            }
+        });
+
+
+#if 0
+        lianli::postCallback([this](const void* userData) {
+            char buf[256];
+            int len = m_RpcPipe.Receive((BYTE*)buf, 256);
+            if (len > 0)
+            {
+                WT_Trace("Bin::onPipeReceiveData: len=%d buf=%s\n", len, buf);
+                if (strcmp(buf, "cmd_unhook") == 0)
+                {
+                    COBLOG("Bin::destroy: begin\n");
+                    destroy();
+                    COBLOG("Bin::destroy: end\n");
+                }
+            }
+        });
+#endif
     }
 
 #if 0
@@ -502,7 +530,9 @@ void Bin::onPipeReceiveData(int nErrCode)
 
 void Bin::destroy()
 {
-    m_RpcPipe.DestroyPipe();
+    //m_RpcPipe.DestroyPipe();
+    m_RpcPipe.ClosePipe();
+    m_MsgCallback.ResetWndProc();
 }
 
 NS_COB_END

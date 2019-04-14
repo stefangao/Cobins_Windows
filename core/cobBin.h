@@ -6,6 +6,7 @@
 #include "cobConst.h"
 #include "cobContext.h"
 #include "BindPipe.h"
+#include "MsgCallback.h"
 
 NS_COB_BEGIN
 
@@ -78,7 +79,7 @@ class Bin
 public:
     Bin();
 
-    bool create(int portId);
+    bool create(HWND hWnd, int portId);
     void destroy();
 
     bool connect(int portId);
@@ -122,6 +123,7 @@ protected: //should be private
 	HANDLE m_hPlatformCntx;
 
 	HWND      m_hMainWnd;
+    MsgCallback m_MsgCallback;
 
 protected:
 	BYTE m_RpcMsgTxdBuf[RPCBUF_MAXLEN];

@@ -59,6 +59,7 @@ CmmiexeDlg::CmmiexeDlg(CWnd* pParent /*=nullptr*/)
     : CDialogEx(IDD_MMI_EXE_DIALOG, pParent)
 {
     m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hHook = NULL;
 }
 
 void CmmiexeDlg::DoDataExchange(CDataExchange* pDX)
@@ -190,37 +191,34 @@ void CmmiexeDlg::OnBnClickedButton2()
     mAppDelegate.mBin.RpcSendData((BYTE*)buf, 9);
 }
 
+BOOL UnHookWnd(HHOOK hHook)
+{
+    BOOL ret = false;
+    if (hHook != NULL)
+    {
+        ret = UnhookWindowsHookEx(hHook);
+        return FALSE;
+    }
+    return ret;
+}
 
 void CmmiexeDlg::OnBnClickedButton3()
 {
-    HINSTANCE handle = LoadLibraryA("spy_dll.dll");
-    if (handle) //判读句柄内dll是否可用
+    bool ret = false;
+    if (m_hHook)
     {
-        typedef BOOL(*UnHookWnd_t) (HWND);
-        UnHookWnd_t UnHookWnd = (UnHookWnd_t)GetProcAddress(handle, "UnHookWnd");
-        if (UnHookWnd) //还是判断一下函数指针是否有效
-        {
-            BOOL result = UnHookWnd(NULL);
-            printf("UnHookWnd result=%d\n", result);
-        }
-        FreeLibrary(handle); //卸载句柄，，
+        ret = UnHookWnd(m_hHook);
+        WT_Trace("UnHookWnd: ret=%d", ret);
+        if (ret)
+            m_hHook = NULL;
     }
 }
 
 void CmmiexeDlg::OnBnClickedButton4()
 {
-    ValueMap vm;
-    ValueVector vv;
-    vv.push_back(Value(1));
-    vv.push_back(Value(3));
-    vv.push_back(Value(5));
-    vm.at("test2") = "hello";
-    vm.at("test1/kkk") = Value(89);
-    vm.at("test1/ddd") = vv;
-    auto str = vm.makeJsonString() + "\n";
-    COBLOG(str.c_str());
+    char buf[] = "cmd_unhook";
+    mAppDelegate.mBin.RpcSendData((BYTE*)buf, 11);
 }
-
 
 afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
 {
@@ -237,19 +235,19 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
                 HWND hGameWnd = GetWndByCursor();
 
                 COBLOG("hGameWnd=%x\n", hGameWnd);
-                if (hGameWnd)
+                if (hGameWnd && m_hHook == NULL)
                 {
                     HINSTANCE handle = LoadLibraryA("spy_dll.dll");
                     if (handle) //判读句柄内dll是否可用
                     {
-                        typedef BOOL(*HookWnd_t) (HWND);
+                        typedef HHOOK(*HookWnd_t) (HWND);
                         HookWnd_t HookWnd = (HookWnd_t)GetProcAddress(handle, "HookWnd");
                         if (HookWnd) //还是判断一下函数指针是否有效
                         {
-                            BOOL result = HookWnd(hGameWnd);
-                            printf("HookWnd result=%d\n", result);
+                            m_hHook = HookWnd(hGameWnd);
+                            WT_Trace("HookWnd result=%x\n", m_hHook);
                         }
-                        FreeLibrary(handle); //卸载句柄，，
+                        FreeLibrary(handle); //卸载
                     }
                 }
             }

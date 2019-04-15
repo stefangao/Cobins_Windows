@@ -9,21 +9,17 @@
 
 class MsgCallback
 {
+	typedef const std::function<void(void)> CallbackFunc;
 private:
-    HWND mhMainWnd;
-    static WNDPROC mOldWndProc;
-    static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-    static std::function<void(void)> mPostCallback;
-    std::function<void(void)> mSendCallback;
+    HWND m_hMainWnd;
+    WNDPROC m_OldWndProc;
 
 public:
     MsgCallback() {};
-    MsgCallback(HWND hWnd);
 
 public:
-    void post(const std::function<void(void)>& callback);
-    void send(const std::function<void(void)>& callback);
+    void post(CallbackFunc& callback);
+    void send(CallbackFunc& callback);
 
     void SetWndProc(HWND hWnd);
     void ResetWndProc();

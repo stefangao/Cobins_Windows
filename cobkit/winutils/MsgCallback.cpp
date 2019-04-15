@@ -1,51 +1,48 @@
 #include "MsgCallback.h"
 #include "wtermin.h"
 
-WNDPROC MsgCallback::mOldWndProc = NULL;
-std::function<void(void)> MsgCallback::mPostCallback = nullptr;
-MsgCallback::MsgCallback(HWND hWnd)
-  : mhMainWnd(hWnd)
-{
-    mSendCallback = nullptr;
-    ::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WindowProc);
-}
-
 void MsgCallback::SetWndProc(HWND hWnd)
 {
-    mhMainWnd = hWnd;
-    ::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WindowProc);
+    if (m_hMainWnd != NULL && hWnd)
+    {
+        m_hMainWnd = hWnd;
+        m_OldWndProc = ::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WindowProc);
+    }
 }
 
 void MsgCallback::ResetWndProc()
 {
-    if (mhMainWnd)
+    if (m_hMainWnd)
     {
-        ::SetWindowLong(mhMainWnd, GWL_WNDPROC, (LONG)mOldWndProc);
+        ::SetWindowLong(m_hMainWnd, GWL_WNDPROC, (LONG)m_OldWndProc);
+        m_hMainWnd = NULL;
     }
 }
 
-LRESULT CALLBACK MsgCallback::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    //WT_Trace(" MsgCallback::WindowProc\n");
     if (uMsg == WM_POST_CALLBACK)
     {
-        if (mPostCallback)
+        CallbackFunc* p = (CallbackFunc*)wParam;
+        CallbackFunc& callback = *p;
+        if (callback)
         {
-            mPostCallback();
+            callback();
+            delete p;
             return 0;
         }
     }
-    return CallWindowProc(mOldWndProc, hWnd, uMsg, wParam, lParam);
+    return CallWindowProc(m_OldWndProc, hWnd, uMsg, wParam, lParam);
 }
 
 void MsgCallback::post(const std::function<void(void)>& callback)
 {
-    mPostCallback = callback;
-    ::PostMessage(mhMainWnd, WM_POST_CALLBACK, 0, 0);
+    CallbackFunc **wParam = new (CallbackFunc*);
+    ::PostMessage(m_hMainWnd, WM_POST_CALLBACK, (WPARAM)(*wParam), 0);
 }
 
 void MsgCallback::send(const std::function<void(void)>& callback)
 {
-    mSendCallback = callback;
-
+    CallbackFunc **wParam = new (CallbackFunc*);
+    ::SendMessage(m_hMainWnd, WM_POST_CALLBACK, (WPARAM)(*wParam), 0);
 }

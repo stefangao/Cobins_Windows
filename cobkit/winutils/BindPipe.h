@@ -4,7 +4,7 @@
 #include "Pipe.h"
 #include <functional>
 
-class  __declspec(dllexport) CBindPipe : public CPipe
+class CBindPipe : public CPipe
 {
 
 typedef struct

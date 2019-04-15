@@ -2,11 +2,11 @@
 #define __COB_BIN_H__
 
 #include <windows.h>
-#include "lianli.h"
-#include "cobConst.h"
+#include "llfsm/lianli.h"
 #include "cobContext.h"
-#include "BindPipe.h"
-#include "MsgCallback.h"
+#include "winutils/BindPipe.h"
+#include "winutils/MsgCallback.h"
+#include "base/cobUtils.h"
 
 NS_COB_BEGIN
 

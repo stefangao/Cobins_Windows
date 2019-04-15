@@ -95,11 +95,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)external;$(SolutionDir)llfsm;$(SolutionDir)winutils;$(SolutionDir)core;$(SolutionDir)kbhook;$(SolutionDir)base</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)external;$(SolutionDir)llfsm;$(SolutionDir)cobkit;$(SolutionDir)cobkit\inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>../base/lib/Debug/base.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)external/llfsm/lib/Debug/llfsm.lib;$(SolutionDir)cobkit/lib/Debug/cobkit.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -193,8 +193,6 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="test3.h" />
-    <ClInclude Include="TestCase.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppDelegate.cpp" />
@@ -206,8 +204,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="test3.cpp" />
-    <ClCompile Include="TestCase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mmiexe.rc" />

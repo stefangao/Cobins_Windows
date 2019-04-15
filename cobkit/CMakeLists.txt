@@ -8,6 +8,7 @@ set(SOLUTION_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${SOLUTION_ROOT_DIR}/inc)
+include_directories(${SOLUTION_ROOT_DIR}/cobkit/inc)
 include_directories(${SOLUTION_ROOT_DIR}/cobkit)
 include_directories(${SOLUTION_ROOT_DIR}/external)
 

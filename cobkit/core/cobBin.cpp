@@ -1,4 +1,4 @@
-#include "wndshm.h"
+#include "winutils/wndshm.h"
 #include "cobBin.h"
 #include "cobProbe.h"
 #include "cobRobot.h"

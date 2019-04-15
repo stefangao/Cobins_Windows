@@ -3,23 +3,23 @@
 
 WndThread::WndThread()
 {
-	mhMainWnd = NULL;
+	m_hMainWnd = NULL;
 }
 
 WndThread::~WndThread()
 {
     DestroyWindow(m_hMainWnd);
-    PostQuitMessage();
+    PostQuitMessage(0);
 }
 
-static LRESULT WndProc(HWND hWnd,UINT wMsg,WPARAM wParam,LPARAM lParam)
+static LRESULT WINAPI WndProc(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
     return DefWindowProc(hWnd,wMsg,wParam,lParam);
 }
-static DWORD ThreadProc(PVOID pArg)
+static DWORD WINAPI ThreadProc(PVOID pArg)
 {
 	WndThread* pThread = (WndThread*)pArg;
-	hInst = GetModuleHandle(NULL);
+    HMODULE hInst = GetModuleHandle(NULL);
 
     WNDCLASS wc = {0};
     wc.style         = 0;
@@ -34,7 +34,7 @@ static DWORD ThreadProc(PVOID pArg)
     wc.lpszClassName = TEXT("SimpleWindow");
     RegisterClass(&wc);
 
-    m_hMainWnd = CreateWindowEx(0,
+    pThread->m_hMainWnd = CreateWindowEx(0,
                 TEXT("SimpleWindow"),
                 TEXT("SimpleWindow"),
                 WS_VISIBLE,
@@ -61,14 +61,14 @@ static DWORD ThreadProc(PVOID pArg)
     return 0;
 }
 
-HANDLE WndThread::create()
+HWND WndThread::create()
 {
-    HANDLE hThread = CreateThread(NULL, 0, ThreadProc,　this, 0, NULL);
+    HANDLE hThread = CreateThread(NULL, 0, ThreadProc, this, 0, NULL);
     CloseHandle(hThread);
 
     m_hEvent = CreateEvent(0, FALSE, FALSE, NULL);
     WaitForSingleObject(m_hEvent, INFINITE);
-    CloseHanle(m_hEvent);
+    CloseHandle(m_hEvent);
 
     WT_Trace("WndThread::create() End: hMainWnd=%x\n", m_hMainWnd);
     return m_hMainWnd;

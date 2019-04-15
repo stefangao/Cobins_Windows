@@ -1,12 +1,40 @@
 #include "MsgCallback.h"
+#include <assert.h>
 #include "wtermin.h"
+
+static std::map<HWND, WNDPROC> m_WndMap;
+
+static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    if (uMsg == WM_POST_CALLBACK || uMsg == WM_SEND_CALLBACK)
+    {
+        CallbackFunc* *p1 = (CallbackFunc**)wParam;
+        CallbackFunc* p2 = *p1;
+        CallbackFunc& callback = *p2;
+        if (callback)
+        {
+            callback();
+            delete p1;
+            return 0;
+        }
+    }
+
+    auto iter = m_WndMap.find(hWnd);
+    assert(iter != m_WndMap.end());
+
+    return CallWindowProc(iter->second, hWnd, uMsg, wParam, lParam);
+}
 
 void MsgCallback::SetWndProc(HWND hWnd)
 {
-    if (m_hMainWnd != NULL && hWnd)
+    auto iter = m_WndMap.find(hWnd);
+    assert(iter == m_WndMap.end());
+
+    if (m_hMainWnd == NULL && hWnd)
     {
         m_hMainWnd = hWnd;
-        m_OldWndProc = ::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WindowProc);
+        WNDPROC oldWndProc = (WNDPROC)SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WindowProc);
+        m_WndMap.insert(std::make_pair(hWnd, oldWndProc));
     }
 }
 
@@ -14,29 +42,17 @@ void MsgCallback::ResetWndProc()
 {
     if (m_hMainWnd)
     {
-        ::SetWindowLong(m_hMainWnd, GWL_WNDPROC, (LONG)m_OldWndProc);
+        auto iter = m_WndMap.find(m_hMainWnd);
+        assert(iter != m_WndMap.end());
+
+        ::SetWindowLong(m_hMainWnd, GWL_WNDPROC, (LONG)iter->second);
         m_hMainWnd = NULL;
     }
 }
 
-static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    if (uMsg == WM_POST_CALLBACK)
-    {
-        CallbackFunc* p = (CallbackFunc*)wParam;
-        CallbackFunc& callback = *p;
-        if (callback)
-        {
-            callback();
-            delete p;
-            return 0;
-        }
-    }
-    return CallWindowProc(m_OldWndProc, hWnd, uMsg, wParam, lParam);
-}
-
 static void CALLBACK TimerProc(HWND hWnd, UINT nMsg, UINT nTimerid, DWORD dwTime)
 {
+    /*
    switch(nTimerid)
    {
    case 1:
@@ -44,26 +60,26 @@ static void CALLBACK TimerProc(HWND hWnd, UINT nMsg, UINT nTimerid, DWORD dwTime
        break;
    default:
 	   break;
-   }
+   }*/
 }
 
 void MsgCallback::post(const std::function<void(void)>& callback)
 {
     CallbackFunc **wParam = new (CallbackFunc*);
-    ::PostMessage(m_hMainWnd, WM_POST_CALLBACK, (WPARAM)(*wParam), 0);
+    *wParam = &callback;
+    ::PostMessage(m_hMainWnd, WM_POST_CALLBACK, (WPARAM)wParam, 0);
 }
-
 void MsgCallback::send(const std::function<void(void)>& callback)
 {
     CallbackFunc **wParam = new (CallbackFunc*);
-    ::SendMessage(m_hMainWnd, WM_POST_CALLBACK, (WPARAM)(*wParam), 0);
+    ::SendMessage(m_hMainWnd, WM_SEND_CALLBACK, (WPARAM)(*wParam), 0);
 }
 
-void MsgCallback::wait(UINT uTimeout, UINT uTargetMsg, CallbackFunc& callback);
+void MsgCallback::wait(UINT uTimeout, UINT uTargetMsg, const CallbackFunc& callback)
 {
 	if (uTimeout != INFINITE)
 	{
-　　　　　　　　SetTimer(m_hMainWnd, 1, uTimeout, TimerProc);
+        SetTimer(m_hMainWnd, 1, uTimeout, TimerProc);
 	}
 
     MSG msg;

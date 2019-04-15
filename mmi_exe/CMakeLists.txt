@@ -14,10 +14,9 @@ add_definitions(-DUNICODE -D_UNICODE)
 include_directories(
 ${SOLUTION_ROOT_DIR}/inc
 ${SOLUTION_ROOT_DIR}/external
-${SOLUTION_ROOT_DIR}/base
-${SOLUTION_ROOT_DIR}/core
+${SOLUTION_ROOT_DIR}/cobkit
+${SOLUTION_ROOT_DIR}/cobkit/inc
 ${SOLUTION_ROOT_DIR}/llfsm
-${SOLUTION_ROOT_DIR}/winutils
 )
 
 link_directories(

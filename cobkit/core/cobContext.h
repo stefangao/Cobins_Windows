@@ -9,8 +9,8 @@
 #ifndef __COB_CONTEXT_H__
 #define __COB_CONTEXT_H__
 
-#include "lianli.h"
-#include "cobConst.h"
+#include "llfsm/lianli.h"
+#include "cobMacros.h"
 
 NS_COB_BEGIN
 

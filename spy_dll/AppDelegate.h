@@ -1,7 +1,7 @@
 #ifndef __APP_DELEGATE_H__
 #define __APP_DELEGATE_H__
 
-#include "cobApplication.h"
+#include "cobins.h"
 USING_NS_COB;
 
 class AppDelegate : public cobins::Application

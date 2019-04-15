@@ -1,7 +1,7 @@
 #ifndef __COB_APPLICATION_H__
 #define __COB_APPLICATION_H__
 
-#include "lianli.h"
+#include "llfsm/lianli.h"
 #include "cobMacros.h"
 #include "cobContext.h"
 #include "cobBin.h"

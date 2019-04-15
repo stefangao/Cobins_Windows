@@ -30,12 +30,6 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="test3.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="TestCase.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="AppDelegate.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -48,12 +42,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="test3.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="TestCase.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AppDelegate.cpp">

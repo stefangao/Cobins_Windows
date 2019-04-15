@@ -6,13 +6,12 @@
 #include "mmi_exe.h"
 #include "mmi_exeDlg.h"
 #include "afxdialogex.h"
-#include "lianli.h"
+#include "llfsm/lianli.h"
 #include "cobins.h"
-#include "test3.h"
-#include "BindPipe.h"
-#include "kbhook.h"
-#include "wndbase.h"
-#include "LibInjectMng.h"
+#include "winutils/BindPipe.h"
+#include "winutils/kbhook.h"
+#include "winutils/wndbase.h"
+#include "winutils/LibInjectMng.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

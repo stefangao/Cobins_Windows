@@ -1,0 +1,5 @@
+#include "cobTypes.h"
+#include "cobMacros.h"
+#include "cobConst.h"
+#include "base/cobUtils.h"
+#include "core/cobApplication.h"

@@ -2,19 +2,20 @@
 #include <assert.h>
 #include "wtermin.h"
 
+struct CallbackWrapper{ CallbackFunc callback; };
 static std::map<HWND, WNDPROC> m_WndMap;
 
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     if (uMsg == WM_POST_CALLBACK || uMsg == WM_SEND_CALLBACK)
     {
-        CallbackFunc* *p1 = (CallbackFunc**)wParam;
-        CallbackFunc* p2 = *p1;
-        CallbackFunc& callback = *p2;
-        if (callback)
+        CallbackWrapper *wrapper = (CallbackWrapper*)wParam;
+        if (wrapper)
         {
-            callback();
-            delete p1;
+            if (wrapper->callback)
+                wrapper->callback();
+
+            delete wrapper;
             return 0;
         }
     }
@@ -63,16 +64,17 @@ static void CALLBACK TimerProc(HWND hWnd, UINT nMsg, UINT nTimerid, DWORD dwTime
    }*/
 }
 
-void MsgCallback::post(const std::function<void(void)>& callback)
+void MsgCallback::post(const CallbackFunc& callback)
 {
-    CallbackFunc **wParam = new (CallbackFunc*);
-    *wParam = &callback;
-    ::PostMessage(m_hMainWnd, WM_POST_CALLBACK, (WPARAM)wParam, 0);
+    CallbackWrapper *wrapper = new CallbackWrapper();
+    wrapper->callback = callback;
+    ::PostMessage(m_hMainWnd, WM_POST_CALLBACK, (WPARAM)wrapper, 0);
 }
-void MsgCallback::send(const std::function<void(void)>& callback)
+void MsgCallback::send(const CallbackFunc& callback)
 {
-    CallbackFunc **wParam = new (CallbackFunc*);
-    ::SendMessage(m_hMainWnd, WM_SEND_CALLBACK, (WPARAM)(*wParam), 0);
+    CallbackWrapper *wrapper = new CallbackWrapper();
+    wrapper->callback = callback;
+    ::SendMessage(m_hMainWnd, WM_SEND_CALLBACK, (WPARAM)wrapper, 0);
 }
 
 void MsgCallback::wait(UINT uTimeout, UINT uTargetMsg, const CallbackFunc& callback)

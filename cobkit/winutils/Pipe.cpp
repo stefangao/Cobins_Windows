@@ -254,8 +254,6 @@ BOOL CPipe::Listen()
    
     while (m_bConnected)
     {
-        WT_Trace("Listen new loop [%x]\n", GetCurrentProcessId());
-
         bSuccess = ReadFile(m_hPipe, NULL, 0, &dwReadLen, OVERLAPPED_IO ? &ol : NULL);
         if (bSuccess && GetDataSize() > 0)
         {
@@ -263,28 +261,13 @@ BOOL CPipe::Listen()
             WaitForSingleObject(m_hEvent, 10000);
         }
         else if (GetLastError() == ERROR_IO_PENDING)
-        {
-            /*
-            //×î¶àµÈ3Ãë
-            //WT_Trace("pipe[%x] listen: wait 3000 ...\n", this);
-            DWORD dwResult = WaitForSingleObject(ol.hEvent, 8000);
-            if (dwResult != WAIT_OBJECT_0)
-            {
-                WT_Trace("CPipe::Listen: wait nothing\n");
-            }*/
-            //WT_Trace("pipe[%x] listen: wait end (%d)\n", this, dwResult);
-
-            WT_Trace("GetOverlappedResult000 [%x]\n", GetCurrentProcessId());
-            
+        {           
             bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwReadLen, TRUE);
-            WT_Trace("GetOverlappedResult£ºbSucc=%d, len=%d [%x]\n", bSuccess, GetDataSize(), GetCurrentProcessId());
+            WT_Trace("GetOverlappedResult£ºbSucc=%d, len=%d [%x](%x)\n", bSuccess, GetDataSize(), GetCurrentProcessId(), GetCurrentThreadId());
             if (bSuccess && GetDataSize() > 0)
             {
-                WT_Trace("OnReceive E");
                 OnReceive(0);
-                WT_Trace("OnReceive X1");
                 WaitForSingleObject(m_hEvent, 10000);
-                WT_Trace("OnReceive X2");
             }
         }
 
@@ -299,7 +282,6 @@ BOOL CPipe::Listen()
             OnReceive(-1);
             break;
         }
-        WT_Trace("Listen loop end [%d]\n", m_bConnected);
     }
 
     WT_Trace("Listen end [%x]\n", GetCurrentProcessId());

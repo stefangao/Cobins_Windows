@@ -9,7 +9,7 @@
 #define WM_SEND_CALLBACK    WM_USER + 1002
 #define WM_WAIT_TIMEOUT     WM_USER + 1003
 
-typedef const std::function<void(void)> CallbackFunc;
+typedef std::function<void(void)> CallbackFunc;
 
 class MsgCallback
 {
@@ -20,8 +20,8 @@ public:
     MsgCallback() {};
 
 public:
-    void post(CallbackFunc& callback);
-    void send(CallbackFunc& callback);
+    void post(const CallbackFunc& callback);
+    void send(const CallbackFunc& callback);
     void wait(UINT uTimeout, UINT uTargetMsg, const CallbackFunc& callback);
 
     void SetWndProc(HWND hWnd);

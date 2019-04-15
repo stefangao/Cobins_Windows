@@ -419,15 +419,18 @@ void Bin::onPipeReceiveData(int nErrCode)
 {
     if (nErrCode == 0)
     {
-        COBLOG("-*-postCallback begin mainwnd=%x\n", m_hMainWnd);
-        m_MsgCallback.post([this]() {
+        COBLOG("Bin::onPipeReceiveData E thread=%x\n", GetCurrentThreadId());
+        m_MsgCallback.send([this]() {
             char buf[256];
             int len = m_RpcPipe.Receive((BYTE*)buf, 256);
-            WT_Trace("Bin::onPipeReceiveData: len=%d buf=%s\n", len, buf);
+            WT_Trace("Bin::onPipeReceiveData X: thread=%x len=%d buf=%s\n", GetCurrentThreadId(), len, buf);
             if (strcmp(buf, "cmd_unhook") == 0)
             {
                 COBLOG("Bin::destroy: begin\n");
-                destroy();
+                m_MsgCallback.post([this]()
+                {
+                    destroy();
+                });
                 COBLOG("Bin::destroy: end\n");
             }
         });

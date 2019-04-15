@@ -8,9 +8,8 @@ set(SOLUTION_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${SOLUTION_ROOT_DIR}/inc)
+include_directories(${SOLUTION_ROOT_DIR}/cobkit)
 include_directories(${SOLUTION_ROOT_DIR}/external)
-include_directories(${PROJECT_SOURCE_DIR}/base)
-include_directories(${PROJECT_SOURCE_DIR}/winutils)
 
 file(GLOB_RECURSE DIR_HEADERS  *.h)
 source_group("Include" FILES ${DIR_HEADERS}) 

@@ -35,6 +35,18 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     return CallWindowProc(m_OldWndProc, hWnd, uMsg, wParam, lParam);
 }
 
+static void CALLBACK TimerProc(HWND hWnd, UINT nMsg, UINT nTimerid, DWORD dwTime)
+{
+   switch(nTimerid)
+   {
+   case 1:
+	   ::PostMessage(m_hMainWnd, WM_WAIT_TIMEOUT, 0, 0);
+       break;
+   default:
+	   break;
+   }
+}
+
 void MsgCallback::post(const std::function<void(void)>& callback)
 {
     CallbackFunc **wParam = new (CallbackFunc*);
@@ -46,3 +58,29 @@ void MsgCallback::send(const std::function<void(void)>& callback)
     CallbackFunc **wParam = new (CallbackFunc*);
     ::SendMessage(m_hMainWnd, WM_POST_CALLBACK, (WPARAM)(*wParam), 0);
 }
+
+void MsgCallback::wait(UINT uTimeout, UINT uTargetMsg, CallbackFunc& callback);
+{
+	if (uTimeout != INFINITE)
+	{
+　　　　　　　　SetTimer(m_hMainWnd, 1, uTimeout, TimerProc);
+	}
+
+    MSG msg;
+    while(GetMessage(&msg, NULL, 0, 0))
+    {
+    	if (msg.message == uTargetMsg)
+    	{
+    		callback();
+    		break;
+    	}
+    	else if (msg.message == WM_WAIT_TIMEOUT)
+    	{
+    		callback();
+    		break;
+    	}
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+}
+

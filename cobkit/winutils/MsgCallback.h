@@ -5,7 +5,8 @@
 #include <functional>
 
 #define WM_POST_CALLBACK    WM_USER + 1001
-#define WM_SEND_CALLBACK    WM_USER + 1002
+#define WM_SEND_CALLBAＩCK  WM_USER + 1002
+#define WM_WAIT_TIMEOUT     WM_USER + 1003
 
 class MsgCallback
 {
@@ -20,6 +21,7 @@ public:
 public:
     void post(CallbackFunc& callback);
     void send(CallbackFunc& callback);
+    void wait(UINT uTimeout, UINT uTargetMsg, CallbackFunc& callback);
 
     void SetWndProc(HWND hWnd);
     void ResetWndProc();

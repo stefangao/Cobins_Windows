@@ -3,10 +3,9 @@
 
 #include <windows.h>
 #include "llfsm/lianli.h"
-#include "cobContext.h"
 #include "winutils/cobPipe.h"
 #include "winutils/MsgCallback.h"
-#include "winutils/DllManager.h"
+#include "winutils/cobDllManager.h"
 #include "base/cobUtils.h"
 #include "base/cobValue.h"
 
@@ -84,7 +83,7 @@ public:
     bool create(HWND hWnd, int portId);
     void destroy();
 
-    bool bind(HWND hWnd, const ValueMap& params)
+    bool bind(HWND hWnd, const ValueMap& params);
     bool unbind();
 
     bool connect(int portId);
@@ -121,13 +120,13 @@ private:
 	int     m_nRpcFrameNo;
 
 
-protected: //should be private
-	cobinsPipe m_RpcPipe;
-	char    m_strPrefix[6];  //"Host" or "Embed"
+protected:
+	Pipe m_RpcPipe;
+	char m_strPrefix[6];  //"Host" or "Embed"
 
 	HANDLE m_hPlatformCntx;
 
-	HWND      m_hMainWnd;
+	HWND m_hMainWnd;
     MsgCallback m_MsgCallback;
 
     DllManager m_dllManager;

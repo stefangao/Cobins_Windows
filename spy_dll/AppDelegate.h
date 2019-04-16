@@ -3,13 +3,13 @@
 
 #include "cobins.h"
 USING_NS_COB;
-USING_NS_LLFSM;
+USING_NS_LL;
 
 class AppDelegate : public cobins::Application
 {
 public:
     AppDelegate();
-    bool create(HWND hWnd, const std::string& name, cobins::Context& context = cobins::Context::DEFAULT);
+    bool create(HWND hWnd, const std::string& name, lianli::Context& context = lianli::Context::DEFAULT);
 
 protected:
     virtual void onCreate(const lianli::Context& context) override;

@@ -1,13 +1,13 @@
-#include <winutils/cobDllManager.h>
+#include "cobDllManager.h"
 
 NS_COB_BEGIN
 
 DllManager::DllManager()
 {
-    m_hHook　= NULL;
+    m_hHook = NULL;
 }
 
-BOOL DllManager::Inject(HWND hTargetWnd, const std::string& dllPath)
+BOOL DllManager::inject(HWND hTargetWnd, const std::string& dllPath)
 {
     if (hTargetWnd && m_hHook == NULL)
      {
@@ -24,9 +24,10 @@ BOOL DllManager::Inject(HWND hTargetWnd, const std::string& dllPath)
              FreeLibrary(hInst);
          }
      }
+    return true;
 }
 
-BOOL DllManager::Eject()
+BOOL DllManager::eject()
 {
     BOOL ret = false;
     if (m_hHook != NULL)

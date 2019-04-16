@@ -7,7 +7,7 @@ Robot::Robot()
 
 }
 
-bool Robot::create(const std::string& name, Context& context)
+bool Robot::create(const std::string& name, lianli::Context& context)
 {
     if (!lianli::FSM::create(name, context))
         return false;

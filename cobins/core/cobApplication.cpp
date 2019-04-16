@@ -7,7 +7,7 @@ Application::Application()
 
 }
 
-bool Application::create(const std::string& name, Context& context)
+bool Application::create(const std::string& name, lianli::Context& context)
 {
     if (!lianli::FSM::create(name, context))
         return false;

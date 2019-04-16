@@ -1,8 +1,10 @@
-#ifndef __COB_INJECT_DLL__
-#define __COB_INJECT_DLL__
+#ifndef __DLL_MANAGER__
+#define __DLL_MANAGER__
 
 #include <windows.h>
+#include <string>
 #include "cobMacros.h"
+#include "base/cobUtils.h"
 
 NS_COB_BEGIN
 
@@ -16,8 +18,8 @@ public:
     virtual ~DllManager() {};
 
 public:
-    BOOL Inject(HWND hTargetWnd, const std::string& dllPath);
-    BOOL Eject();
+    BOOL inject(HWND hTargetWnd, const std::string& dllPath);
+    BOOL eject();
     BOOL isInjected() {return m_hHook != NULL;};
 };
 

@@ -3,7 +3,6 @@
 
 #include "llfsm/lianli.h"
 #include "cobMacros.h"
-#include "cobContext.h"
 #include "cobBin.h"
 
 NS_COB_BEGIN
@@ -12,7 +11,7 @@ class Application : public lianli::FSM
 {
 public:
     Application();
-    bool create(const std::string& name, Context& context = Context::DEFAULT);
+    bool create(const std::string& name, lianli::Context& context = lianli::Context::DEFAULT);
 
 protected:
 

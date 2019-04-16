@@ -3,7 +3,6 @@
 
 #include "llfsm/lianli.h"
 #include "cobMacros.h"
-#include "cobContext.h"
 #include "cobProbe.h"
 
 NS_COB_BEGIN
@@ -12,7 +11,7 @@ class Robot : public lianli::FSM
 {
 public:
 	Robot();
-    bool create(const std::string& name, Context& context = Context::DEFAULT);
+    bool create(const std::string& name, lianli::Context& context = lianli::Context::DEFAULT);
 
     Probe* getProbe(const std::string& probeName);
     Robot* getRobot(const std::string& robotName);

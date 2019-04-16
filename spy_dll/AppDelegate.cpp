@@ -5,7 +5,7 @@ AppDelegate::AppDelegate()
 
 }
 
-bool AppDelegate::create(HWND hWnd, const std::string& name, Context& context)
+bool AppDelegate::create(HWND hWnd, const std::string& name, lianli::Context& context)
 {
     if (!Application::create(name, context))
         return false;

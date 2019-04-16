@@ -2,6 +2,7 @@
 #define __COB_PIPE__
 
 #include <windows.h>
+#include <functional>
 #include "cobMacros.h"
 
 NS_COB_BEGIN
@@ -9,14 +10,14 @@ NS_COB_BEGIN
 #define PIPENAME "\\\\.\\pipe\\GameBs_Ptfm_Pipe%x"       /* Default pipe name */
 #define OVERLAPPED_IO  TRUE
 
-class CPipe
+class Pipe
 {
 	friend DWORD WINAPI PipeClientListenProc(LPVOID lParam);
 	friend DWORD WINAPI PipeServerListenProc(LPVOID lParam);
 
 public:
-    HANDLE  m_hPipe;  //only for test
-
+    HANDLE  m_hPipe;
+    std::function<void(int)> m_OnPipeReceiveDataProc;
 
 private:
 	HANDLE  m_hEvent;
@@ -32,8 +33,8 @@ protected:
 	BOOL PipeCheck();
 
 public:
-	CPipe();
-   	virtual ~CPipe();
+	Pipe();
+   	virtual ~Pipe();
 
     BOOL IsPipe() {return (m_hPipe != INVALID_HANDLE_VALUE);};
 

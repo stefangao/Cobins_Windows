@@ -445,6 +445,10 @@ void Bin::onPipeReceiveData(int nErrCode)
                 });
                 COBLOG("Bin::destroy: end\n");
             }
+            else if (strcmp(buf, "hello123") == 0)
+            {
+                MessageBox(m_hMainWnd, buf, "test", 0);
+            }
         });
 
 

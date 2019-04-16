@@ -1,10 +1,10 @@
-#include "stdio.h"
-#include "Pipe.h"
+#include <stdio.h>
+#include "cobPipe.h"
 #include "wtermin.h"
 
 NS_COB_BEGIN
 
-CPipe::CPipe()
+Pipe::Pipe()
 {
     m_hPipe = INVALID_HANDLE_VALUE;
     m_hEvent = CreateEvent(0, FALSE, FALSE, NULL);
@@ -16,7 +16,7 @@ CPipe::CPipe()
     m_OnPipeReceiveDataProc = NULL;
 }
 
-CPipe::~CPipe()
+Pipe::~Pipe()
 {
     CloseHandle (m_hEvent);
     CloseHandle (m_hSendEvent);
@@ -26,8 +26,8 @@ CPipe::~CPipe()
 
 static DWORD WINAPI PipeClientListenProc(LPVOID lParam)
 {
-    CPipe* pPipe;
-    pPipe = (CPipe*)lParam;
+    Pipe* pPipe;
+    pPipe = (Pipe*)lParam;
 
     SetEvent(pPipe->m_hEvent);  //make parent thread continue
     pPipe->Listen();
@@ -39,7 +39,7 @@ static DWORD WINAPI PipeClientListenProc(LPVOID lParam)
 
 static DWORD WINAPI PipeServerListenProc(LPVOID lParam)
 {
-    CPipe* pPipe = (CPipe*)lParam;
+    Pipe* pPipe = (Pipe*)lParam;
 
     SetEvent (pPipe->m_hEvent);  //make parent thread continue
 
@@ -54,7 +54,7 @@ static DWORD WINAPI PipeServerListenProc(LPVOID lParam)
     return 0;
 }
 
-int CPipe::Send(BYTE *pBuf, int nSize)
+int Pipe::Send(BYTE *pBuf, int nSize)
 {
     BOOL bSuccess;
     OVERLAPPED ol;
@@ -62,7 +62,7 @@ int CPipe::Send(BYTE *pBuf, int nSize)
 
     if (m_hPipe == INVALID_HANDLE_VALUE || !m_bConnected)
     {
-        WT_Error("CPipe::Send: ��Ч�����δ����: hPipe=%x\n", m_hPipe);
+        WT_Error("Pipe::Send: ��Ч�����δ����: hPipe=%x\n", m_hPipe);
         OnReceive(-1);
         return -1;
     }
@@ -95,7 +95,7 @@ int CPipe::Send(BYTE *pBuf, int nSize)
             bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwWritten, FALSE);
             if (!bSuccess && !PipeCheck())
             {
-                WT_Error("CPipe::Send: error\n");
+                WT_Error("Pipe::Send: error\n");
                 dwWritten = -1;
                 OnReceive(-1);
             }
@@ -111,7 +111,7 @@ int CPipe::Send(BYTE *pBuf, int nSize)
     return dwWritten;
 }
 
-int CPipe::Receive(BYTE *pBuf, int nBufLen)
+int Pipe::Receive(BYTE *pBuf, int nBufLen)
 {
     BOOL bSuccess;
     OVERLAPPED ol;
@@ -119,7 +119,7 @@ int CPipe::Receive(BYTE *pBuf, int nBufLen)
 
     if (m_hPipe == INVALID_HANDLE_VALUE || !m_bConnected)
     {
-        WT_Error("CPipe::Receive: hPipe=%x\n", m_hPipe);
+        WT_Error("Pipe::Receive: hPipe=%x\n", m_hPipe);
         OnReceive(-1);
         return -1;
     }
@@ -141,7 +141,7 @@ int CPipe::Receive(BYTE *pBuf, int nBufLen)
             if (dwResult != WAIT_OBJECT_0)
             {
                 BOOL bCancel = CancelIo(m_hPipe);
-                WT_Error("CPipe::Recv: delayed: bCancel=%d\n", bCancel);
+                WT_Error("Pipe::Recv: delayed: bCancel=%d\n", bCancel);
                 //ClosePipe();
                 //OnReceive(-1);
                 //return 0;
@@ -151,7 +151,7 @@ int CPipe::Receive(BYTE *pBuf, int nBufLen)
             bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwReadLen, FALSE);
             if (!bSuccess && !PipeCheck())
             {
-                WT_Error("CPipe::Send: error\n");
+                WT_Error("Pipe::Send: error\n");
                 dwReadLen = -1;
                 OnReceive(-1);
             }
@@ -163,7 +163,7 @@ int CPipe::Receive(BYTE *pBuf, int nBufLen)
     return dwReadLen;
 }
 
-BOOL CPipe::PipeCheck()
+BOOL Pipe::PipeCheck()
 {
     DWORD dwLastError = GetLastError();
     WT_Trace("PipeCheck��lastErr=%d", dwLastError);
@@ -185,7 +185,7 @@ BOOL CPipe::PipeCheck()
     return TRUE;
 }
 
-BOOL CPipe::ConnectPipe()
+BOOL Pipe::ConnectPipe()
 {
     BOOL bSuccess;
     OVERLAPPED ol;
@@ -223,7 +223,7 @@ BOOL CPipe::ConnectPipe()
             }
             else
             {
-                WT_Trace("CPipe::ConnectPipe()111: dwLastErr=%d\n",
+                WT_Trace("Pipe::ConnectPipe()111: dwLastErr=%d\n",
                         GetLastError());
             }
         }
@@ -234,7 +234,7 @@ BOOL CPipe::ConnectPipe()
         }
         else
         {
-            WT_Trace("CPipe::ConnectPipe()222: dwLastErr=%d\n", dwLastErr);
+            WT_Trace("Pipe::ConnectPipe()222: dwLastErr=%d\n", dwLastErr);
         }
     }
 
@@ -246,7 +246,7 @@ BOOL CPipe::ConnectPipe()
     return bResult;
 }
 
-BOOL CPipe::Listen()
+BOOL Pipe::Listen()
 {
     BOOL bSuccess;
     DWORD dwReadLen;
@@ -282,12 +282,12 @@ BOOL CPipe::Listen()
 
         if (dwReadLen > 0)
         {
-            WT_Error("CPipe::Listen: fatal error: dwReadLen > 0\n");
+            WT_Error("Pipe::Listen: fatal error: dwReadLen > 0\n");
         }
 
         if (!bSuccess && !PipeCheck())
         {
-            WT_Error("CPipe::Listen: Pipe check error\n");
+            WT_Error("Pipe::Listen: Pipe check error\n");
             OnReceive(-1);
             break;
         }
@@ -298,14 +298,14 @@ BOOL CPipe::Listen()
     return -1;
 }
 
-int CPipe::GetDataSize()
+int Pipe::GetDataSize()
 {
 	DWORD dwSizeLow, dwSizeHigh;
 	dwSizeLow = GetFileSize(m_hPipe, &dwSizeHigh);
 	return dwSizeLow;
 }
 
-BOOL CPipe::CreatePipe(const char* pipename)
+BOOL Pipe::CreatePipe(const char* pipename)
 {
     if (m_hPipe != INVALID_HANDLE_VALUE)
     {
@@ -320,18 +320,18 @@ BOOL CPipe::CreatePipe(const char* pipename)
 
     if (m_hPipe == INVALID_HANDLE_VALUE)
     {
-        WT_Error("CPipe::CreatePipe: lasterr=%d\n", GetLastError());
+        WT_Error("Pipe::CreatePipe: lasterr=%d\n", GetLastError());
         return FALSE;
     }
 
     m_hListenThread = CreateThread(0, 0, PipeServerListenProc, this, 0, 0);
-    WT_Trace("CPipe::CreatePipe: listen thread=%x\n", m_hListenThread);
+    WT_Trace("Pipe::CreatePipe: listen thread=%x\n", m_hListenThread);
     WaitForSingleObject(m_hEvent, 2000);    //wait child thread running
 
     return TRUE;
 }
 
-BOOL CPipe::OpenPipe(const char* pipename)
+BOOL Pipe::OpenPipe(const char* pipename)
 {
     if (m_hPipe != INVALID_HANDLE_VALUE)
     {
@@ -344,7 +344,7 @@ BOOL CPipe::OpenPipe(const char* pipename)
 
     if (m_hPipe == INVALID_HANDLE_VALUE)
     {
-        WT_Error("CPipe::CreatePipe: lasterr=%d\n", GetLastError());
+        WT_Error("Pipe::CreatePipe: lasterr=%d\n", GetLastError());
         return FALSE;
     }
 
@@ -355,7 +355,7 @@ BOOL CPipe::OpenPipe(const char* pipename)
     return TRUE;
 }
 
-BOOL CPipe::CreatePipe(DWORD dwPortId)
+BOOL Pipe::CreatePipe(DWORD dwPortId)
 {
 	char pipename[256];
 
@@ -366,7 +366,7 @@ BOOL CPipe::CreatePipe(DWORD dwPortId)
 	return CreatePipe(pipename);
 }
 
-BOOL CPipe::OpenPipe(DWORD dwPortId)
+BOOL Pipe::OpenPipe(DWORD dwPortId)
 {
 	char pipename[256];
 
@@ -376,7 +376,7 @@ BOOL CPipe::OpenPipe(DWORD dwPortId)
 	return OpenPipe(pipename);
 }
 
-BOOL CPipe::BindPipe(DWORD dwPortId)
+BOOL Pipe::BindPipe(DWORD dwPortId)
 {
 	char pipename[256];
 
@@ -390,17 +390,17 @@ BOOL CPipe::BindPipe(DWORD dwPortId)
 	}
 }
 
-BOOL CPipe::DestroyPipe()
+BOOL Pipe::DestroyPipe()
 {
 	WT_Trace("DestroyPipe111: m_hPipe=%x\n", m_hPipe);
 	if (m_hPipe != INVALID_HANDLE_VALUE)
 	{
 		OnClose(0);
 		SetEvent (m_hListenEvent);
-		WT_Trace("CPipe::DestroyPipe->111: listen thread=%x", m_hListenThread);
+		WT_Trace("Pipe::DestroyPipe->111: listen thread=%x", m_hListenThread);
 		//WaitForSingleObject(m_hListenThread, INFINITE);
 		//TerminateThread(m_hListenThread, 0);
-		WT_Trace("CPipe::DestroyPipe->222: listen thread=%x", m_hListenThread);
+		WT_Trace("Pipe::DestroyPipe->222: listen thread=%x", m_hListenThread);
 
 		m_bConnected = FALSE;
 		DisconnectNamedPipe (m_hPipe);
@@ -415,7 +415,7 @@ BOOL CPipe::DestroyPipe()
 	return TRUE;
 }
 
-BOOL CPipe::ClosePipe()
+BOOL Pipe::ClosePipe()
 {
 	WT_Trace("SetEvent listen: E\n");
 	m_bConnected = FALSE;
@@ -441,13 +441,13 @@ BOOL CPipe::ClosePipe()
 	return TRUE;
 }
 
-BOOL CPipe::RegisterRxd(const std::function<void(int)>& callback)
+BOOL Pipe::RegisterRxd(const std::function<void(int)>& callback)
 {
 	m_OnPipeReceiveDataProc = callback;
 	return TRUE;
 }
 
-void CPipe::OnReceive(int nErrorCode)
+void Pipe::OnReceive(int nErrorCode)
 {
 	if (m_OnPipeReceiveDataProc != nullptr)
 	{

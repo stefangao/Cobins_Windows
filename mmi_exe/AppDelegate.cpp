@@ -24,7 +24,7 @@ void AppDelegate::onStart()
 
 }
 
-bool Application::onEventProc(const std::string& evtName, EvtData& evtData)
+bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtData& evtData)
 {
     if (evtName == "ConnectEvt")
     {

@@ -95,11 +95,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)external;$(SolutionDir)llfsm;$(SolutionDir)cobkit;$(SolutionDir)cobkit\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)cobins;$(SolutionDir)cobins\inc;$(SolutionDir)external</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>$(SolutionDir)external/llfsm/lib/Debug/llfsm.lib;$(SolutionDir)cobkit/lib/Debug/cobkit.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)external/llfsm/lib/Debug/llfsm.lib;$(SolutionDir)cobins/lib/Debug/cobins.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -213,17 +213,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\mmi_exe.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\core\build\core.vcxproj">
-      <Project>{df480582-16c7-3b5b-ab54-b320ace6057b}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\llfsm\build\llfsm.vcxproj">
-      <Project>{581a59f2-7929-3643-b0ff-d34bbe7658a0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\winutils\build\winutils.vcxproj">
-      <Project>{af9dbbd9-8e6c-320c-8bd8-2886077179b5}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

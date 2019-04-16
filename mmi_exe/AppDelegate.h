@@ -2,7 +2,9 @@
 #define __APP_DELEGATE_H__
 
 #include "cobins.h"
+#include <string>
 USING_NS_COB;
+USING_NS_LL;
 
 class AppDelegate : public cobins::Application
 {

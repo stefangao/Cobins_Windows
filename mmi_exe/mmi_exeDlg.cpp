@@ -8,10 +8,8 @@
 #include "afxdialogex.h"
 #include "llfsm/lianli.h"
 #include "cobins.h"
-#include "winutils/BindPipe.h"
 #include "winutils/kbhook.h"
 #include "winutils/wndbase.h"
-#include "winutils/LibInjectMng.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -264,8 +262,8 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
                 {
                     //char exeGame[] = "GmbsManager.dll";
                     char exeGame[] = "spy_dll.dll";
-                    bool exist = LIM_IsDllExist(exeGame, hGameWnd);
-                    COBLOG("hGameWnd: isExist=%d\n", exist);
+                    //bool exist = LIM_IsDllExist(exeGame, hGameWnd);
+                    //COBLOG("hGameWnd: isExist=%d\n", exist);
                 }
             }
         }

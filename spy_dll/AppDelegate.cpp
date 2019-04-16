@@ -34,11 +34,3 @@ void AppDelegate::onDestroy(const lianli::Context& context)
 {
     mBin.destroy();
 }
-
-BEGIN_STATE_TABLE(AppDelegate)
-    STATE_ENTRY(DAEMON, Daemon, lianli::S_ROOT, lianli::SFL_ACTIVE)
-END_STATE_TABLE()
-
-BEGIN_TRANS_TABLE(AppDelegate, FSM)
-    TRANS_ENTRY(DAEMON, "UnhookEvt", lianli::S_NONE)
-END_TRANS_TABLE()

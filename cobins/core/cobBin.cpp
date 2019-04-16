@@ -53,6 +53,18 @@ bool Bin::disconnect()
 	return true;
 }
 
+bool Bin::bind(HWND hWnd, const ValueMap& params)
+{
+    //m_dllManager.inject
+    return true;
+}
+
+bool Bin::unbind()
+{
+    m_dllManager.eject();
+    return true;
+}
+
 bool Bin::install(Probe& probe)
 {
 	mProbeMap.insert(std::make_pair(probe.getName(), &probe));
@@ -86,7 +98,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 	if (m_RpcReturnCntx.bNeed && !m_RpcReturnCntx.bDone)
 	{
 		RpcReturn(NULL, 0, TRUE);
-		COBLOG("------------------------ RpcSend: ½âËø------------------------\n");
+		COBLOG("------------------------ RpcSend: ï¿½ï¿½ï¿½ï¿½------------------------\n");
 	}
 
 	RpcSendLock();
@@ -120,21 +132,21 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 			else
 			{
 				RpcSendUnlock();
-				//COBLOG("============================== ÈÔÈ»ÔÚËø¶¨ ==============================\n");
+				//COBLOG("============================== ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ==============================\n");
 			}
 		}
 	}
 
 	//WT_Printf("[%s]RpcSend1111\n", m_strPrefix);
 
-	//Èç¹ûÔËÐÐµ½ÕâÀïÒ»¶¨ÊÇËø×¡ÁËRPC
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¡ï¿½ï¿½RPC
 	int lResult = -1;
 	if (RpcSendMessage(strEngineName, lpMsgName, pMsgData, nMsgDataLen, RMFL_SYNC, ++m_nRpcFrameNo) > 0)
 	{
 		if (RpcRecvAnswer(strEngineName, lpMsgName, pResultData, nResultDataLen) == 0)
 		{
 			if (strncmp((LPCSTR)pResultData, "Error", 5) != 0)
-				lResult = 0; //³É¹¦
+				lResult = 0; //ï¿½É¹ï¿½
 		}
 		else
 		{
@@ -147,7 +159,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 		RpcSendLock();
 		SetRpcState(0);
 		RpcSendUnlock();
-		COBLOG("[%s]RpcSend: Ö´ÐÐÊ§°Ü\n", m_strPrefix);
+		COBLOG("[%s]RpcSend: Ö´ï¿½ï¿½Ê§ï¿½ï¿½\n", m_strPrefix);
 	}
 
 	//WT_Printf("[%s]RpcSend2222\n", m_strPrefix);
@@ -177,7 +189,7 @@ int Bin::RpcReturn(PBYTE pResultData, int nResultDataLen, BOOL bRightNow)
 		}
 		else
 		{
-			COBLOG("Bin::RpcReturn: Buffer²»¹»\n");
+			COBLOG("Bin::RpcReturn: Bufferï¿½ï¿½ï¿½ï¿½\n");
 			return -1;
 		}
 	}
@@ -293,14 +305,14 @@ int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msg
 	{
 		if (GetTickCount() > dwStartTicks + 8000)
 		{
-			COBLOG("[%s]:=====µÈ´ýÓ¦´ð³¬Ê±=====\n", m_strPrefix);
+			COBLOG("[%s]:=====ï¿½È´ï¿½Ó¦ï¿½ï¿½Ê±=====\n", m_strPrefix);
 			msgdatalen = 0;
 			return -1;
 		}
 		Sleep(10);
 	}
 
-	//±£´æÊÕµ½µÄÓ¦´ð(ÏûÏ¢´¦Àíº¯Êý»áÊÍ·ÅpMsgData)
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½Ó¦ï¿½ï¿½(ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½pMsgData)
 	if (msg.message == WM_GMBS_RPCANSWER)
 	{
 		PBYTE pMsgInfo = (PBYTE)msg.wParam;
@@ -322,7 +334,7 @@ int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msg
 			msgdatalen = 0;
 			nResult = -1;
 
-			COBLOG("[%s]:RpcRecvAnswer: ´íÎóÓ¦´ð: (%s)!=%s (%s)!=%s\n (%d)!=%d ctr=%x\n", m_strPrefix, MSGRCVR(pMsgInfo), receiver,
+			COBLOG("[%s]:RpcRecvAnswer: ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½: (%s)!=%s (%s)!=%s\n (%d)!=%d ctr=%x\n", m_strPrefix, MSGRCVR(pMsgInfo), receiver,
 				MSGNAME(pMsgInfo), msgname, pMsgHeader->frameno, m_nRpcFrameNo, pMsgHeader->ctrcode);
 		}
 	}
@@ -332,7 +344,7 @@ int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msg
 		nResult = -1;
 	}
 
-	//·Ö·¢ÏûÏ¢²¢´¦Àí
+	//ï¿½Ö·ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	TranslateMessage(&msg);
 	DispatchMessage(&msg);
 
@@ -367,12 +379,12 @@ int Bin::RpcSendData(PBYTE pData, int nDataLen)
 		nLen = m_RpcPipe.Send(pData + nTotalLen, nDataLen - nTotalLen);
 		if (nLen < 0)
 		{
-			COBLOG("PipeÒì³£\n");
+			COBLOG("Pipeï¿½ì³£\n");
 			return -2;
 		}
 		else if (nLen == 0)
 		{
-			COBLOG("Pipe·¢ËÍÊ§°Ü\n");
+			COBLOG("Pipeï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½\n");
 			return -3;
 		}
 
@@ -388,7 +400,7 @@ int Bin::RpcRecvData(PBYTE pDataBuf, int nBufLen)
 
 	if (m_RpcPipe.GetDataSize() <= 0)
 	{
-		COBLOG("----------------RpcRecvDataÎÞÊý¾Ý-------------------\n");
+		COBLOG("----------------RpcRecvDataï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-------------------\n");
 	}
 
 	nRecvLen = m_RpcPipe.Receive(pDataBuf, nBufLen);
@@ -474,7 +486,7 @@ void Bin::onPipeReceiveData(int nErrCode)
     nLen = pGmbsThread->RpcRecvDataEx((PBYTE)&MsgHeader, sizeof(MsgHeader));
     if (nLen != sizeof(MsgHeader))
     {
-        WT_Error("----------¶ªÆúPipeµ±Ç°ËùÓÐÊý¾Ý[MsgHead³¤¶È²»¹»]-------------\n");
+        WT_Error("----------ï¿½ï¿½ï¿½ï¿½Pipeï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[MsgHeadï¿½ï¿½ï¿½È²ï¿½ï¿½ï¿½]-------------\n");
         return;
     }
 
@@ -487,7 +499,7 @@ void Bin::onPipeReceiveData(int nErrCode)
 
         } while (nLen == sizeof(bTemBuf));
 
-        WT_Error("----------¶ªÆúPipeµ±Ç°ËùÓÐÊý¾Ý[Æô¶¯Âë²»¶Ôstart=%x]-------------\n", MsgHeader.start);
+        WT_Error("----------ï¿½ï¿½ï¿½ï¿½Pipeï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ë²»ï¿½ï¿½start=%x]-------------\n", MsgHeader.start);
 
         return;
     }
@@ -496,7 +508,7 @@ void Bin::onPipeReceiveData(int nErrCode)
     pMsgInfo = (PBYTE)cntt_malloc(nMsgInfoLen);
     if (pMsgInfo == NULL)
     {
-        WT_Error("_OnPipeReceiveProc: ÄÚ´æ²»×ã\n");
+        WT_Error("_OnPipeReceiveProc: ï¿½Ú´æ²»ï¿½ï¿½\n");
         return;
     }
 
@@ -506,7 +518,7 @@ void Bin::onPipeReceiveData(int nErrCode)
     nLen = pGmbsThread->RpcRecvDataEx(pMsgInfo + nRecvLen, nMsgInfoLen - nRecvLen);
     if (nLen != nMsgInfoLen - nRecvLen)
     {
-        WT_Error("----------¶ªÆúPipeµ±Ç°ËùÓÐÊý¾Ý[ÏûÏ¢³¤¶È²»¹»]-------------\n");
+        WT_Error("----------ï¿½ï¿½ï¿½ï¿½Pipeï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½È²ï¿½ï¿½ï¿½]-------------\n");
         return;
     }
 

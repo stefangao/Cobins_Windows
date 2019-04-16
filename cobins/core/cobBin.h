@@ -4,9 +4,11 @@
 #include <windows.h>
 #include "llfsm/lianli.h"
 #include "cobContext.h"
-#include "winutils/BindPipe.h"
+#include "winutils/cobPipe.h"
 #include "winutils/MsgCallback.h"
+#include "winutils/DllManager.h"
 #include "base/cobUtils.h"
+#include "base/cobValue.h"
 
 NS_COB_BEGIN
 
@@ -82,6 +84,9 @@ public:
     bool create(HWND hWnd, int portId);
     void destroy();
 
+    bool bind(HWND hWnd, const ValueMap& params)
+    bool unbind();
+
     bool connect(int portId);
     bool disconnect();
 
@@ -117,13 +122,15 @@ private:
 
 
 protected: //should be private
-	CBindPipe m_RpcPipe;
+	cobinsPipe m_RpcPipe;
 	char    m_strPrefix[6];  //"Host" or "Embed"
 
 	HANDLE m_hPlatformCntx;
 
 	HWND      m_hMainWnd;
     MsgCallback m_MsgCallback;
+
+    DllManager m_dllManager;
 
 protected:
 	BYTE m_RpcMsgTxdBuf[RPCBUF_MAXLEN];
@@ -132,7 +139,6 @@ public: //TBD
 	int RpcSendData(PBYTE pData, int nDataLen);
 	int RpcRecvData(PBYTE pDataBuf, int nBufLen);
 	int RpcRecvDataEx(PBYTE pDataBuf, int nBufLen);
-
 };
 
 #define MSGRCVR(pMsgData) ((LPCSTR)(pMsgData + sizeof(RpcMsgHeader_t)))

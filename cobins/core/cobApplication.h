@@ -16,6 +16,7 @@ public:
 
 protected:
 
+
 };
 
 NS_COB_END

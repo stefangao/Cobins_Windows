@@ -24,6 +24,22 @@ void AppDelegate::onStart()
 
 }
 
+bool Application::onEventProc(const std::string& evtName, EvtData& evtData)
+{
+    if (evtName == "ConnectEvt")
+    {
+        
+        
+    }
+    else if (evtName == "ConnectEvt")
+    {
+        
+        
+    }
+
+    return true;
+}
+
 void AppDelegate::onStop()
 {
 
@@ -33,3 +49,8 @@ void AppDelegate::onDestroy(const lianli::Context& context)
 {
 
 }
+
+BEGIN_TRANS_TABLE(AppDelegate, FSM)
+    TRANS_ENTRY(S_ROOT, "ConnectEvt", S_NONE)
+    TRANS_ENTRY(S_ROOT, "DisconnectEvt", S_NONE)
+END_TRANS_TABLE()

@@ -1,16 +1,15 @@
-#if !defined(PIPE_H__)
-#define PIPE_H__
-
-#if _MSC_VER > 1000
-#pragma once
-#endif
+#ifndef __COB_PIPE__
+#define __COB_PIPE__
 
 #include <windows.h>
+#include "cobMacros.h"
+
+NS_COB_BEGIN
 
 #define PIPENAME "\\\\.\\pipe\\GameBs_Ptfm_Pipe%x"       /* Default pipe name */
 #define OVERLAPPED_IO  TRUE
 
-class  __declspec(dllexport) CPipe
+class CPipe
 {
 	friend DWORD WINAPI PipeClientListenProc(LPVOID lParam);
 	friend DWORD WINAPI PipeServerListenProc(LPVOID lParam);
@@ -57,11 +56,15 @@ public:
 
     int  GetDataSize( );
 
+    BOOL RegisterRxd(std::function<void(int)> callback);
+
 
 // Operations
 protected:
-	virtual void OnReceive(int nErrorCode){};
+	virtual void OnReceive(int nErrorCode);
 	virtual void OnClose(int nErrorCode) {};
 };
+
+NS_COB_END
 
 #endif

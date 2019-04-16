@@ -13,12 +13,15 @@ public:
 protected:
     virtual void onCreate(const lianli::Context& context) override;
     virtual void onStart() override;
+    virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override;
     virtual void onStop() override;
     virtual void onDestroy(const lianli::Context& context) override;
 
 protected:
 public:
     cobins::Bin mBin;
+
+    DECLARE_TRANS_TABLE()
 };
 
 #endif

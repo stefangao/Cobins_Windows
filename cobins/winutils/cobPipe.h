@@ -56,7 +56,7 @@ public:
 
     int  GetDataSize( );
 
-    BOOL RegisterRxd(std::function<void(int)> callback);
+    BOOL RegisterRxd(const std::function<void(int)>& callback);
 
 
 // Operations

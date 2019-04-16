@@ -9,8 +9,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${SOLUTION_ROOT_DIR}/inc)
 include_directories(${SOLUTION_ROOT_DIR}/external)
-include_directories(${SOLUTION_ROOT_DIR}/cobkit)
-include_directories(${SOLUTION_ROOT_DIR}/cobkit/inc)
+include_directories(${SOLUTION_ROOT_DIR}/cobins)
+include_directories(${SOLUTION_ROOT_DIR}/cobins/inc)
 
 link_directories(${SOLUTION_ROOT_DIR}/lib)
 
@@ -22,7 +22,7 @@ aux_source_directory(. DIR_LIB_SRCS)
 add_library(${PROJECT_NAME} SHARED ${DIR_LIB_SRCS} ${DIR_HEADERS})
 
 target_link_libraries(${PROJECT_NAME} llfsm)
-target_link_libraries(${PROJECT_NAME} cobkit)
+target_link_libraries(${PROJECT_NAME} cobins)
 
 add_custom_command(
     TARGET ${PROJECT_NAME}

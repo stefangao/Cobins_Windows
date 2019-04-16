@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(cobkit)
+project(cobins)
 
 add_compile_options(-std=c++11)
 
@@ -8,8 +8,8 @@ set(SOLUTION_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${SOLUTION_ROOT_DIR}/inc)
-include_directories(${SOLUTION_ROOT_DIR}/cobkit/inc)
-include_directories(${SOLUTION_ROOT_DIR}/cobkit)
+include_directories(${SOLUTION_ROOT_DIR}/cobins/inc)
+include_directories(${SOLUTION_ROOT_DIR}/cobins)
 include_directories(${SOLUTION_ROOT_DIR}/external)
 
 file(GLOB_RECURSE DIR_HEADERS  *.h)

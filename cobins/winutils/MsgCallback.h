@@ -15,14 +15,16 @@ class MsgCallback
 {
 private:
     HWND m_hMainWnd;
+    BOOL m_bNeedReset;
 
 public:
-    MsgCallback() {};
+    MsgCallback();
+    virtual ~MsgCallback();
 
 public:
     void post(const CallbackFunc& callback);
     void send(const CallbackFunc& callback);
-    void wait(UINT uTimeout, UINT uTargetMsg, const CallbackFunc& callback);
+    void wait(UINT uTimeout, const CallbackFunc& callback, UINT uTargetMsg = 0);
 
     void SetWndProc(HWND hWnd);
     void ResetWndProc();

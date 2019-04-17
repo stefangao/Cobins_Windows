@@ -5,6 +5,18 @@
 struct CallbackWrapper{ CallbackFunc callback; };
 static std::map<HWND, WNDPROC> m_WndMap;
 
+MsgCallback::MsgCallback()
+{
+    m_hMainWnd = NULL;
+    m_bNeedReset = FALSE;
+}
+
+MsgCallback::~MsgCallback()
+{
+    if (m_bNeedReset)
+        ResetWndProc();
+}
+
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     if (uMsg == WM_POST_CALLBACK || uMsg == WM_SEND_CALLBACK)
@@ -29,11 +41,16 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 void MsgCallback::SetWndProc(HWND hWnd)
 {
     auto iter = m_WndMap.find(hWnd);
-    assert(iter == m_WndMap.end());
+    if (iter != m_WndMap.end())
+    {
+        m_hMainWnd = hWnd;
+        return;
+    }
 
     if (m_hMainWnd == NULL && hWnd)
     {
         m_hMainWnd = hWnd;
+        m_bNeedReset = TRUE;
         WNDPROC oldWndProc = (WNDPROC)SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WindowProc);
         m_WndMap.insert(std::make_pair(hWnd, oldWndProc));
     }
@@ -53,15 +70,15 @@ void MsgCallback::ResetWndProc()
 
 static void CALLBACK TimerProc(HWND hWnd, UINT nMsg, UINT nTimerid, DWORD dwTime)
 {
-    /*
    switch(nTimerid)
    {
    case 1:
-	   ::PostMessage(m_hMainWnd, WM_WAIT_TIMEOUT, 0, 0);
+	   ::PostMessage(hWnd, WM_WAIT_TIMEOUT, 0, 0);
+       KillTimer(hWnd, 1);
        break;
    default:
 	   break;
-   }*/
+   }
 }
 
 void MsgCallback::post(const CallbackFunc& callback)
@@ -77,7 +94,7 @@ void MsgCallback::send(const CallbackFunc& callback)
     ::SendMessage(m_hMainWnd, WM_SEND_CALLBACK, (WPARAM)wrapper, 0);
 }
 
-void MsgCallback::wait(UINT uTimeout, UINT uTargetMsg, const CallbackFunc& callback)
+void MsgCallback::wait(UINT uTimeout, const CallbackFunc& callback, UINT uTargetMsg)
 {
 	if (uTimeout != INFINITE)
 	{
@@ -87,16 +104,17 @@ void MsgCallback::wait(UINT uTimeout, UINT uTargetMsg, const CallbackFunc& callb
     MSG msg;
     while(GetMessage(&msg, NULL, 0, 0))
     {
-    	if (msg.message == uTargetMsg)
+    	if (msg.message == WM_WAIT_TIMEOUT)
     	{
     		callback();
     		break;
     	}
-    	else if (msg.message == WM_WAIT_TIMEOUT)
-    	{
-    		callback();
-    		break;
-    	}
+        else if (msg.message == uTargetMsg)
+        {
+            callback();
+            break;
+        }
+
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }

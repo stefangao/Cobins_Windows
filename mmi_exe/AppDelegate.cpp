@@ -14,9 +14,17 @@ bool AppDelegate::create(const std::string& name, Context& context)
     return true;
 }
 
+bool AppDelegate::create(HWND hWnd, const std::string& name, Context& context)
+{
+    if (!Application::create(name, context))
+        return false;
+
+    mBin.create(hWnd);
+    return true;
+}
+
 void AppDelegate::onCreate(const lianli::Context& context)
 {
-    mBin.create(NULL, 1234);
 }
 
 void AppDelegate::onStart()
@@ -26,12 +34,16 @@ void AppDelegate::onStart()
 
 bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtData& evtData)
 {
-    if (evtName == "ConnectEvt")
+    if (evtName == "BindEvt")
     {
-        
-        
+        HWND hTargetWnd;
+        evtData >> (DWORD&)hTargetWnd;
+        if (hTargetWnd)
+        {
+            mBin.bind(hTargetWnd);
+        }
     }
-    else if (evtName == "ConnectEvt")
+    else if (evtName == "UnbindEvt")
     {
         
         
@@ -51,6 +63,6 @@ void AppDelegate::onDestroy(const lianli::Context& context)
 }
 
 BEGIN_TRANS_TABLE(AppDelegate, FSM)
-    TRANS_ENTRY(S_ROOT, "ConnectEvt", S_NONE)
-    TRANS_ENTRY(S_ROOT, "DisconnectEvt", S_NONE)
+    TRANS_ENTRY(S_ROOT, "BindEvt", S_NONE)
+    TRANS_ENTRY(S_ROOT, "UnbindtEvt", S_NONE)
 END_TRANS_TABLE()

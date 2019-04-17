@@ -11,13 +11,13 @@ bool AppDelegate::create(HWND hWnd, const std::string& name, lianli::Context& co
         return false;
 
     mhMainWnd = hWnd;
-    mBin.create(mhMainWnd, 1234);
+    //mBin.create(hWnd, 1234);
     return true;
 }
 
 void AppDelegate::onCreate(const lianli::Context& context)
 {
-    
+
 }
 
 void AppDelegate::onStart()

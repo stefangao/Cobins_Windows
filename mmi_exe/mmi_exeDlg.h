@@ -22,7 +22,8 @@ protected:
 	HICON m_hIcon;
 
     AppDelegate mAppDelegate;
-    HHOOK m_hHook;
+    MsgCallback m_MsgCb1;
+    MsgCallback m_MsgCb2;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();

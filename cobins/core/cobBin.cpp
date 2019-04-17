@@ -24,7 +24,28 @@ bool Bin::create(HWND hWnd, int portId)
     }
     m_hMainWnd = hWnd;
     m_MsgCallback.SetWndProc(hWnd);
-    return ret;
+    return TRUE;
+}
+
+bool Bin::create(HWND hWnd)
+{
+    m_hMainWnd = hWnd;
+    m_MsgCallback.SetWndProc(hWnd);
+
+    /*
+    bool ret = false;
+    if (!m_RpcPipe.IsPipe())
+    {
+        ret = m_RpcPipe.CreatePipe(portId);
+        if (ret)
+        {
+            std::function<void(int)> callback = std::bind(&Bin::onPipeReceiveData, this, std::placeholders::_1);
+            m_RpcPipe.RegisterRxd(callback);
+        }
+    }
+    m_hMainWnd = hWnd;
+    m_MsgCallback.SetWndProc(hWnd);*/
+    return TRUE;
 }
 
 bool Bin::connect(int portId)
@@ -55,8 +76,17 @@ bool Bin::disconnect()
 
 bool Bin::bind(HWND hWnd, const ValueMap& params)
 {
-    //m_dllManager.inject
-    return true;
+    bool ret = m_dllManager.inject(hWnd, "spy_dll.dll");
+    if (ret)
+    {
+        m_MsgCallback.wait(1000, [this]()
+        {
+            bool ret = connect(1234);
+            COBLOG("Bin::bind: connect ret = %d\n", ret);
+        });
+    }
+    COBLOG("Bin::bind: inject ret = %d\n", ret);
+    return ret;
 }
 
 bool Bin::unbind()
@@ -137,9 +167,6 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 		}
 	}
 
-	//WT_Printf("[%s]RpcSend1111\n", m_strPrefix);
-
-	//������е�����һ������ס��RPC
 	int lResult = -1;
 	if (RpcSendMessage(strEngineName, lpMsgName, pMsgData, nMsgDataLen, RMFL_SYNC, ++m_nRpcFrameNo) > 0)
 	{

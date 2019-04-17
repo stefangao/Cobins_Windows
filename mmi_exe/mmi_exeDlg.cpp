@@ -56,7 +56,6 @@ CmmiexeDlg::CmmiexeDlg(CWnd* pParent /*=nullptr*/)
     : CDialogEx(IDD_MMI_EXE_DIALOG, pParent)
 {
     m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-    m_hHook = NULL;
 }
 
 void CmmiexeDlg::DoDataExchange(CDataExchange* pDX)
@@ -110,6 +109,7 @@ BOOL CmmiexeDlg::OnInitDialog()
 
     // TODO: 在此添加额外的初始化代码
     KB_StartHook(m_hWnd);
+    mAppDelegate.create(m_hWnd, "HostApp");
 
     return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -177,7 +177,22 @@ HWND CmmiexeDlg::GetWndByCursor()
 void CmmiexeDlg::OnBnClickedButton1()
 {
     // TODO: 在此添加控件通知处理程序代码
-    mAppDelegate.mBin.connect(1234);
+    //mAppDelegate.mBin.connect(1234);
+
+    m_MsgCb2.SetWndProc(m_hWnd);
+    m_MsgCb2.wait(1000, []()
+    {
+        COBLOG("m_MsgCb2.post got222\n");
+    });
+
+    m_MsgCb1.SetWndProc(m_hWnd);
+    m_MsgCb1.post([]()
+    {
+        COBLOG("m_MsgCb1.post got111\n");
+    });
+
+
+
 }
 
 
@@ -201,6 +216,7 @@ BOOL UnHookWnd(HHOOK hHook)
 
 void CmmiexeDlg::OnBnClickedButton3()
 {
+    /*
     bool ret = false;
     if (m_hHook)
     {
@@ -208,7 +224,7 @@ void CmmiexeDlg::OnBnClickedButton3()
         WT_Trace("UnHookWnd: ret=%d", ret);
         if (ret)
             m_hHook = NULL;
-    }
+    }*/
 }
 
 void CmmiexeDlg::OnBnClickedButton4()
@@ -222,7 +238,7 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
     if (lParam & 0x80000000)  //when key up
     {
         UINT keyCode = wParam;
-        COBLOG("OnWshMsgKey: keyCode=%x", keyCode);
+        //COBLOG("OnWshMsgKey: keyCode=%x", keyCode);
         switch (keyCode)
         {
         case 'H':
@@ -230,8 +246,15 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
             if (GetKeyState(VK_CONTROL) & 0x8000)
             {
                 HWND hGameWnd = GetWndByCursor();
-
                 COBLOG("hGameWnd=%x\n", hGameWnd);
+
+                mAppDelegate.start();
+
+                EvtData data;
+                data << (DWORD)hGameWnd;
+                mAppDelegate.postEvent("BindEvt", data);
+
+#if 0
                 if (hGameWnd && m_hHook == NULL)
                 {
                     HINSTANCE handle = LoadLibraryA("spy_dll.dll");
@@ -247,6 +270,7 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
                         FreeLibrary(handle); //卸载
                     }
                 }
+#endif
             }
         }
         break;

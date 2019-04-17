@@ -83,7 +83,7 @@ public:
     bool create(HWND hWnd, int portId);
     void destroy();
 
-    bool bind(HWND hWnd, const ValueMap& params);
+    bool bind(HWND hWnd, const ValueMap& params = ValueMapNull);
     bool unbind();
 
     bool connect(int portId);
@@ -126,9 +126,8 @@ protected:
 
 	HANDLE m_hPlatformCntx;
 
-	HWND m_hMainWnd;
+    HWND m_hMainWnd;
     MsgCallback m_MsgCallback;
-
     DllManager m_dllManager;
 
 protected:

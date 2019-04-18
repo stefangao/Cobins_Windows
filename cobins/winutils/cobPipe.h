@@ -50,7 +50,7 @@ public:
 	int  Send(BYTE* pBuf,int nSize);
 	int  Receive(BYTE *pBuf,int nBufLen);
 
-    BOOL DestroyPipe();
+    //BOOL DestroyPipe();
     BOOL ClosePipe();
 
 	BOOL IsConnected() {return m_bConnected;};

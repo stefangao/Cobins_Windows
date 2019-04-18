@@ -10,8 +10,6 @@ class AppDelegate : public cobins::Application
 {
 public:
     AppDelegate();
-    bool create(const std::string& name, Context& context = Context::DEFAULT);
-    bool create(HWND hWnd, const std::string& name, Context& context = Context::DEFAULT);
 
 protected:
     virtual void onCreate(const lianli::Context& context) override;

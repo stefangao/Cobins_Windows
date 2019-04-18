@@ -22,7 +22,7 @@ class CAboutDlg : public CDialogEx
 public:
     CAboutDlg();
 
-    // 对话框数据
+// 对话框数据
 #ifdef AFX_DESIGN_TIME
     enum { IDD = IDD_ABOUTBOX };
 #endif
@@ -109,7 +109,7 @@ BOOL CmmiexeDlg::OnInitDialog()
 
     // TODO: 在此添加额外的初始化代码
     KB_StartHook(m_hWnd);
-    mAppDelegate.create(m_hWnd, "HostApp");
+    mAppDelegate.create(m_hWnd, "HostApp").start();
 
     return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -177,8 +177,6 @@ HWND CmmiexeDlg::GetWndByCursor()
 void CmmiexeDlg::OnBnClickedButton1()
 {
     // TODO: 在此添加控件通知处理程序代码
-    //mAppDelegate.mBin.connect(1234);
-
     m_MsgCb2.SetWndProc(m_hWnd);
     m_MsgCb2.wait(1000, []()
     {
@@ -190,11 +188,7 @@ void CmmiexeDlg::OnBnClickedButton1()
     {
         COBLOG("m_MsgCb1.post got111\n");
     });
-
-
-
 }
-
 
 void CmmiexeDlg::OnBnClickedButton2()
 {
@@ -247,8 +241,6 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
             {
                 HWND hGameWnd = GetWndByCursor();
                 COBLOG("hGameWnd=%x\n", hGameWnd);
-
-                mAppDelegate.start();
 
                 EvtData data;
                 data << (DWORD)hGameWnd;

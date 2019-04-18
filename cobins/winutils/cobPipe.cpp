@@ -390,6 +390,7 @@ BOOL Pipe::BindPipe(DWORD dwPortId)
 	}
 }
 
+#if 0
 BOOL Pipe::DestroyPipe()
 {
 	WT_Trace("DestroyPipe111: m_hPipe=%x\n", m_hPipe);
@@ -414,30 +415,21 @@ BOOL Pipe::DestroyPipe()
 
 	return TRUE;
 }
+#endif
 
 BOOL Pipe::ClosePipe()
 {
-	WT_Trace("SetEvent listen: E\n");
-	m_bConnected = FALSE;
-	CloseHandle (m_hPipe);
-	SetEvent (m_hListenEvent);
-	WT_Trace("SetEvent listen: X\n");
-	SetEvent (m_hEvent);
-	WaitForSingleObject(m_hListenThread, INFINITE);
-	WT_Trace("WaitForSingleObject End proc=%x\n", GetCurrentProcessId());
-	/*
-	 if (m_hPipe != INVALID_HANDLE_VALUE)
-	 {
-	 OnClose(0);
+    WT_Trace("ClosePipe: E\n");
 
-	 CloseHandle(m_hPipe);
-	 m_hPipe = INVALID_HANDLE_VALUE;
-	 m_bConnected = FALSE;
-	 SetEvent(m_hEvent);
+    m_bConnected = FALSE;
+    CloseHandle (m_hPipe);
+    SetEvent (m_hListenEvent);
+    SetEvent (m_hEvent);
+    SetEvent (m_hRecvEvent);
+    SetEvent (m_hSendEvent);
+    WaitForSingleObject(m_hListenThread, INFINITE);
 
-	 WT_Trace("ClosePipe\n");
-	 }*/
-
+    WT_Trace("ClosePipe: WaitForSingleObject End proc=%x\n", GetCurrentProcessId());
 	return TRUE;
 }
 

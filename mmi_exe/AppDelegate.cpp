@@ -6,25 +6,9 @@ AppDelegate::AppDelegate()
 
 }
 
-bool AppDelegate::create(const std::string& name, Context& context)
-{
-    if (!Application::create(name, context))
-        return false;
-
-    return true;
-}
-
-bool AppDelegate::create(HWND hWnd, const std::string& name, Context& context)
-{
-    if (!Application::create(name, context))
-        return false;
-
-    mBin.create(hWnd);
-    return true;
-}
-
 void AppDelegate::onCreate(const lianli::Context& context)
 {
+    mBin.create(m_hMainWnd);
 }
 
 void AppDelegate::onStart()

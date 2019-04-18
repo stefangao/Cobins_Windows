@@ -4,15 +4,15 @@ NS_COB_BEGIN
 
 Application::Application()
 {
-
+    m_hMainWnd = NULL;
 }
 
-bool Application::create(const std::string& name, lianli::Context& context)
+Application& Application::create(HWND hWnd, const std::string& name, lianli::Context& context)
 {
-    if (!lianli::FSM::create(name, context))
-        return false;
+    lianli::FSM::create(name, context);
 
-    return true;
+    m_hMainWnd = hWnd;
+    return *this;
 }
 
 NS_COB_END

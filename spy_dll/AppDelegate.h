@@ -9,7 +9,6 @@ class AppDelegate : public cobins::Application
 {
 public:
     AppDelegate();
-    bool create(HWND hWnd, const std::string& name, lianli::Context& context = lianli::Context::DEFAULT);
 
 protected:
     virtual void onCreate(const lianli::Context& context) override;
@@ -19,7 +18,6 @@ protected:
 
 protected:
     cobins::Bin mBin;
-    HWND mhMainWnd;
 };
 
 #endif

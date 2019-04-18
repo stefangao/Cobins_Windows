@@ -10,67 +10,56 @@ Bin::Bin()
 
 }
 
-bool Bin::create(HWND hWnd, int portId)
-{
-    bool ret = false;
-    if (!m_RpcPipe.IsPipe())
-    {
-        ret = m_RpcPipe.CreatePipe(portId);
-        if (ret)
-        {
-            std::function<void(int)> callback = std::bind(&Bin::onPipeReceiveData, this, std::placeholders::_1);
-            m_RpcPipe.RegisterRxd(callback);
-        }
-    }
-    m_hMainWnd = hWnd;
-    m_MsgCallback.SetWndProc(hWnd);
-    return TRUE;
-}
-
 bool Bin::create(HWND hWnd)
 {
     m_hMainWnd = hWnd;
     m_MsgCallback.SetWndProc(hWnd);
-
-    /*
-    bool ret = false;
-    if (!m_RpcPipe.IsPipe())
-    {
-        ret = m_RpcPipe.CreatePipe(portId);
-        if (ret)
-        {
-            std::function<void(int)> callback = std::bind(&Bin::onPipeReceiveData, this, std::placeholders::_1);
-            m_RpcPipe.RegisterRxd(callback);
-        }
-    }
-    m_hMainWnd = hWnd;
-    m_MsgCallback.SetWndProc(hWnd);*/
     return TRUE;
 }
 
-bool Bin::connect(int portId)
+bool Bin::pipeListen(DWORD dwPortId)
 {
     bool ret = false;
     if (!m_RpcPipe.IsPipe())
     {
-        ret = m_RpcPipe.OpenPipe(portId);
+        ret = m_RpcPipe.CreatePipe(dwPortId);
         if (ret)
         {
             std::function<void(int)> callback = std::bind(&Bin::onPipeReceiveData, this, std::placeholders::_1);
             m_RpcPipe.RegisterRxd(callback);
 
-            COBLOG("Bin::connect: success");
-        }
-        else
-        {
-            COBLOG("Bin::connect: failed");
+            COBLOG("Bin::pipeListen: success");
         }
     }
     return ret;
 }
 
-bool Bin::disconnect()
+bool Bin::pipeConnect(DWORD dwPortId)
 {
+    bool ret = false;
+    if (!m_RpcPipe.IsPipe())
+    {
+        ret = m_RpcPipe.OpenPipe(dwPortId);
+        if (ret)
+        {
+            std::function<void(int)> callback = std::bind(&Bin::onPipeReceiveData, this, std::placeholders::_1);
+            m_RpcPipe.RegisterRxd(callback);
+            COBLOG("Bin::pipeConnect: success");
+        }
+        else
+        {
+            COBLOG("Bin::pipeConnect: failed");
+        }
+    }
+    return ret;
+}
+
+bool Bin::pipeDisconnect()
+{
+    if (!m_RpcPipe.IsPipe())
+    {
+        m_RpcPipe.ClosePipe();
+    }
 	return true;
 }
 
@@ -81,7 +70,7 @@ bool Bin::bind(HWND hWnd, const ValueMap& params)
     {
         m_MsgCallback.wait(1000, [this]()
         {
-            bool ret = connect(1234);
+            bool ret = pipeConnect(1234);
             COBLOG("Bin::bind: connect ret = %d\n", ret);
         });
     }
@@ -321,7 +310,6 @@ int Bin::RpcSendMessage(LPCSTR receiver, LPCSTR msgname, PBYTE msgdata, int msgd
 	return nSentLen;
 }
 
-
 int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msgdatalen)
 {
 	MSG   msg;
@@ -371,10 +359,8 @@ int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msg
 		nResult = -1;
 	}
 
-	//�ַ���Ϣ������
 	TranslateMessage(&msg);
 	DispatchMessage(&msg);
-
 	return nResult;
 }
 
@@ -576,7 +562,6 @@ void Bin::onPipeReceiveData(int nErrCode)
 
 void Bin::destroy()
 {
-    //m_RpcPipe.DestroyPipe();
     m_RpcPipe.ClosePipe();
     m_MsgCallback.ResetWndProc();
 }

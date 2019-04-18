@@ -24,7 +24,10 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
         {
             MSG *lpMsg;
             lpMsg = (MSG*)lParam;
-            g_AppDelegate.create(lpMsg->hwnd, "embed123");
+            if (lpMsg->hwnd != NULL)
+            {
+                g_AppDelegate.create(lpMsg->hwnd, "embed123").start();
+            }
         }
     }
     return CallNextHookEx(g_hHook, nCode, wParam, lParam);

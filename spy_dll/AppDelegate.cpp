@@ -5,23 +5,14 @@ AppDelegate::AppDelegate()
 
 }
 
-bool AppDelegate::create(HWND hWnd, const std::string& name, lianli::Context& context)
-{
-    if (!Application::create(name, context))
-        return false;
-
-    mhMainWnd = hWnd;
-    //mBin.create(hWnd, 1234);
-    return true;
-}
-
 void AppDelegate::onCreate(const lianli::Context& context)
 {
-
+    mBin.create(m_hMainWnd);
 }
 
 void AppDelegate::onStart()
 {
+    mBin.pipeListen(m_hMainWnd);
 
 }
 

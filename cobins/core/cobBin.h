@@ -80,14 +80,15 @@ class Bin
 public:
     Bin();
 
-    bool create(HWND hWnd, int portId);
+    bool create(HWND hWnd);
     void destroy();
 
     bool bind(HWND hWnd, const ValueMap& params = ValueMapNull);
     bool unbind();
 
-    bool connect(int portId);
-    bool disconnect();
+    bool pipeListen(DWORD dwPortId);  //for pipe server
+    bool pipeConnect(DWORD dwPortId); //for pipe client
+    bool pipeDisconnect();
 
     bool install(Probe& probe);
     bool uninstall(const std::string& probeName);

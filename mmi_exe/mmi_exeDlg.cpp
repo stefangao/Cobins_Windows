@@ -73,6 +73,7 @@ BEGIN_MESSAGE_MAP(CmmiexeDlg, CDialogEx)
     ON_BN_CLICKED(IDC_BUTTON4, &CmmiexeDlg::OnBnClickedButton4)
     ON_MESSAGE(WSH_MSG_KEY, &CmmiexeDlg::OnWshMsgKey)
     ON_BN_CLICKED(IDC_BUTTON5, &CmmiexeDlg::OnBnClickedButton5)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -109,7 +110,8 @@ BOOL CmmiexeDlg::OnInitDialog()
 
     // TODO: 在此添加额外的初始化代码
     KB_StartHook(m_hWnd);
-    mAppDelegate.create(m_hWnd, "HostApp").start();
+	m_pAppDelegate = new AppDelegate();
+	m_pAppDelegate->create(m_hWnd, "HostApp").start();
 
     return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -176,25 +178,29 @@ HWND CmmiexeDlg::GetWndByCursor()
 
 void CmmiexeDlg::OnBnClickedButton1()
 {
-    // TODO: 在此添加控件通知处理程序代码
-    m_MsgCb2.SetWndProc(m_hWnd);
-    m_MsgCb2.wait(1000, []()
-    {
-        COBLOG("m_MsgCb2.post got222\n");
-    });
+	char buf[] = "hello12345";
 
-    m_MsgCb1.SetWndProc(m_hWnd);
-    m_MsgCb1.post([]()
-    {
-        COBLOG("m_MsgCb1.post got111\n");
-    });
+	EvtData data;
+	data << buf;
+	m_pAppDelegate->postEvent("SendDataEvt", data);
 }
 
 void CmmiexeDlg::OnBnClickedButton2()
 {
     // TODO: 在此添加控件通知处理程序代码
-    char buf[] = "hello123";
-    mAppDelegate.mBin.RpcSendData((BYTE*)buf, 9);
+
+
+	m_MsgCb2.SetWndProc(m_hWnd);
+	m_MsgCb2.wait(1000, []()
+	{
+		COBLOG("m_MsgCb2.post got222\n");
+	});
+
+	m_MsgCb1.SetWndProc(m_hWnd);
+	m_MsgCb1.post([]()
+	{
+		COBLOG("m_MsgCb1.post got111\n");
+	});
 }
 
 BOOL UnHookWnd(HHOOK hHook)
@@ -219,12 +225,15 @@ void CmmiexeDlg::OnBnClickedButton3()
         if (ret)
             m_hHook = NULL;
     }*/
+
+	m_pAppDelegate->destroy();
 }
 
 void CmmiexeDlg::OnBnClickedButton4()
 {
-    char buf[] = "cmd_unhook";
-    mAppDelegate.mBin.RpcSendData((BYTE*)buf, 11);
+	EvtData data;
+	data << "cmd_unhook";
+	m_pAppDelegate->postEvent("SendDataEvt", data);
 }
 
 afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
@@ -244,7 +253,7 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
 
                 EvtData data;
                 data << (DWORD)hGameWnd;
-                mAppDelegate.postEvent("BindEvt", data);
+				m_pAppDelegate->postEvent("BindEvt", data);
 
 #if 0
                 if (hGameWnd && m_hHook == NULL)
@@ -303,6 +312,12 @@ void CmmiexeDlg::OnBnClickedButton5()
         GetWindowTextA(hGameWnd, wszTitle, 256);
         COBLOG("Game Caption=%s\n", wszTitle);
     }
+}
 
-    int a = 1;
+
+void CmmiexeDlg::OnDestroy()
+{
+	m_pAppDelegate->destroy();
+
+	CDialogEx::OnDestroy();
 }

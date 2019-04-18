@@ -62,7 +62,7 @@ int Pipe::Send(BYTE *pBuf, int nSize)
 
     if (m_hPipe == INVALID_HANDLE_VALUE || !m_bConnected)
     {
-        WT_Error("Pipe::Send: ��Ч�����δ����: hPipe=%x\n", m_hPipe);
+        WT_Error("Pipe::Send: Error hPipe=%x\n", m_hPipe);
         OnReceive(-1);
         return -1;
     }
@@ -79,7 +79,6 @@ int Pipe::Send(BYTE *pBuf, int nSize)
     {
         if (GetLastError() == ERROR_IO_PENDING)
         {
-            //����3��
             //WT_Trace("pipe[%x] write: wait 3000 ...\n", this);
             DWORD dwResult = WaitForSingleObject(ol.hEvent, 5000);
             if (dwResult != WAIT_OBJECT_0)
@@ -166,7 +165,7 @@ int Pipe::Receive(BYTE *pBuf, int nBufLen)
 BOOL Pipe::PipeCheck()
 {
     DWORD dwLastError = GetLastError();
-    WT_Trace("PipeCheck��lastErr=%d", dwLastError);
+    WT_Trace("PipeCheck lastErr=%d", dwLastError);
 
     if (dwLastError == ERROR_BROKEN_PIPE || dwLastError == ERROR_NO_DATA
             || dwLastError == ERROR_PIPE_NOT_CONNECTED)
@@ -176,8 +175,7 @@ BOOL Pipe::PipeCheck()
         m_bConnected = FALSE;
         m_hPipe = INVALID_HANDLE_VALUE;
 
-        WT_Error(
-                "=============================PipeCheck: lasterr=%d, this=%p\n",
+        WT_Error("==PipeCheck: lasterr=%d, this=%p\n",
                 dwLastError, this);
         return FALSE;
     }
@@ -344,7 +342,7 @@ BOOL Pipe::OpenPipe(const char* pipename)
 
     if (m_hPipe == INVALID_HANDLE_VALUE)
     {
-        WT_Error("Pipe::CreatePipe: lasterr=%d\n", GetLastError());
+        WT_Error("Pipe::OpenPipe: lasterr=%d\n", GetLastError());
         return FALSE;
     }
 
@@ -360,8 +358,7 @@ BOOL Pipe::CreatePipe(DWORD dwPortId)
 	char pipename[256];
 
 	sprintf_s(pipename, PIPENAME, dwPortId);
-
-	//WT_Trace("CreatePipe: name=%s\n", pipename);
+	WT_Trace("CreatePipe: name=%s\n", pipename);
 
 	return CreatePipe(pipename);
 }
@@ -371,7 +368,7 @@ BOOL Pipe::OpenPipe(DWORD dwPortId)
 	char pipename[256];
 
 	sprintf_s(pipename, PIPENAME, dwPortId);
-	//WT_Trace("OpenPipe: name=%s\n", pipename);
+	WT_Trace("OpenPipe: name=%s\n", pipename);
 
 	return OpenPipe(pipename);
 }

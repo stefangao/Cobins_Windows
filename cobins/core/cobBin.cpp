@@ -28,7 +28,7 @@ bool Bin::pipeListen(DWORD dwPortId)
             std::function<void(int)> callback = std::bind(&Bin::onPipeReceiveData, this, std::placeholders::_1);
             m_RpcPipe.RegisterRxd(callback);
 
-            COBLOG("Bin::pipeListen: success");
+            COBLOG("Bin::pipeListen: [%d] success\n", dwPortId);
         }
     }
     return ret;
@@ -44,14 +44,135 @@ bool Bin::pipeConnect(DWORD dwPortId)
         {
             std::function<void(int)> callback = std::bind(&Bin::onPipeReceiveData, this, std::placeholders::_1);
             m_RpcPipe.RegisterRxd(callback);
-            COBLOG("Bin::pipeConnect: success");
+            COBLOG("Bin::pipeConnect: success\n");
         }
         else
         {
-            COBLOG("Bin::pipeConnect: failed");
+            COBLOG("Bin::pipeConnect: failed\n");
         }
     }
     return ret;
+}
+
+
+void Bin::onPipeReceiveData(int nErrCode)
+{
+	if (nErrCode == 0)
+	{
+		COBLOG("Bin::onPipeReceiveData E thread=%x\n", GetCurrentThreadId());
+		m_MsgCallback.send([this]() {
+			char buf[256];
+			int len = m_RpcPipe.Receive((BYTE*)buf, 256);
+			WT_Trace("Bin::onPipeReceiveData X: thread=%x len=%d buf=%s\n", GetCurrentThreadId(), len, buf);
+			if (strcmp(buf, "cmd_unhook") == 0)
+			{
+				COBLOG("Bin::destroy: begin\n");
+				m_MsgCallback.post([this]()
+				{
+					destroy();
+				});
+				COBLOG("Bin::destroy: end\n");
+			}
+			else if (strcmp(buf, "hello123") == 0)
+			{
+				MessageBox(m_hMainWnd, buf, "test", 0);
+			}
+		});
+
+
+#if 0
+		lianli::postCallback([this](const void* userData) {
+			char buf[256];
+			int len = m_RpcPipe.Receive((BYTE*)buf, 256);
+			if (len > 0)
+			{
+				WT_Trace("Bin::onPipeReceiveData: len=%d buf=%s\n", len, buf);
+				if (strcmp(buf, "cmd_unhook") == 0)
+				{
+					COBLOG("Bin::destroy: begin\n");
+					destroy();
+					COBLOG("Bin::destroy: end\n");
+				}
+			}
+		});
+#endif
+	}
+
+#if 0
+	CGmbsThread *pGmbsThread;
+	RpcMsgHeader_t MsgHeader;
+	PBYTE pMsgInfo = NULL;
+	int nMsgInfoLen = 0;
+	int nRecvLen = 0;
+	int nLen = 0;
+
+	if (nErrCode == -1)
+	{
+		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_PIPEBROKEN, NULL, NULL);
+		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_EXIT, NULL, NULL);
+
+		WT_Error("_OnPipeReceiveProc: Pipe broken\n");
+		return;
+	}
+
+	nLen = pGmbsThread->RpcRecvDataEx((PBYTE)&MsgHeader, sizeof(MsgHeader));
+	if (nLen != sizeof(MsgHeader))
+	{
+		WT_Error("----------����Pipe��ǰ��������[MsgHead���Ȳ���]-------------\n");
+		return;
+	}
+
+	if (MsgHeader.start != 0xA2B3C4E5)
+	{
+		BYTE bTemBuf[256];
+		do
+		{
+			nLen = pGmbsThread->RpcRecvDataEx(bTemBuf, sizeof(bTemBuf));
+
+		} while (nLen == sizeof(bTemBuf));
+
+		WT_Error("----------����Pipe��ǰ��������[�����벻��start=%x]-------------\n", MsgHeader.start);
+
+		return;
+	}
+
+	nMsgInfoLen = sizeof(RpcMsgHeader_t) + MsgHeader.rcvrlen + MsgHeader.namelen + MsgHeader.datalen;
+	pMsgInfo = (PBYTE)cntt_malloc(nMsgInfoLen);
+	if (pMsgInfo == NULL)
+	{
+		WT_Error("_OnPipeReceiveProc: �ڴ治��\n");
+		return;
+	}
+
+	memcpy(pMsgInfo, &MsgHeader, sizeof(MsgHeader));
+	nRecvLen += sizeof(MsgHeader);
+
+	nLen = pGmbsThread->RpcRecvDataEx(pMsgInfo + nRecvLen, nMsgInfoLen - nRecvLen);
+	if (nLen != nMsgInfoLen - nRecvLen)
+	{
+		WT_Error("----------����Pipe��ǰ��������[��Ϣ���Ȳ���]-------------\n");
+		return;
+	}
+
+	if ((MsgHeader.ctrcode & RMFL_SYNC) == RMFL_SYNC)
+	{
+		//WT_Printf("%s:-pipedata_send-[%d]\n", ((CGmbsContainer*)pGmbsThread)->m_strPrefix, MsgHeader.frameno);
+		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCSEND, (WPARAM)pMsgInfo, nMsgInfoLen);
+	}
+	else if ((MsgHeader.ctrcode & RMFL_ANSWER) == RMFL_ANSWER)
+	{
+		//WT_Printf("%s:-pipedata_answ-[%d]\n", ((CGmbsContainer*)pGmbsThread)->m_strPrefix, MsgHeader.frameno);
+		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCANSWER, (WPARAM)pMsgInfo, nMsgInfoLen);
+	}
+	else if ((MsgHeader.ctrcode & RMFL_USERMSG) == RMFL_USERMSG)
+	{
+		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_USERMSG, (WPARAM)pMsgInfo, nMsgInfoLen);
+	}
+	else
+	{
+		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCPOST, (WPARAM)pMsgInfo, nMsgInfoLen);
+	}
+#endif
 }
 
 bool Bin::pipeDisconnect()
@@ -66,15 +187,15 @@ bool Bin::pipeDisconnect()
 bool Bin::bind(HWND hWnd, const ValueMap& params)
 {
     bool ret = m_dllManager.inject(hWnd, "spy_dll.dll");
+	COBLOG("Bin::bind: inject ret = %d\n", ret);
     if (ret)
     {
-        m_MsgCallback.wait(1000, [this]()
+        m_MsgCallback.wait(1000, [this, hWnd]()
         {
-            bool ret = pipeConnect(1234);
+            bool ret = pipeConnect(0x1234);
             COBLOG("Bin::bind: connect ret = %d\n", ret);
         });
     }
-    COBLOG("Bin::bind: inject ret = %d\n", ret);
     return ret;
 }
 
@@ -151,7 +272,6 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 			else
 			{
 				RpcSendUnlock();
-				//COBLOG("============================== ��Ȼ������ ==============================\n");
 			}
 		}
 	}
@@ -162,7 +282,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 		if (RpcRecvAnswer(strEngineName, lpMsgName, pResultData, nResultDataLen) == 0)
 		{
 			if (strncmp((LPCSTR)pResultData, "Error", 5) != 0)
-				lResult = 0; //�ɹ�
+				lResult = 0;
 		}
 		else
 		{
@@ -175,7 +295,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 		RpcSendLock();
 		SetRpcState(0);
 		RpcSendUnlock();
-		COBLOG("[%s]RpcSend: ִ��ʧ��\n", m_strPrefix);
+		COBLOG("[%s]RpcSend: error\n", m_strPrefix);
 	}
 
 	//WT_Printf("[%s]RpcSend2222\n", m_strPrefix);
@@ -205,7 +325,7 @@ int Bin::RpcReturn(PBYTE pResultData, int nResultDataLen, BOOL bRightNow)
 		}
 		else
 		{
-			COBLOG("Bin::RpcReturn: Buffer����\n");
+			COBLOG("Bin::RpcReturn: Buffer error\n");
 			return -1;
 		}
 	}
@@ -320,14 +440,13 @@ int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msg
 	{
 		if (GetTickCount() > dwStartTicks + 8000)
 		{
-			COBLOG("[%s]:=====�ȴ�Ӧ��ʱ=====\n", m_strPrefix);
+			COBLOG("[%s]:error\n", m_strPrefix);
 			msgdatalen = 0;
 			return -1;
 		}
 		Sleep(10);
 	}
 
-	//�����յ���Ӧ��(��Ϣ���������ͷ�pMsgData)
 	if (msg.message == WM_GMBS_RPCANSWER)
 	{
 		PBYTE pMsgInfo = (PBYTE)msg.wParam;
@@ -349,7 +468,7 @@ int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msg
 			msgdatalen = 0;
 			nResult = -1;
 
-			COBLOG("[%s]:RpcRecvAnswer: ����Ӧ��: (%s)!=%s (%s)!=%s\n (%d)!=%d ctr=%x\n", m_strPrefix, MSGRCVR(pMsgInfo), receiver,
+			COBLOG("[%s]:RpcRecvAnswer: error (%s)!=%s (%s)!=%s\n (%d)!=%d ctr=%x\n", m_strPrefix, MSGRCVR(pMsgInfo), receiver,
 				MSGNAME(pMsgInfo), msgname, pMsgHeader->frameno, m_nRpcFrameNo, pMsgHeader->ctrcode);
 		}
 	}
@@ -392,12 +511,12 @@ int Bin::RpcSendData(PBYTE pData, int nDataLen)
 		nLen = m_RpcPipe.Send(pData + nTotalLen, nDataLen - nTotalLen);
 		if (nLen < 0)
 		{
-			COBLOG("Pipe�쳣\n");
+			COBLOG("RpcSendData: error1\n");
 			return -2;
 		}
 		else if (nLen == 0)
 		{
-			COBLOG("Pipe����ʧ��\n");
+			COBLOG("RpcSendData: error2\n");
 			return -3;
 		}
 
@@ -413,7 +532,7 @@ int Bin::RpcRecvData(PBYTE pDataBuf, int nBufLen)
 
 	if (m_RpcPipe.GetDataSize() <= 0)
 	{
-		COBLOG("----------------RpcRecvData������-------------------\n");
+		COBLOG("RpcRecvData error\n");
 	}
 
 	nRecvLen = m_RpcPipe.Receive(pDataBuf, nBufLen);
@@ -438,126 +557,6 @@ int Bin::RpcRecvDataEx(PBYTE pDataBuf, int nBufLen)
 	} while (nRecvLen < nBufLen);
 
 	return nRecvLen;
-}
-
-void Bin::onPipeReceiveData(int nErrCode)
-{
-    if (nErrCode == 0)
-    {
-        COBLOG("Bin::onPipeReceiveData E thread=%x\n", GetCurrentThreadId());
-        m_MsgCallback.send([this]() {
-            char buf[256];
-            int len = m_RpcPipe.Receive((BYTE*)buf, 256);
-            WT_Trace("Bin::onPipeReceiveData X: thread=%x len=%d buf=%s\n", GetCurrentThreadId(), len, buf);
-            if (strcmp(buf, "cmd_unhook") == 0)
-            {
-                COBLOG("Bin::destroy: begin\n");
-                m_MsgCallback.post([this]()
-                {
-                    destroy();
-                });
-                COBLOG("Bin::destroy: end\n");
-            }
-            else if (strcmp(buf, "hello123") == 0)
-            {
-                MessageBox(m_hMainWnd, buf, "test", 0);
-            }
-        });
-
-
-#if 0
-        lianli::postCallback([this](const void* userData) {
-            char buf[256];
-            int len = m_RpcPipe.Receive((BYTE*)buf, 256);
-            if (len > 0)
-            {
-                WT_Trace("Bin::onPipeReceiveData: len=%d buf=%s\n", len, buf);
-                if (strcmp(buf, "cmd_unhook") == 0)
-                {
-                    COBLOG("Bin::destroy: begin\n");
-                    destroy();
-                    COBLOG("Bin::destroy: end\n");
-                }
-            }
-        });
-#endif
-    }
-
-#if 0
-    CGmbsThread *pGmbsThread;
-    RpcMsgHeader_t MsgHeader;
-    PBYTE pMsgInfo = NULL;
-    int nMsgInfoLen = 0;
-    int nRecvLen = 0;
-    int nLen = 0;
-
-    if (nErrCode == -1)
-    {
-        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_PIPEBROKEN, NULL, NULL);
-        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_EXIT, NULL, NULL);
-
-        WT_Error("_OnPipeReceiveProc: Pipe broken\n");
-        return;
-    }
-
-    nLen = pGmbsThread->RpcRecvDataEx((PBYTE)&MsgHeader, sizeof(MsgHeader));
-    if (nLen != sizeof(MsgHeader))
-    {
-        WT_Error("----------����Pipe��ǰ��������[MsgHead���Ȳ���]-------------\n");
-        return;
-    }
-
-    if (MsgHeader.start != 0xA2B3C4E5)
-    {
-        BYTE bTemBuf[256];
-        do
-        {
-            nLen = pGmbsThread->RpcRecvDataEx(bTemBuf, sizeof(bTemBuf));
-
-        } while (nLen == sizeof(bTemBuf));
-
-        WT_Error("----------����Pipe��ǰ��������[�����벻��start=%x]-------------\n", MsgHeader.start);
-
-        return;
-    }
-
-    nMsgInfoLen = sizeof(RpcMsgHeader_t) + MsgHeader.rcvrlen + MsgHeader.namelen + MsgHeader.datalen;
-    pMsgInfo = (PBYTE)cntt_malloc(nMsgInfoLen);
-    if (pMsgInfo == NULL)
-    {
-        WT_Error("_OnPipeReceiveProc: �ڴ治��\n");
-        return;
-    }
-
-    memcpy(pMsgInfo, &MsgHeader, sizeof(MsgHeader));
-    nRecvLen += sizeof(MsgHeader);
-
-    nLen = pGmbsThread->RpcRecvDataEx(pMsgInfo + nRecvLen, nMsgInfoLen - nRecvLen);
-    if (nLen != nMsgInfoLen - nRecvLen)
-    {
-        WT_Error("----------����Pipe��ǰ��������[��Ϣ���Ȳ���]-------------\n");
-        return;
-    }
-
-    if ((MsgHeader.ctrcode & RMFL_SYNC) == RMFL_SYNC)
-    {
-        //WT_Printf("%s:-pipedata_send-[%d]\n", ((CGmbsContainer*)pGmbsThread)->m_strPrefix, MsgHeader.frameno);
-        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCSEND, (WPARAM)pMsgInfo, nMsgInfoLen);
-    }
-    else if ((MsgHeader.ctrcode & RMFL_ANSWER) == RMFL_ANSWER)
-    {
-        //WT_Printf("%s:-pipedata_answ-[%d]\n", ((CGmbsContainer*)pGmbsThread)->m_strPrefix, MsgHeader.frameno);
-        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCANSWER, (WPARAM)pMsgInfo, nMsgInfoLen);
-    }
-    else if ((MsgHeader.ctrcode & RMFL_USERMSG) == RMFL_USERMSG)
-    {
-        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_USERMSG, (WPARAM)pMsgInfo, nMsgInfoLen);
-    }
-    else
-    {
-        PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCPOST, (WPARAM)pMsgInfo, nMsgInfoLen);
-    }
-#endif
 }
 
 void Bin::destroy()

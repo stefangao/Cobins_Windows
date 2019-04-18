@@ -65,6 +65,7 @@ void MsgCallback::ResetWndProc()
 
         ::SetWindowLong(m_hMainWnd, GWL_WNDPROC, (LONG)iter->second);
         m_hMainWnd = NULL;
+		m_WndMap.erase(iter);
     }
 }
 

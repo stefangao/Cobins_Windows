@@ -12,7 +12,7 @@ void AppDelegate::onCreate(const lianli::Context& context)
 
 void AppDelegate::onStart()
 {
-    mBin.pipeListen(m_hMainWnd);
+    mBin.pipeListen(0x1234);
 
 }
 

@@ -10,7 +10,7 @@ static HINSTANCE g_hinstDll = NULL;     //the handle to DLL module
 static BOOL g_hostFlag = FALSE;
 static BOOL g_hooked = FALSE;
 static cob::Pipe g_pipe;
-static AppDelegate g_AppDelegate;
+static AppDelegate* g_pAppDelegate;
 static HWND g_hMainWnd = NULL;
 
 //消息回调函数
@@ -18,7 +18,6 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
     if (!g_hooked)
     {
-        WT_Trace("OnHooked: process=%x,hinstDLL=%x,g_hostFlag=%d\n", GetCurrentProcessId(), g_hinstDll, g_hostFlag);
         g_hooked = true;
         if (!g_hostFlag)
         {
@@ -26,7 +25,9 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
             lpMsg = (MSG*)lParam;
             if (lpMsg->hwnd != NULL)
             {
-                g_AppDelegate.create(lpMsg->hwnd, "embed123").start();
+				WT_Trace("OnHooked: process=%x, gameWnd=%x\n", GetCurrentProcessId(), lpMsg->hwnd);
+				g_pAppDelegate = new AppDelegate();
+				g_pAppDelegate->create(lpMsg->hwnd, "embed123").start();
             }
         }
     }
@@ -41,7 +42,7 @@ _declspec(dllexport) void triggerAppliation()
         g_hooked = true;
         if (!g_hostFlag)
         {
-            g_AppDelegate.create(g_hMainWnd, "embed123");
+			g_pAppDelegate->create(g_hMainWnd, "embed123");
         }
     }
 }
@@ -97,7 +98,11 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
         break;
 
     case DLL_PROCESS_DETACH:
-        COBLOG("DLL_PROCESS_DETACH: process=%x, hinstDLL=%x\n", GetCurrentProcessId(), hinstDLL);
+		if (g_hooked && !g_hostFlag)
+		{
+			g_pAppDelegate->destroy();
+		}
+		COBLOG("DLL_PROCESS_DETACH: process=%x, hinstDLL=%x\n", GetCurrentProcessId(), hinstDLL);
         break;
 
     default:

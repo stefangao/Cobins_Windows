@@ -21,7 +21,7 @@ public:
 protected:
 	HICON m_hIcon;
 
-    AppDelegate mAppDelegate;
+    AppDelegate* m_pAppDelegate;
     MsgCallback m_MsgCb1;
     MsgCallback m_MsgCb2;
 
@@ -43,4 +43,5 @@ protected:
 	afx_msg LRESULT OnWshMsgKey(WPARAM wParam, LPARAM lParam);
 public:
     afx_msg void OnBnClickedButton5();
+	afx_msg void OnDestroy();
 };

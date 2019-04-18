@@ -9,10 +9,9 @@ Application::Application()
 
 Application& Application::create(HWND hWnd, const std::string& name, lianli::Context& context)
 {
-    lianli::FSM::create(name, context);
+	m_hMainWnd = hWnd;
 
-    m_hMainWnd = hWnd;
-    return *this;
+    return (Application&)lianli::FSM::create(name, context);
 }
 
 NS_COB_END

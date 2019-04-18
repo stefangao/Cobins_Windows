@@ -32,13 +32,19 @@ bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtData& evtDa
         
         
     }
+	else if (evtName == "SendDataEvt")
+	{
+		std::string text;
+		evtData >> text;
+		mBin.RpcSendData((PBYTE)text.c_str(), text.size() + 1);
+	}
 
     return true;
 }
 
 void AppDelegate::onStop()
 {
-
+	mBin.destroy();
 }
 
 void AppDelegate::onDestroy(const lianli::Context& context)
@@ -49,4 +55,5 @@ void AppDelegate::onDestroy(const lianli::Context& context)
 BEGIN_TRANS_TABLE(AppDelegate, FSM)
     TRANS_ENTRY(S_ROOT, "BindEvt", S_NONE)
     TRANS_ENTRY(S_ROOT, "UnbindtEvt", S_NONE)
+	TRANS_ENTRY(S_ROOT, "SendDataEvt", S_NONE)
 END_TRANS_TABLE()

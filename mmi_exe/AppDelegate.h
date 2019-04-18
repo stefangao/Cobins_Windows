@@ -10,6 +10,7 @@ class AppDelegate : public cob::Application
 {
 public:
     AppDelegate();
+	virtual ~AppDelegate() {};
 
 protected:
     virtual void onCreate(const lianli::Context& context) override;
@@ -19,7 +20,6 @@ protected:
     virtual void onDestroy(const lianli::Context& context) override;
 
 protected:
-public:
     cob::Bin mBin;
 
     DECLARE_TRANS_TABLE()

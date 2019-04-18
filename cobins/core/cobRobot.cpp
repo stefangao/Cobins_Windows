@@ -7,13 +7,11 @@ Robot::Robot()
 
 }
 
-bool Robot::create(const std::string& name, lianli::Context& context)
+Robot& Robot::create(const std::string& name, lianli::Context& context)
 {
-    if (!lianli::FSM::create(name, context))
-        return false;
+	lianli::FSM::create(name, context);
 
-
-    return true;
+    return *this;
 }
 
 

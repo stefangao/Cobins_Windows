@@ -11,7 +11,7 @@ class Robot : public lianli::FSM
 {
 public:
 	Robot();
-    bool create(const std::string& name, lianli::Context& context = lianli::Context::DEFAULT);
+	Robot& create(const std::string& name, lianli::Context& context = lianli::Context::DEFAULT);
 
     Probe* getProbe(const std::string& probeName);
     Robot* getRobot(const std::string& robotName);

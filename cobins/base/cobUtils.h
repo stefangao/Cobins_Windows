@@ -38,7 +38,7 @@ extern const char* LL_STRING_EMPTY;
     #if defined(WIN32) && defined(WT_TRACE)
         #define COBLOG(format,...) WT_Trace(format, ##__VA_ARGS__)
     #else
-        #define COBLOG(format,...) cobins::Utils::__log(format, ##__VA_ARGS__)
+        #define COBLOG(format,...) cob::Utils::__log(format, ##__VA_ARGS__)
     #endif
 #else
     #define COBLOG(format)

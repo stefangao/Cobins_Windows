@@ -9,7 +9,7 @@ static HHOOK g_hHook = NULL;	    //the handle to the hook procedure
 static HINSTANCE g_hinstDll = NULL;     //the handle to DLL module
 static BOOL g_hostFlag = FALSE;
 static BOOL g_hooked = FALSE;
-static cobins::Pipe g_pipe;
+static cob::Pipe g_pipe;
 static AppDelegate g_AppDelegate;
 static HWND g_hMainWnd = NULL;
 

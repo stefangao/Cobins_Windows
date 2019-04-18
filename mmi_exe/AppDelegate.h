@@ -6,7 +6,7 @@
 USING_NS_COB;
 USING_NS_LL;
 
-class AppDelegate : public cobins::Application
+class AppDelegate : public cob::Application
 {
 public:
     AppDelegate();
@@ -20,7 +20,7 @@ protected:
 
 protected:
 public:
-    cobins::Bin mBin;
+    cob::Bin mBin;
 
     DECLARE_TRANS_TABLE()
 };

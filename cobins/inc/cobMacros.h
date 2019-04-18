@@ -10,9 +10,9 @@
 #define __COB_MACROS_H__
 
 #ifdef __cplusplus
-    #define NS_COB_BEGIN                     namespace cobins {
+    #define NS_COB_BEGIN                     namespace cob {
     #define NS_COB_END                       }
-    #define USING_NS_COB                     using namespace cobins
+    #define USING_NS_COB                     using namespace cob
 #else
     #define NS_COB_BEGIN
     #define NS_COB_END

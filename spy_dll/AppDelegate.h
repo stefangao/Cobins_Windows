@@ -5,7 +5,7 @@
 USING_NS_COB;
 USING_NS_LL;
 
-class AppDelegate : public cobins::Application
+class AppDelegate : public cob::Application
 {
 public:
     AppDelegate();
@@ -17,7 +17,7 @@ protected:
     virtual void onDestroy(const lianli::Context& context) override;
 
 protected:
-    cobins::Bin mBin;
+    cob::Bin mBin;
 };
 
 #endif

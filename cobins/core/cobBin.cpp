@@ -7,13 +7,13 @@ NS_COB_BEGIN
 
 Bin::Bin()
 {
-
+    memset(&m_RpcReturnCntx, 0, sizeof(m_RpcReturnCntx));
 }
 
 bool Bin::create(HWND hWnd)
 {
     m_hMainWnd = hWnd;
-    m_MsgCallback.SetWndProc(hWnd);
+    m_MsgCb.SetWndProc(hWnd);
     return TRUE;
 }
 
@@ -57,121 +57,116 @@ bool Bin::pipeConnect(DWORD dwPortId)
 
 void Bin::onPipeReceiveData(int nErrCode)
 {
-	if (nErrCode == 0)
-	{
-		COBLOG("Bin::onPipeReceiveData E thread=%x\n", GetCurrentThreadId());
-		m_MsgCallback.send([this]() {
-			char buf[256];
-			int len = m_RpcPipe.Receive((BYTE*)buf, 256);
-			WT_Trace("Bin::onPipeReceiveData X: thread=%x len=%d buf=%s\n", GetCurrentThreadId(), len, buf);
-			if (strcmp(buf, "cmd_unhook") == 0)
-			{
-				COBLOG("Bin::destroy: begin\n");
-				m_MsgCallback.post([this]()
-				{
-					destroy();
-				});
-				COBLOG("Bin::destroy: end\n");
-			}
-			else if (strcmp(buf, "hello123") == 0)
-			{
-				MessageBox(m_hMainWnd, buf, "test", 0);
-			}
-		});
+    if (nErrCode == 0)
+    {
+        COBLOG("Bin::onPipeReceiveData E thread=%x [%x]\n", GetCurrentThreadId(), GetCurrentProcessId());
+        m_MsgCb.post([this]() {
+            onRpcReceived();
+
+            /*
+            char buf[256];
+            int len = m_RpcPipe.Receive((BYTE*)buf, 256);
+            WT_Trace("Bin::onPipeReceiveData X: thread=%x [%x] len=%d buf=%s\n", GetCurrentThreadId(), GetCurrentProcessId(), len, buf);
+
+            auto prober = getProbe("prober1");
+            if (prober)
+            {
+                lianli::EvtData evtData, retData;
+                evtData << buf;
+
+                m_RpcReturnCntx.bNeed = true;
+                m_RpcReturnCntx.bDone = false;
+                m_RpcReturnCntx.nDataLen = 0;
+                prober->onRequest("Test123", evtData, retData);
+            }*/
+        });
+    }
 
 
 #if 0
-		lianli::postCallback([this](const void* userData) {
-			char buf[256];
-			int len = m_RpcPipe.Receive((BYTE*)buf, 256);
-			if (len > 0)
-			{
-				WT_Trace("Bin::onPipeReceiveData: len=%d buf=%s\n", len, buf);
-				if (strcmp(buf, "cmd_unhook") == 0)
-				{
-					COBLOG("Bin::destroy: begin\n");
-					destroy();
-					COBLOG("Bin::destroy: end\n");
-				}
-			}
-		});
+    char buf[256];
+    int len = m_RpcPipe.Receive((BYTE*)buf, 256);
+    WT_Trace("Bin::onPipeReceiveData X: thread=%x len=%d buf=%s\n", GetCurrentThreadId(), len, buf);
+    if (strcmp(buf, "cmd_unhook") == 0)
+    {
+        COBLOG("Bin::destroy: begin\n");
+        m_MsgCb.post([this]()
+        {
+            destroy();
+        });
+        COBLOG("Bin::destroy: end\n");
+    }
+    else if (strcmp(buf, "hello123") == 0)
+    {
+        MessageBox(m_hMainWnd, buf, "test", 0);
+    }
 #endif
-	}
+}
 
-#if 0
-	CGmbsThread *pGmbsThread;
-	RpcMsgHeader_t MsgHeader;
-	PBYTE pMsgInfo = NULL;
-	int nMsgInfoLen = 0;
-	int nRecvLen = 0;
-	int nLen = 0;
+void Bin::onRpcReceived()
+{
+    RpcMsgHeader_t MsgHeader;
+    PBYTE pMsgInfo = NULL;
+    int nMsgInfoLen = 0;
+    int nRecvLen = 0;
+    int nLen = 0;
 
-	if (nErrCode == -1)
-	{
-		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_PIPEBROKEN, NULL, NULL);
-		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_EXIT, NULL, NULL);
+    nLen = RpcRecvDataEx((PBYTE)&MsgHeader, sizeof(MsgHeader));
+    if (nLen != sizeof(MsgHeader))
+    {
+        COBLOG("----------error-------------\n");
+        return;
+    }
 
-		WT_Error("_OnPipeReceiveProc: Pipe broken\n");
-		return;
-	}
+    if (MsgHeader.start != 0xA2B3C4E5)
+    {
+        BYTE bTemBuf[256];
+        do
+        {
+            nLen = RpcRecvDataEx(bTemBuf, sizeof(bTemBuf));
 
-	nLen = pGmbsThread->RpcRecvDataEx((PBYTE)&MsgHeader, sizeof(MsgHeader));
-	if (nLen != sizeof(MsgHeader))
-	{
-		WT_Error("----------����Pipe��ǰ��������[MsgHead���Ȳ���]-------------\n");
-		return;
-	}
+        } while (nLen == sizeof(bTemBuf));
 
-	if (MsgHeader.start != 0xA2B3C4E5)
-	{
-		BYTE bTemBuf[256];
-		do
-		{
-			nLen = pGmbsThread->RpcRecvDataEx(bTemBuf, sizeof(bTemBuf));
+        COBLOG("---------error: %d-------------\n", MsgHeader.start);
 
-		} while (nLen == sizeof(bTemBuf));
+        return;
+    }
 
-		WT_Error("----------����Pipe��ǰ��������[�����벻��start=%x]-------------\n", MsgHeader.start);
+    nMsgInfoLen = sizeof(RpcMsgHeader_t) + MsgHeader.rcvrlen + MsgHeader.namelen + MsgHeader.datalen;
+    pMsgInfo = (PBYTE)malloc(nMsgInfoLen);
+    if (pMsgInfo == NULL)
+    {
+        COBLOG("error");
+        return;
+    }
 
-		return;
-	}
+    memcpy(pMsgInfo, &MsgHeader, sizeof(MsgHeader));
+    nRecvLen += sizeof(MsgHeader);
 
-	nMsgInfoLen = sizeof(RpcMsgHeader_t) + MsgHeader.rcvrlen + MsgHeader.namelen + MsgHeader.datalen;
-	pMsgInfo = (PBYTE)cntt_malloc(nMsgInfoLen);
-	if (pMsgInfo == NULL)
-	{
-		WT_Error("_OnPipeReceiveProc: �ڴ治��\n");
-		return;
-	}
+    nLen = RpcRecvDataEx(pMsgInfo + nRecvLen, nMsgInfoLen - nRecvLen);
+    if (nLen != nMsgInfoLen - nRecvLen)
+    {
+        COBLOG("error\n");
+        return;
+    }
 
-	memcpy(pMsgInfo, &MsgHeader, sizeof(MsgHeader));
-	nRecvLen += sizeof(MsgHeader);
+#if 1
+    const char* recvName = MSGRCVR(pMsgInfo);
+    const char* msgName = MSGNAME(pMsgInfo);
+    const char* msgData = (const char*)MSGDATA(pMsgInfo);
+    COBLOG("Bin::onRpcReceived: recv=%s, msg=%s, data=%s\n", recvName, msgName, msgData);
 
-	nLen = pGmbsThread->RpcRecvDataEx(pMsgInfo + nRecvLen, nMsgInfoLen - nRecvLen);
-	if (nLen != nMsgInfoLen - nRecvLen)
-	{
-		WT_Error("----------����Pipe��ǰ��������[��Ϣ���Ȳ���]-------------\n");
-		return;
-	}
+    auto prober = getProbe("prober1");
+    if (prober)
+    {
+        lianli::EvtData evtData, retData;
+        evtData << msgData;
 
-	if ((MsgHeader.ctrcode & RMFL_SYNC) == RMFL_SYNC)
-	{
-		//WT_Printf("%s:-pipedata_send-[%d]\n", ((CGmbsContainer*)pGmbsThread)->m_strPrefix, MsgHeader.frameno);
-		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCSEND, (WPARAM)pMsgInfo, nMsgInfoLen);
-	}
-	else if ((MsgHeader.ctrcode & RMFL_ANSWER) == RMFL_ANSWER)
-	{
-		//WT_Printf("%s:-pipedata_answ-[%d]\n", ((CGmbsContainer*)pGmbsThread)->m_strPrefix, MsgHeader.frameno);
-		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCANSWER, (WPARAM)pMsgInfo, nMsgInfoLen);
-	}
-	else if ((MsgHeader.ctrcode & RMFL_USERMSG) == RMFL_USERMSG)
-	{
-		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_USERMSG, (WPARAM)pMsgInfo, nMsgInfoLen);
-	}
-	else
-	{
-		PostMessage(pGmbsThread->m_hMainWnd, WM_GMBS_RPCPOST, (WPARAM)pMsgInfo, nMsgInfoLen);
-	}
+        m_RpcReturnCntx.bNeed = true;
+        m_RpcReturnCntx.bDone = false;
+        m_RpcReturnCntx.nDataLen = 0;
+        prober->onRequest(msgName, evtData, retData);
+    }
 #endif
 }
 
@@ -190,7 +185,7 @@ bool Bin::bind(HWND hWnd, const ValueMap& params)
 	COBLOG("Bin::bind: inject ret = %d\n", ret);
     if (ret)
     {
-        m_MsgCallback.wait(1000, [this, hWnd]()
+        m_MsgCb.wait(2000, [this, hWnd]()
         {
             bool ret = pipeConnect(0x1234);
             COBLOG("Bin::bind: connect ret = %d\n", ret);
@@ -207,19 +202,31 @@ bool Bin::unbind()
 
 bool Bin::install(Probe& probe)
 {
+    auto iter = mProbeMap.find(probe.getName());
+    COBASSERT(iter == mProbeMap.end(), "install failed: existed already");
+
 	mProbeMap.insert(std::make_pair(probe.getName(), &probe));
+    probe.mBin = this;
 	return true;
 }
 
 bool Bin::uninstall(const std::string& probeName)
 {
+    auto iter = mProbeMap.find("probeName");
+    if (iter == mProbeMap.end())
+        return false;
+
+    mProbeMap.erase(iter);
 	return true;
 }
 
 Probe* Bin::getProbe(const std::string& probeName)
 {
+    auto iter = mProbeMap.find(probeName);
+    if (iter == mProbeMap.end())
+        return nullptr;
 
-	return nullptr;
+	return iter->second;
 }
 
 Robot* Bin::getRobot(const std::string& robotName)
@@ -238,7 +245,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 	if (m_RpcReturnCntx.bNeed && !m_RpcReturnCntx.bDone)
 	{
 		RpcReturn(NULL, 0, TRUE);
-		COBLOG("------------------------ RpcSend: ����------------------------\n");
+		COBLOG("------------------------ RpcSend:------------------------\n");
 	}
 
 	RpcSendLock();
@@ -279,6 +286,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 	int lResult = -1;
 	if (RpcSendMessage(strEngineName, lpMsgName, pMsgData, nMsgDataLen, RMFL_SYNC, ++m_nRpcFrameNo) > 0)
 	{
+        /*
 		if (RpcRecvAnswer(strEngineName, lpMsgName, pResultData, nResultDataLen) == 0)
 		{
 			if (strncmp((LPCSTR)pResultData, "Error", 5) != 0)
@@ -287,7 +295,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 		else
 		{
 			COBLOG("[%s]RpcSend: Wrong Answer (nResultDataLen=%d)\n", m_strPrefix, nResultDataLen);
-		}
+		}*/
 	}
 
 	if (lResult == -1)
@@ -295,7 +303,7 @@ int Bin::RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMs
 		RpcSendLock();
 		SetRpcState(0);
 		RpcSendUnlock();
-		COBLOG("[%s]RpcSend: error\n", m_strPrefix);
+		//COBLOG("[%s]RpcSend: error\n", m_strPrefix);
 	}
 
 	//WT_Printf("[%s]RpcSend2222\n", m_strPrefix);
@@ -438,7 +446,7 @@ int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msg
 	DWORD dwStartTicks = GetTickCount();
 	while (!PeekMessage(&msg, m_hMainWnd, WM_GMBS_EXIT, WM_GMBS_RPCANSWER, PM_REMOVE))
 	{
-		if (GetTickCount() > dwStartTicks + 8000)
+		if (GetTickCount() > dwStartTicks + 20000)
 		{
 			COBLOG("[%s]:error\n", m_strPrefix);
 			msgdatalen = 0;
@@ -486,6 +494,7 @@ int Bin::RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msg
 
 int  Bin::GetRpcState()
 {
+    return 0;
 	if (m_hPlatformCntx == NULL)
 		return NULL;
 
@@ -495,6 +504,7 @@ int  Bin::GetRpcState()
 
 void Bin::SetRpcState(int state)
 {
+    return;
 	if (m_hPlatformCntx == NULL)
 		return;
 
@@ -562,7 +572,7 @@ int Bin::RpcRecvDataEx(PBYTE pDataBuf, int nBufLen)
 void Bin::destroy()
 {
     m_RpcPipe.ClosePipe();
-    m_MsgCallback.ResetWndProc();
+    m_MsgCb.ResetWndProc();
 }
 
 NS_COB_END

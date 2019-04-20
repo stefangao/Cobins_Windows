@@ -80,7 +80,7 @@ int Pipe::Send(BYTE *pBuf, int nSize)
         if (GetLastError() == ERROR_IO_PENDING)
         {
             //WT_Trace("pipe[%x] write: wait 3000 ...\n", this);
-            DWORD dwResult = WaitForSingleObject(ol.hEvent, 5000);
+            DWORD dwResult = WaitForSingleObject(ol.hEvent, INFINITE);
             if (dwResult != WAIT_OBJECT_0)
             {
                 WT_Error("pipe write: wait error\n");
@@ -91,7 +91,7 @@ int Pipe::Send(BYTE *pBuf, int nSize)
             }
             //WT_Trace("pipe[%x] write: wait ok\n", this);
 
-            bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwWritten, FALSE);
+            bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwWritten, TRUE);
             if (!bSuccess && !PipeCheck())
             {
                 WT_Error("Pipe::Send: error\n");
@@ -135,6 +135,7 @@ int Pipe::Receive(BYTE *pBuf, int nBufLen)
     {
         if (GetLastError() == ERROR_IO_PENDING)
         {
+            /*
             //WT_Trace("pipe[%x] read: wait 3000 ...\n", this);
             DWORD dwResult = WaitForSingleObject(ol.hEvent, 5000);
             if (dwResult != WAIT_OBJECT_0)
@@ -145,7 +146,7 @@ int Pipe::Receive(BYTE *pBuf, int nBufLen)
                 //OnReceive(-1);
                 //return 0;
             }
-            //WT_Trace("pipe[%x] read: wait ok\n", this);
+            //WT_Trace("pipe[%x] read: wait ok\n", this);*/
 
             bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwReadLen, FALSE);
             if (!bSuccess && !PipeCheck())
@@ -292,7 +293,6 @@ BOOL Pipe::Listen()
     }
 
     WT_Trace("Listen end [%x]\n", GetCurrentProcessId());
-
     return -1;
 }
 
@@ -386,33 +386,6 @@ BOOL Pipe::BindPipe(DWORD dwPortId)
 		return OpenPipe(dwPortId);
 	}
 }
-
-#if 0
-BOOL Pipe::DestroyPipe()
-{
-	WT_Trace("DestroyPipe111: m_hPipe=%x\n", m_hPipe);
-	if (m_hPipe != INVALID_HANDLE_VALUE)
-	{
-		OnClose(0);
-		SetEvent (m_hListenEvent);
-		WT_Trace("Pipe::DestroyPipe->111: listen thread=%x", m_hListenThread);
-		//WaitForSingleObject(m_hListenThread, INFINITE);
-		//TerminateThread(m_hListenThread, 0);
-		WT_Trace("Pipe::DestroyPipe->222: listen thread=%x", m_hListenThread);
-
-		m_bConnected = FALSE;
-		DisconnectNamedPipe (m_hPipe);
-		CloseHandle(m_hPipe);
-		m_hPipe = INVALID_HANDLE_VALUE;
-		SetEvent (m_hEvent);
-
-		WT_Trace("DestroyPipe: this=%p\n", this);
-	}
-	WT_Trace("DestroyPipe222: m_hPipe=%x\n", m_hPipe);
-
-	return TRUE;
-}
-#endif
 
 BOOL Pipe::ClosePipe()
 {

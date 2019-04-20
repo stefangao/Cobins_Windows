@@ -17,6 +17,7 @@ NS_COB_BEGIN
 class Bin;
 class Probe
 {
+    friend class Bin;
 public:
 	Probe(const std::string& name);
 
@@ -27,6 +28,7 @@ public:
     bool unbind();
 
     virtual bool request(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData);
+	virtual bool response(const lianli::EvtData& resultData, bool bRightNow = false);
 
 protected:
     virtual void onRequest(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData);

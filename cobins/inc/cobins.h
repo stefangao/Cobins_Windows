@@ -3,3 +3,5 @@
 #include "cobConst.h"
 #include "base/cobUtils.h"
 #include "core/cobApplication.h"
+#include "core/cobProber.h"
+#include "core/cobIProbe.h"

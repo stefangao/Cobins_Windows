@@ -1,4 +1,5 @@
 #include "AppDelegate.h"
+#include "Prober1.h"
 
 AppDelegate::AppDelegate()
 {
@@ -8,6 +9,9 @@ AppDelegate::AppDelegate()
 void AppDelegate::onCreate(const lianli::Context& context)
 {
     mBin.create(m_hMainWnd);
+
+    auto prober1 = new Prober1("prober1");
+    mBin.install(*prober1);
 }
 
 void AppDelegate::onStart()

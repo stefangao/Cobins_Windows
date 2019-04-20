@@ -10,7 +10,7 @@ static HINSTANCE g_hinstDll = NULL;     //the handle to DLL module
 static BOOL g_hostFlag = FALSE;
 static BOOL g_hooked = FALSE;
 static cob::Pipe g_pipe;
-static AppDelegate* g_pAppDelegate;
+static AppDelegate* g_pAppDelegate = NULL;
 static HWND g_hMainWnd = NULL;
 
 //消息回调函数
@@ -98,7 +98,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
         break;
 
     case DLL_PROCESS_DETACH:
-		if (g_hooked && !g_hostFlag)
+		if (g_hooked && !g_hostFlag && g_pAppDelegate)
 		{
 			g_pAppDelegate->destroy();
 		}

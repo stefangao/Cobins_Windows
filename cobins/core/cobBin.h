@@ -99,9 +99,11 @@ public:
 	int RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMsgDataLen, PBYTE& pResultData, int& nResultDataLen);
 	int RpcPost(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMsgDataLen);
 	int RpcReturn(PBYTE pResultData, int nResultDataLen, BOOL bRightNow);
+
 	BOOL RpcSendLock();
 	BOOL RpcSendUnlock();
 	int RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msgdatalen);
+
 	int GetRpcState();
 	void SetRpcState(int state);
 
@@ -112,6 +114,7 @@ protected:
     std::map<const std::string, Probe*> mProbeMap;
 
     void onPipeReceiveData(int nErrCode);
+    virtual void onRpcReceived();
 
 private:
 	GmbsReturnCntx_t m_RpcReturnCntx;
@@ -128,7 +131,7 @@ protected:
 	HANDLE m_hPlatformCntx;
 
     HWND m_hMainWnd;
-    MsgCallback m_MsgCallback;
+    MsgCallback m_MsgCb;
     DllManager m_dllManager;
 
 protected:

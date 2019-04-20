@@ -36,7 +36,12 @@ bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtData& evtDa
 	{
 		std::string text;
 		evtData >> text;
-		mBin.RpcSendData((PBYTE)text.c_str(), text.size() + 1);
+		//mBin.RpcSendData((PBYTE)text.c_str(), text.size() + 1);
+
+        PBYTE resultBuf;
+        int len;
+        //mBin.RpcPost("testEngine", "TestEvt1", (PBYTE)text.c_str(), text.size() + 1);
+        mBin.RpcSend("testEngine", "TestEvt1", (PBYTE)text.c_str(), text.size() + 1, resultBuf, len);
 	}
 
     return true;

@@ -50,4 +50,10 @@ void Probe::onNotify(const std::string& evtName, const lianli::EvtData& evtData)
 
 }
 
+bool Probe::response(const lianli::EvtData& resultData, bool bRightNow)
+{
+
+    return true;
+}
+
 NS_COB_END

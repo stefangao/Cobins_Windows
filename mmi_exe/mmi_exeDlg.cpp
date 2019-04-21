@@ -178,29 +178,43 @@ HWND CmmiexeDlg::GetWndByCursor()
 
 void CmmiexeDlg::OnBnClickedButton1()
 {
-	char buf[] = "hello12345";
+	std::string str = "hello post ABC123";
 
 	EvtData data;
-	data << buf;
-	m_pAppDelegate->postEvent("SendDataEvt", data);
+	data << str;
+	m_pAppDelegate->postEvent("PostDataEvt", data);
 }
 
 void CmmiexeDlg::OnBnClickedButton2()
 {
-    // TODO: 在此添加控件通知处理程序代码
+    std::string str = "hello send 12345";
 
+    EvtData data;
+    data << str;
+    m_pAppDelegate->sendEvent("SendDataEvt", data);
 
+    /*
 	m_MsgCb2.SetWndProc(m_hWnd);
 	m_MsgCb2.wait(1000, []()
 	{
 		COBLOG("m_MsgCb2.post got222\n");
-	});
+	});*/
 
+    /*
 	m_MsgCb1.SetWndProc(m_hWnd);
-	m_MsgCb1.post([]()
+	m_MsgCb1.post([&]()
 	{
 		COBLOG("m_MsgCb1.post got111\n");
+        m_MsgCb1.post([]()
+        {
+            COBLOG("m_MsgCb1.post got222\n");
+        });
 	});
+
+    m_MsgCb1.post([]()
+    {
+        COBLOG("m_MsgCb1.post got333\n");
+    });*/
 }
 
 BOOL UnHookWnd(HHOOK hHook)
@@ -216,24 +230,37 @@ BOOL UnHookWnd(HHOOK hHook)
 
 void CmmiexeDlg::OnBnClickedButton3()
 {
-    /*
-    bool ret = false;
-    if (m_hHook)
-    {
-        ret = UnHookWnd(m_hHook);
-        WT_Trace("UnHookWnd: ret=%d", ret);
-        if (ret)
-            m_hHook = NULL;
-    }*/
+    lianli::EvtData data;
+    //std::stringstream data;
+    data << "hello";
+    COBLOG("size1=%d", data.getDataLen());
+    data << "boy";
+    COBLOG("size2=%d", data.getDataLen());
 
-	m_pAppDelegate->destroy();
+    std::string str1, str2;
+    data >> str1;
+    data >> str2;
+    COBLOG("str=%s, %s\n", str1.c_str(), str2.c_str());
 }
 
 void CmmiexeDlg::OnBnClickedButton4()
 {
+    /*
 	EvtData data;
 	data << "cmd_unhook";
-	m_pAppDelegate->postEvent("SendDataEvt", data);
+	m_pAppDelegate->postEvent("SendDataEvt", data);*/
+
+    std::stringstream ss;
+    ss << "hello";
+    std::string str1 = ss.str();
+
+    EvtData data;
+    data << "hello";
+    std::string str2 = data.str();
+
+    int a = 3;
+
+
 }
 
 afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)

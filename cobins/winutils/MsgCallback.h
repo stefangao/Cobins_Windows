@@ -28,6 +28,8 @@ public:
 
     void SetWndProc(HWND hWnd);
     void ResetWndProc();
+
+    inline HWND getMainWnd() { return m_hMainWnd; }
 };
 
 #endif

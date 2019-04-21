@@ -35,14 +35,18 @@ bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtData& evtDa
 	else if (evtName == "SendDataEvt")
 	{
 		std::string text;
-		evtData >> text;
+		//evtData >> text;
 		//mBin.RpcSendData((PBYTE)text.c_str(), text.size() + 1);
 
-        PBYTE resultBuf;
+        lianli::EvtData resultBuf;
         int len;
         //mBin.RpcPost("testEngine", "TestEvt1", (PBYTE)text.c_str(), text.size() + 1);
-        mBin.RpcSend("testEngine", "TestEvt1", (PBYTE)text.c_str(), text.size() + 1, resultBuf, len);
+        mBin.RpcSend("testEngine", "TestEvt1", evtData, resultBuf);
 	}
+    else if (evtName == "PostDataEvt")
+    {
+        mBin.RpcPost("testEngine", "TestEvt1", evtData);
+    }
 
     return true;
 }
@@ -61,4 +65,5 @@ BEGIN_TRANS_TABLE(AppDelegate, FSM)
     TRANS_ENTRY(S_ROOT, "BindEvt", S_NONE)
     TRANS_ENTRY(S_ROOT, "UnbindtEvt", S_NONE)
 	TRANS_ENTRY(S_ROOT, "SendDataEvt", S_NONE)
+    TRANS_ENTRY(S_ROOT, "PostDataEvt", S_NONE)
 END_TRANS_TABLE()

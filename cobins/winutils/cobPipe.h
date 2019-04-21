@@ -59,6 +59,8 @@ public:
 
     BOOL RegisterRxd(const std::function<void(int)>& callback);
 
+    void ReceiveEnd();
+
 
 // Operations
 protected:

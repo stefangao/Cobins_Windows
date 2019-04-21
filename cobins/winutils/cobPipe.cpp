@@ -158,9 +158,14 @@ int Pipe::Receive(BYTE *pBuf, int nBufLen)
         }
     }
 
-    SetEvent (m_hEvent);
+    //SetEvent (m_hEvent);
 
     return dwReadLen;
+}
+
+void Pipe::ReceiveEnd()
+{
+    SetEvent(m_hEvent);
 }
 
 BOOL Pipe::PipeCheck()

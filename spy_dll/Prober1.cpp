@@ -11,8 +11,11 @@ Prober1::Prober1(const std::string& name)
 void Prober1::onRequest(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData)
 {
     COBLOG("Prober1::onRequest: evtName=%s\n", evtName.c_str());
-    char buf[] = "ABCD7890";
-    getBin()->RpcReturn((PBYTE)buf, sizeof(buf), TRUE);
+    //char buf[] = "ABCD7890";
+
+    lianli::EvtData data;
+    data << "ABCDE7890";
+    getBin()->RpcReturn(data, TRUE);
 }
 
 NS_COB_END

@@ -96,29 +96,22 @@ public:
     Probe* getProbe(const std::string& probeName);
     Robot* getRobot(const std::string& robotName);
 
-	int RpcSend(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMsgDataLen, PBYTE& pResultData, int& nResultDataLen);
-	int RpcPost(LPCSTR strEngineName, LPCSTR lpMsgName, PBYTE pMsgData, int nMsgDataLen);
-	int RpcReturn(PBYTE pResultData, int nResultDataLen, BOOL bRightNow);
+    bool RpcSend(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& resultData);
+    bool RpcPost(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData);
+    int  RpcSendEvent(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData, DWORD ctrCode, DWORD frameNo);
+    int  RpcRecvAnswer(const std::string& probeName, const std::string& evtName, lianli::EvtData& evtData);
+    int  RpcReturn(const lianli::EvtData& evtData, BOOL bRightNow = FALSE);
 
-	BOOL RpcSendLock();
-	BOOL RpcSendUnlock();
-	int RpcRecvAnswer(LPCSTR receiver, LPCSTR msgname, PBYTE &msgdata, int &msgdatalen);
-
-	int GetRpcState();
-	void SetRpcState(int state);
-
-	int  RpcSendMessage(LPCSTR receiver, LPCSTR msgname, PBYTE msgdata, int msgdatalen, DWORD ctrcode = 0);
-	int  RpcSendMessage(LPCSTR receiver, LPCSTR msgname, PBYTE msgdata, int msgdatalen, DWORD ctrcode, DWORD frameno);
+	int  RpcSendEvent(const std::string& probeName, const std::string& evtName, PBYTE data, int dataLen, DWORD ctrCode, DWORD frameNo);
 
 protected:
     std::map<const std::string, Probe*> mProbeMap;
 
     void onPipeReceiveData(int nErrCode);
-    virtual void onRpcReceived();
+    virtual void onRpcReceived(PBYTE pMsgInfo);
 
 private:
 	GmbsReturnCntx_t m_RpcReturnCntx;
-	HANDLE   m_hRpcSendMutex;
 
 	BYTE    m_RpcMsgRxdBuf[RPCBUF_MAXLEN];
 	int     m_nRpcFrameNo;
@@ -126,9 +119,6 @@ private:
 
 protected:
 	Pipe m_RpcPipe;
-	char m_strPrefix[6];  //"Host" or "Embed"
-
-	HANDLE m_hPlatformCntx;
 
     HWND m_hMainWnd;
     MsgCallback m_MsgCb;

@@ -11,7 +11,7 @@ static BOOL g_hostFlag = FALSE;
 static BOOL g_hooked = FALSE;
 static cob::Pipe g_pipe;
 static AppDelegate* g_pAppDelegate = NULL;
-static HWND g_hMainWnd = NULL;
+static HWND g_hMainWn = NULL;
 
 //消息回调函数
 LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)

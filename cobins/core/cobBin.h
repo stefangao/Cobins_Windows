@@ -100,7 +100,7 @@ public:
     bool RpcPost(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData);
     int  RpcSendEvent(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData, DWORD ctrCode, DWORD frameNo);
     int  RpcRecvAnswer(const std::string& probeName, const std::string& evtName, lianli::EvtData& evtData);
-    int  RpcReturn(const lianli::EvtData& evtData, BOOL bRightNow = FALSE);
+    int  RpcReturn(const lianli::EvtData& evtData, bool bRightNow = false);
 
 	int  RpcSendEvent(const std::string& probeName, const std::string& evtName, PBYTE data, int dataLen, DWORD ctrCode, DWORD frameNo);
 

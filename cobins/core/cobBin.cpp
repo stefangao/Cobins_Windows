@@ -275,7 +275,7 @@ bool Bin::RpcPost(const std::string& probeName, const std::string& evtName, cons
 	return lResult;
 }
 
-int Bin::RpcReturn(const lianli::EvtData& evtData, BOOL bRightNow)
+int Bin::RpcReturn(const lianli::EvtData& evtData, bool bRightNow)
 {
     if (evtData.getDataLen() > 0)
     {

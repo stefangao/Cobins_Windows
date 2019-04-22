@@ -18,7 +18,6 @@ Probe::Probe(const std::string& name)
 
 bool Probe::bind(const std::string& config)
 {
-
 	return true;
 }
 
@@ -29,31 +28,58 @@ bool Probe::unbind()
 
 bool Probe::request(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData)
 {
+    COBASSERT(mBin, "bin is null");
 
-
+    mBin->RpcSend(mName, evtName, evtData, retData);
 	return true;
+}
+
+bool Probe::response(const lianli::EvtData& resultData)
+{
+    COBASSERT(mBin, "bin is null");
+
+    mBin->RpcReturn(resultData);
+    return true;
+}
+
+bool Probe::notify(const std::string& evtName, const lianli::EvtData& evtData)
+{
+    COBASSERT(mBin, "bin is null");
+
+    mBin->RpcPost(mName, evtName, evtData);
+    return true;
 }
 
 void Probe::onRequest(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData)
 {
-
-
-}
-
-void Probe::onResponse(const std::string& evtName, lianli::EvtData& retData)
-{
-
+    auto iter = mEvtRequestProcMap.find(evtName);
+    if (iter != mEvtRequestProcMap.end())
+    {
+        auto& evtRequestProc = iter->second;
+        evtRequestProc(evtData, retData);
+        response(retData);
+    }
 }
 
 void Probe::onNotify(const std::string& evtName, const lianli::EvtData& evtData)
 {
-
+    auto iter = mEvtNotifyProcMap.find(evtName);
+    if (iter != mEvtNotifyProcMap.end())
+    {
+        auto& evtNotifyProc = iter->second;
+        evtNotifyProc(evtData);
+    }
 }
 
-bool Probe::response(const lianli::EvtData& resultData, bool bRightNow)
+void Probe::addEvtRequestProc(const std::string evtName, const onEvtRequestProc& evtRequestProc)
 {
+    mEvtRequestProcMap.insert(std::pair（"readValue", evtRequestProc));
+}
 
-    return true;
+void Probe::addEvtNotifyProc(const std::string evtName, const onEvtRequestProc& evtRequestProc)
+{
+    mEvtNotifyProcMap.insert(std::pair（"readValue", evtRequestProc));
+
 }
 
 NS_COB_END

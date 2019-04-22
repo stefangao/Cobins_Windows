@@ -2,6 +2,7 @@
 #define __MEM_SPY_H__
 
 #include "cobins.h"
+#include "llfsm/lianli.h"
 
 NS_COB_BEGIN
 
@@ -11,24 +12,17 @@ public:
     MemSpy(const std::string& name);
 
 protected:
-    virtual void onRequest(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData) override;
-
-    void readValue(const lianli::EvtData& evtData, lianli::EvtData& retData);
-
-private:
+    void readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData);
+    void hello(lianli::EvtStream& evtData);
 };
 
 class IMemSpy : public IProbe
 {
 public:
-    IMemSpy(const std::string& name);
-
-    int readValue(void* address);
-
-protected:
-
-
-private:
+    IMemSpy(const std::string& name) : IProbe(name) {}
+    
+    int readValue(unsigned long address);
+    void hello();
 };
 
 NS_COB_END

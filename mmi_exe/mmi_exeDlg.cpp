@@ -180,7 +180,7 @@ void CmmiexeDlg::OnBnClickedButton1()
 {
 	std::string str = "hello post ABC123";
 
-	EvtData data;
+	EvtStream data;
 	data << str;
 	m_pAppDelegate->postEvent("PostDataEvt", data);
 }
@@ -189,7 +189,7 @@ void CmmiexeDlg::OnBnClickedButton2()
 {
     std::string str = "hello send 12345";
 
-    EvtData data;
+    EvtStream data;
     data << str;
     m_pAppDelegate->sendEvent("SendDataEvt", data);
 
@@ -230,7 +230,7 @@ BOOL UnHookWnd(HHOOK hHook)
 
 void CmmiexeDlg::OnBnClickedButton3()
 {
-    lianli::EvtData data;
+    lianli::EvtStream data;
     //std::stringstream data;
     data << "hello";
     COBLOG("size1=%d", data.getDataLen());
@@ -246,7 +246,7 @@ void CmmiexeDlg::OnBnClickedButton3()
 void CmmiexeDlg::OnBnClickedButton4()
 {
     /*
-	EvtData data;
+	EvtStream data;
 	data << "cmd_unhook";
 	m_pAppDelegate->postEvent("SendDataEvt", data);*/
 
@@ -254,7 +254,7 @@ void CmmiexeDlg::OnBnClickedButton4()
     ss << "hello";
     std::string str1 = ss.str();
 
-    EvtData data;
+    EvtStream data;
     data << "hello";
     std::string str2 = data.str();
 
@@ -278,7 +278,7 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
                 HWND hGameWnd = GetWndByCursor();
                 COBLOG("hGameWnd=%x\n", hGameWnd);
 
-                EvtData data;
+                EvtStream data;
                 data << (DWORD)hGameWnd;
 				m_pAppDelegate->postEvent("BindEvt", data);
 

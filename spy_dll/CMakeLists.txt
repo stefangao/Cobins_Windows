@@ -7,6 +7,7 @@ add_compile_options(-std=c++11)
 set(SOLUTION_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+include_directories(${SOLUTION_ROOT_DIR})
 include_directories(${SOLUTION_ROOT_DIR}/inc)
 include_directories(${SOLUTION_ROOT_DIR}/external)
 include_directories(${SOLUTION_ROOT_DIR}/cobins)
@@ -23,6 +24,7 @@ add_library(${PROJECT_NAME} SHARED ${DIR_LIB_SRCS} ${DIR_HEADERS})
 
 target_link_libraries(${PROJECT_NAME} llfsm)
 target_link_libraries(${PROJECT_NAME} cobins)
+target_link_libraries(${PROJECT_NAME} probes)
 
 add_custom_command(
     TARGET ${PROJECT_NAME}

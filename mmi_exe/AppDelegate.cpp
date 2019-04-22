@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "AppDelegate.h"
+#include "probes/MemSpy.h"
+#include "robots/AutoRefresh.h"
 
 AppDelegate::AppDelegate()
 {
@@ -9,6 +11,9 @@ AppDelegate::AppDelegate()
 void AppDelegate::onCreate(const lianli::Context& context)
 {
     mBin.create(m_hMainWnd);
+
+    IMemSpy* memSpy = new IMemSpy("memspy");
+    mBin.install(*memSpy);
 }
 
 void AppDelegate::onStart()
@@ -16,7 +21,7 @@ void AppDelegate::onStart()
 
 }
 
-bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtData& evtData)
+bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtStream& evtData)
 {
     if (evtName == "BindEvt")
     {
@@ -32,21 +37,27 @@ bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtData& evtDa
         
         
     }
-	else if (evtName == "SendDataEvt")
-	{
-		std::string text;
-		//evtData >> text;
-		//mBin.RpcSendData((PBYTE)text.c_str(), text.size() + 1);
-
-        lianli::EvtData resultBuf;
-        int len;
-        //mBin.RpcPost("testEngine", "TestEvt1", (PBYTE)text.c_str(), text.size() + 1);
-        mBin.RpcSend("testEngine", "TestEvt1", evtData, resultBuf);
-	}
     else if (evtName == "PostDataEvt")
     {
-        mBin.RpcPost("testEngine", "TestEvt1", evtData);
+        auto memSpy = (IMemSpy*)mBin.getProbe("memspy");
+        if (memSpy)
+        {
+            memSpy->hello();
+        }
     }
+	else if (evtName == "SendDataEvt")
+	{
+        lianli::EvtStream retData;
+        //mBin.RpcSend("testEngine", "TestEvt1", evtData, retData);
+
+        auto memSpy = (IMemSpy*)mBin.getProbe("memspy");
+        if (memSpy)
+        {
+            int value = memSpy->readValue(0x12345678);
+            COBLOG("readValue: value=%d\n", value);
+        }
+	}
+
 
     return true;
 }

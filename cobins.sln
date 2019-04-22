@@ -5,12 +5,17 @@ VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mmi_exe", "mmi_exe\mmi_exe.vcxproj", "{B9AAC537-283B-492A-BAD5-64D82AB4A783}"
 	ProjectSection(ProjectDependencies) = postProject
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C} = {BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B} = {28357114-ECDF-3DB8-9602-B8CEE4D4B11B}
 		{7E9C3153-A0B2-3CAA-AB71-2A0B8A6A3195} = {7E9C3153-A0B2-3CAA-AB71-2A0B8A6A3195}
 		{4BB9D288-874C-331F-8B42-ECC09A0910E0} = {4BB9D288-874C-331F-8B42-ECC09A0910E0}
 		{2A1F7296-FD3E-3290-A422-9CFDBE78AE11} = {2A1F7296-FD3E-3290-A422-9CFDBE78AE11}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spy_dll", "spy_dll\build\spy_dll.vcxproj", "{2A1F7296-FD3E-3290-A422-9CFDBE78AE11}"
+	ProjectSection(ProjectDependencies) = postProject
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B} = {28357114-ECDF-3DB8-9602-B8CEE4D4B11B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game_exe", "game_exe\game_exe.vcxproj", "{40F88E33-A59C-4873-9359-079C6356FE14}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -20,6 +25,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llfsm", "external\llfsm\build\llfsm.vcxproj", "{7E9C3153-A0B2-3CAA-AB71-2A0B8A6A3195}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cobins", "cobins\build\cobins.vcxproj", "{4BB9D288-874C-331F-8B42-ECC09A0910E0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "probes", "probes\build\probes.vcxproj", "{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "robots", "robots\build\robots.vcxproj", "{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +110,30 @@ Global
 		{4BB9D288-874C-331F-8B42-ECC09A0910E0}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|Win32
 		{4BB9D288-874C-331F-8B42-ECC09A0910E0}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|Win32
 		{4BB9D288-874C-331F-8B42-ECC09A0910E0}.RelWithDebInfo|x86.Build.0 = RelWithDebInfo|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.Debug|x64.ActiveCfg = Debug|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.Debug|x86.ActiveCfg = Debug|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.Debug|x86.Build.0 = Debug|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.MinSizeRel|x64.ActiveCfg = MinSizeRel|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.MinSizeRel|x86.ActiveCfg = MinSizeRel|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.MinSizeRel|x86.Build.0 = MinSizeRel|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.Release|x64.ActiveCfg = Release|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.Release|x86.ActiveCfg = Release|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.Release|x86.Build.0 = Release|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|Win32
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}.RelWithDebInfo|x86.Build.0 = RelWithDebInfo|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.Debug|x64.ActiveCfg = Debug|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.Debug|x86.ActiveCfg = Debug|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.Debug|x86.Build.0 = Debug|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.MinSizeRel|x64.ActiveCfg = MinSizeRel|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.MinSizeRel|x86.ActiveCfg = MinSizeRel|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.MinSizeRel|x86.Build.0 = MinSizeRel|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.Release|x64.ActiveCfg = Release|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.Release|x86.ActiveCfg = Release|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.Release|x86.Build.0 = Release|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|Win32
+		{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}.RelWithDebInfo|x86.Build.0 = RelWithDebInfo|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

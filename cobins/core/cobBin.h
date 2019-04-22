@@ -96,11 +96,11 @@ public:
     Probe* getProbe(const std::string& probeName);
     Robot* getRobot(const std::string& robotName);
 
-    bool RpcSend(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& resultData);
-    bool RpcPost(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData);
-    int  RpcSendEvent(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData, DWORD ctrCode, DWORD frameNo);
-    int  RpcRecvAnswer(const std::string& probeName, const std::string& evtName, lianli::EvtData& evtData);
-    int  RpcReturn(const lianli::EvtData& evtData, bool bRightNow = false);
+    bool RpcSend(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, lianli::EvtStream& resultData);
+    bool RpcPost(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData);
+    int  RpcSendEvent(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, DWORD ctrCode, DWORD frameNo);
+    int  RpcRecvAnswer(const std::string& probeName, const std::string& evtName, lianli::EvtStream& retData);
+    int  RpcReturn(const lianli::EvtStream& evtData, bool bRightNow = true);
 
 	int  RpcSendEvent(const std::string& probeName, const std::string& evtName, PBYTE data, int dataLen, DWORD ctrCode, DWORD frameNo);
 
@@ -112,9 +112,7 @@ protected:
 
 private:
 	GmbsReturnCntx_t m_RpcReturnCntx;
-
-	BYTE    m_RpcMsgRxdBuf[RPCBUF_MAXLEN];
-	int     m_nRpcFrameNo;
+	int m_nRpcFrameNo;
 
 
 protected:
@@ -135,7 +133,7 @@ public: //TBD
 
 #define MSGRCVR(pMsgData) ((LPCSTR)(pMsgData + sizeof(RpcMsgHeader_t)))
 #define MSGNAME(pMsgData) (MSGRCVR(pMsgData) + ((RpcMsgHeader_t*)pMsgData)->rcvrlen)
-#define MSGDATA(pMsgData) ((PBYTE)(MSGNAME(pMsgData) + ((RpcMsgHeader_t*)pMsgData)->namelen))  
+#define MSGDATA(pMsgData) ((LPCSTR)(MSGNAME(pMsgData) + ((RpcMsgHeader_t*)pMsgData)->namelen))  
 
 NS_COB_END
 

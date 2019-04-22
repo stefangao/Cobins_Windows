@@ -95,11 +95,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)cobins;$(SolutionDir)cobins\inc;$(SolutionDir)external</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)cobins;$(SolutionDir)cobins\inc;$(SolutionDir)external;$(SolutionDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>$(SolutionDir)external/llfsm/lib/Debug/llfsm.lib;$(SolutionDir)cobins/lib/Debug/cobins.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)external/llfsm/lib/Debug/llfsm.lib;$(SolutionDir)cobins/lib/Debug/cobins.lib;$(SolutionDir)probes/lib/Debug/probes.lib;$(SolutionDir)robots/lib/Debug/robots.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

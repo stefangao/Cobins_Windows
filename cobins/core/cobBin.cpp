@@ -123,16 +123,42 @@ void Bin::onRpcReceived(PBYTE pMsgInfo)
 
     memcpy(&msgHeader, pMsgInfo, sizeof(msgHeader));
 
-#if 1
     const char* recvName = MSGRCVR(pMsgInfo);
-    const char* msgName = MSGNAME(pMsgInfo);
-    const char* msgData = (const char*)MSGDATA(pMsgInfo);
-    COBLOG("Bin::onRpcReceived: recv=%s, msg=%s, data=%s\n", recvName, msgName, msgData);
+    const char* evtName = MSGNAME(pMsgInfo);
+    const char* recvData = MSGDATA(pMsgInfo);
+    COBLOG("Bin::onRpcReceived: recv=%s, msg=%s, data=%s\n", recvName, evtName, recvData);
 
+    auto iter = mProbeMap.find(recvName);
+    if (iter != mProbeMap.end())
+    {
+        auto probe = iter->second;
+        if (msgHeader.ctrcode == RMFL_SYNC)
+        {
+            m_RpcReturnCntx.bNeed = true;
+            m_RpcReturnCntx.bDone = false;
+            m_RpcReturnCntx.pData[0] = 0;
+            m_RpcReturnCntx.nDataLen = 0;
+            m_RpcReturnCntx.nFrameNo = msgHeader.frameno;
+            strncpy(m_RpcReturnCntx.lpEngName, MSGRCVR(pMsgInfo), ENGNAME_MAXLEN + 1);
+            strncpy(m_RpcReturnCntx.lpMsgName, MSGNAME(pMsgInfo), MSGNAME_MAXLEN + 1);
+
+            lianli::EvtStream evtData, retData;
+            evtData.write(recvData, msgHeader.datalen);
+            probe->onRequest(evtName, evtData, retData);
+        }
+        else
+        {
+            lianli::EvtStream evtData;
+            evtData.write(recvData, msgHeader.datalen);
+            probe->onNotify(evtName, evtData);
+        }
+    }
+
+#if 0
     auto prober = getProbe("prober1");
     if (prober)
     {
-        lianli::EvtData evtData, retData;
+        lianli::EvtStream evtData, retData;
         evtData << msgData;
 
         m_RpcReturnCntx.bNeed = true;
@@ -211,7 +237,7 @@ Robot* Bin::getRobot(const std::string& robotName)
 	return nullptr;
 }
 
-bool Bin::RpcSend(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& resultData)
+bool Bin::RpcSend(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, lianli::EvtStream& resultData)
 {
     MSG msg;
 
@@ -227,7 +253,7 @@ bool Bin::RpcSend(const std::string& probeName, const std::string& evtName, cons
     return lResult;
 }
 
-int Bin::RpcRecvAnswer(const std::string& probeName, const std::string& evtName, lianli::EvtData& evtData)
+int Bin::RpcRecvAnswer(const std::string& probeName, const std::string& evtName, lianli::EvtStream& retData)
 {
     MSG   msg;
     while (GetMessage(&msg, NULL, WM_GMBS_RPCANSWER, WM_GMBS_RPCANSWER + 1))
@@ -248,10 +274,8 @@ int Bin::RpcRecvAnswer(const std::string& probeName, const std::string& evtName,
         if (probeName == MSGRCVR(pMsgInfo) &&
             evtName == MSGNAME(pMsgInfo) && pMsgHeader->frameno == m_nRpcFrameNo)
         {
-            memcpy(m_RpcMsgRxdBuf, MSGDATA(pMsgInfo), pMsgHeader->datalen);
+            retData.write(MSGDATA(pMsgInfo), pMsgHeader->datalen);
             result = 0;
-
-            COBLOG("RpcRecvAnswer=%s %s %s\n", MSGRCVR(pMsgInfo),  evtName.c_str(), MSGDATA(pMsgInfo));
         }
         else
         {
@@ -265,7 +289,7 @@ int Bin::RpcRecvAnswer(const std::string& probeName, const std::string& evtName,
     return 0;
 }
 
-bool Bin::RpcPost(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData)
+bool Bin::RpcPost(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData)
 {
 	int lResult = 0;
 
@@ -275,14 +299,14 @@ bool Bin::RpcPost(const std::string& probeName, const std::string& evtName, cons
 	return lResult;
 }
 
-int Bin::RpcReturn(const lianli::EvtData& evtData, bool bRightNow)
+int Bin::RpcReturn(const lianli::EvtStream& evtData, bool bRightNow)
 {
-    if (evtData.getDataLen() > 0)
+    if (!evtData.empty())
     {
-        if (m_RpcReturnCntx.nDataLen + evtData.getDataLen() <= RPCRETURNBUF_MAXLEN)
+        if (m_RpcReturnCntx.nDataLen + evtData.size() <= RPCRETURNBUF_MAXLEN)
         {
-            evtData.copyTo(m_RpcReturnCntx.pData + m_RpcReturnCntx.nDataLen, RPCRETURNBUF_MAXLEN - m_RpcReturnCntx.nDataLen);
-            m_RpcReturnCntx.nDataLen += evtData.getDataLen();
+            ((lianli::EvtStream&)evtData).read((char*)m_RpcReturnCntx.pData + m_RpcReturnCntx.nDataLen, RPCRETURNBUF_MAXLEN - m_RpcReturnCntx.nDataLen);
+            m_RpcReturnCntx.nDataLen += evtData.size();
         }
         else
         {
@@ -298,10 +322,10 @@ int Bin::RpcReturn(const lianli::EvtData& evtData, bool bRightNow)
         m_RpcReturnCntx.bDone = TRUE;
     }
 
-    return evtData.getDataLen();
+    return evtData.size();
 }
 
-int Bin::RpcSendEvent(const std::string& probeName, const std::string& evtName, const lianli::EvtData& evtData, DWORD ctrCode, DWORD frameNo)
+int Bin::RpcSendEvent(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, DWORD ctrCode, DWORD frameNo)
 {
     RpcMsgHeader_t MsgHeader;
     int nMsgLen = 0;
@@ -309,7 +333,7 @@ int Bin::RpcSendEvent(const std::string& probeName, const std::string& evtName, 
     MsgHeader.start = 0xA2B3C4E5;
     MsgHeader.rcvrlen = probeName.size() + 1;
     MsgHeader.namelen = evtName.size() + 1;
-    MsgHeader.datalen = evtData.getDataLen();
+    MsgHeader.datalen = evtData.size();
     MsgHeader.ctrcode = ctrCode;
     MsgHeader.frameno = frameNo;
 
@@ -322,10 +346,10 @@ int Bin::RpcSendEvent(const std::string& probeName, const std::string& evtName, 
     memcpy(m_RpcMsgTxdBuf + nMsgLen, evtName.c_str(), MsgHeader.namelen);
     nMsgLen += MsgHeader.namelen;
 
-    if (evtData.getData() != NULL && MsgHeader.datalen > 0)
+    if (!evtData.empty() && MsgHeader.datalen > 0)
     {
         //memcpy(m_RpcMsgTxdBuf + nMsgLen, evtData.getData(), MsgHeader.datalen);
-        evtData.copyTo((BYTE*)(m_RpcMsgTxdBuf + nMsgLen), RPCBUF_MAXLEN - nMsgLen);
+        ((lianli::EvtStream&)evtData).read((char*)m_RpcMsgTxdBuf + nMsgLen, RPCBUF_MAXLEN - nMsgLen);
         nMsgLen += MsgHeader.datalen;
     }
 

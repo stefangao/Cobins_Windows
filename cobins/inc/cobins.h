@@ -5,3 +5,4 @@
 #include "core/cobApplication.h"
 #include "core/cobProber.h"
 #include "core/cobIProbe.h"
+#include "core/cobRobot.h"

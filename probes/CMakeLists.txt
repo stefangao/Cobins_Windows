@@ -9,6 +9,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${SOLUTION_ROOT_DIR}/inc)
 include_directories(${SOLUTION_ROOT_DIR}/cobins/inc)
+include_directories(${SOLUTION_ROOT_DIR}/cobins)
 include_directories(${SOLUTION_ROOT_DIR}/external)
 
 file(GLOB_RECURSE DIR_HEADERS  *.h)

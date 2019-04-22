@@ -11,16 +11,17 @@
 
 #include <functional>
 #include <map>
+#include <string>
+#include "cobMacros.h"
 #include "llfsm/lianli.h"
-#include "cobins.h"
 
 NS_COB_BEGIN
 
-typedef std::function<void(const lianli::EvtData& evtData, lianli::EvtData& retData)> onEvtRequestProc;
-typedef std::function<void(const lianli::EvtData& evtData)> onEvtNotifyProc;
+typedef std::function<void(lianli::EvtStream& evtData, lianli::EvtStream& retData)> OnEvtRequestProc;
+typedef std::function<void(lianli::EvtStream& evtData)> OnEvtNotifyProc;
 
-#define CC_CALLBACK_1(__selector__,__target__, ...) std::bind(&__selector__,__target__, std::placeholders::_1, ##__VA_ARGS__)
-#define CC_CALLBACK_2(__selector__,__target__, ...) std::bind(&__selector__,__target__, std::placeholders::_1, std::placeholders::_2, ##__VA_ARGS__)
+#define COB_BIND1(__selector__,__target__, ...) std::bind(&__selector__,__target__, std::placeholders::_1, ##__VA_ARGS__)
+#define COB_BIND2(__selector__,__target__, ...) std::bind(&__selector__,__target__, std::placeholders::_1, std::placeholders::_2, ##__VA_ARGS__)
 
 class Bin;
 class Probe
@@ -35,22 +36,22 @@ public:
     bool bind(const std::string& config);
     bool unbind();
 
-    virtual bool request(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData);
-	virtual bool response(const lianli::EvtData& resultData);
-    virtual bool notify(const std::string& evtName, const lianli::EvtData& evtData);
+    virtual bool request(const std::string& evtName, const lianli::EvtStream& evtData, lianli::EvtStream& retData);
+	virtual bool response(const lianli::EvtStream& resultData);
+    virtual bool notify(const std::string& evtName, const lianli::EvtStream& evtData);
 
 protected:
-    virtual void onRequest(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData);
-    virtual void onNotify(const std::string& evtName, const lianli::EvtData& evtData);
+    virtual void onRequest(const std::string& evtName, lianli::EvtStream& evtData, lianli::EvtStream& retData);
+    virtual void onNotify(const std::string& evtName, lianli::EvtStream& evtData);
 
-    void addEvtRequestProc(const std::string evtName, const onEvtRequestProc& evtRequestProc);
-    void addEvtNotifyProc(const std::string evtName, const onEvtRequestProc& evtRequestProc);
+    void addEvtRequestProc(const std::string& evtName, const OnEvtRequestProc& evtRequestProc);
+    void addEvtNotifyProc(const std::string& evtName, const OnEvtNotifyProc& evtNotifyProc);
 
 protected:
     Bin* mBin;
     std::string mName;
-    std::map<const std::string evtName, onEvtRequestProc> mEvtRequestProcMap;
-    std::map<const std::string evtName, onEvtNotifyProc> mEvtNotifyProcMap;
+    std::map<std::string, OnEvtRequestProc> mEvtRequestProcMap;
+    std::map<std::string, OnEvtNotifyProc> mEvtNotifyProcMap;
 };
 
 NS_COB_END

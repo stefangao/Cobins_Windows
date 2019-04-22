@@ -7,6 +7,8 @@
 //============================================================================
 
 #include "cobProbe.h"
+#include "base/cobUtils.h"
+#include "core/cobBin.h"
 
 NS_COB_BEGIN
 
@@ -26,7 +28,7 @@ bool Probe::unbind()
 	return true;
 }
 
-bool Probe::request(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData)
+bool Probe::request(const std::string& evtName, const lianli::EvtStream& evtData, lianli::EvtStream& retData)
 {
     COBASSERT(mBin, "bin is null");
 
@@ -34,7 +36,7 @@ bool Probe::request(const std::string& evtName, const lianli::EvtData& evtData, 
 	return true;
 }
 
-bool Probe::response(const lianli::EvtData& resultData)
+bool Probe::response(const lianli::EvtStream& resultData)
 {
     COBASSERT(mBin, "bin is null");
 
@@ -42,7 +44,7 @@ bool Probe::response(const lianli::EvtData& resultData)
     return true;
 }
 
-bool Probe::notify(const std::string& evtName, const lianli::EvtData& evtData)
+bool Probe::notify(const std::string& evtName, const lianli::EvtStream& evtData)
 {
     COBASSERT(mBin, "bin is null");
 
@@ -50,7 +52,7 @@ bool Probe::notify(const std::string& evtName, const lianli::EvtData& evtData)
     return true;
 }
 
-void Probe::onRequest(const std::string& evtName, const lianli::EvtData& evtData, lianli::EvtData& retData)
+void Probe::onRequest(const std::string& evtName, lianli::EvtStream& evtData, lianli::EvtStream& retData)
 {
     auto iter = mEvtRequestProcMap.find(evtName);
     if (iter != mEvtRequestProcMap.end())
@@ -61,7 +63,7 @@ void Probe::onRequest(const std::string& evtName, const lianli::EvtData& evtData
     }
 }
 
-void Probe::onNotify(const std::string& evtName, const lianli::EvtData& evtData)
+void Probe::onNotify(const std::string& evtName, lianli::EvtStream& evtData)
 {
     auto iter = mEvtNotifyProcMap.find(evtName);
     if (iter != mEvtNotifyProcMap.end())
@@ -71,15 +73,14 @@ void Probe::onNotify(const std::string& evtName, const lianli::EvtData& evtData)
     }
 }
 
-void Probe::addEvtRequestProc(const std::string evtName, const onEvtRequestProc& evtRequestProc)
+void Probe::addEvtRequestProc(const std::string& evtName, const OnEvtRequestProc& evtRequestProc)
 {
-    mEvtRequestProcMap.insert(std::pair（"readValue", evtRequestProc));
+    mEvtRequestProcMap.insert(std::make_pair(evtName, evtRequestProc));
 }
 
-void Probe::addEvtNotifyProc(const std::string evtName, const onEvtRequestProc& evtRequestProc)
+void Probe::addEvtNotifyProc(const std::string& evtName, const OnEvtNotifyProc& evtNotifyProc)
 {
-    mEvtNotifyProcMap.insert(std::pair（"readValue", evtRequestProc));
-
+    mEvtNotifyProcMap.insert(std::make_pair(evtName, evtNotifyProc));
 }
 
 NS_COB_END

@@ -1,5 +1,5 @@
 #include "AppDelegate.h"
-#include "Prober1.h"
+#include "probes/MemSpy.h"
 
 AppDelegate::AppDelegate()
 {
@@ -10,8 +10,11 @@ void AppDelegate::onCreate(const lianli::Context& context)
 {
     mBin.create(m_hMainWnd);
 
-    auto prober1 = new Prober1("prober1");
-    mBin.install(*prober1);
+    //auto prober1 = new Prober1("prober1");
+    //mBin.install(*prober1);
+
+    auto memSpy = new MemSpy("memspy");
+    mBin.install(*memSpy);
 }
 
 void AppDelegate::onStart()

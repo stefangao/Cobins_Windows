@@ -14,12 +14,12 @@ void AppDelegate::onCreate(const lianli::Context& context)
 
     //create all necessary probes
     IMemSpy* memSpy = new IMemSpy("memspy");
-    mBin.add(*memSpy);
+    mBin.addProbe(*memSpy);
 
     //create all needed robots
     auto autoRefresh = new AutoRefresh();
     autoRefresh->create("AutoRefresh");
-    mBin.add(*autoRefresh);
+    mBin.addRobot(*autoRefresh);
 }
 
 void AppDelegate::onStart()
@@ -67,7 +67,7 @@ bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtStream& evt
 	{
         std::string robotName;
         evtData >> robotName;
-        auto robot = getRobot(robotName);
+        auto robot = mBin.getRobot(robotName);
         if (robot)
         {
             robot->start();
@@ -77,7 +77,7 @@ bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtStream& evt
 	{
         std::string robotName;
         evtData >> robotName;
-        auto robot = getRobot(robotName);
+        auto robot = mBin.getRobot(robotName);
         if (robot)
         {
             robot->stop();
@@ -87,13 +87,13 @@ bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtStream& evt
 	{
         std::string robotName;
         evtData >> robotName;
-        auto robot = getRobot(robotName);
+        auto robot = mBin.getRobot(robotName);
         if (robot)
         {
             std::string embEvtName;
-            EvtData embEvtData;
+            EvtStream embEvtData;
             evtData >> embEvtName >> embEvtData;
-            robot->PostEvent(embEvtName, embEvtData);
+            robot->postEvent(embEvtName, embEvtData);
         }
 	}
 

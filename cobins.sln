@@ -29,6 +29,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "probes", "probes\build\probes.vcxproj", "{28357114-ECDF-3DB8-9602-B8CEE4D4B11B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "robots", "robots\build\robots.vcxproj", "{BF6E6F0D-A3F6-3EE5-AE76-76EA0AE7138C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{28357114-ECDF-3DB8-9602-B8CEE4D4B11B} = {28357114-ECDF-3DB8-9602-B8CEE4D4B11B}
+		{7E9C3153-A0B2-3CAA-AB71-2A0B8A6A3195} = {7E9C3153-A0B2-3CAA-AB71-2A0B8A6A3195}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

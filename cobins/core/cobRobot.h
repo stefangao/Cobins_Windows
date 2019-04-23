@@ -18,6 +18,8 @@ public:
     Probe* getProbe(const std::string& probeName);
     Robot* getRobot(const std::string& robotName);
 
+    inline Bin* getBin() { return mBin; }
+
 protected:
     Bin* mBin;
 

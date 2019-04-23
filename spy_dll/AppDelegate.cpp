@@ -14,7 +14,7 @@ void AppDelegate::onCreate(const lianli::Context& context)
     //mBin.install(*prober1);
 
     auto memSpy = new MemSpy("memspy");
-    mBin.install(*memSpy);
+    mBin.addProbe(*memSpy);
 }
 
 void AppDelegate::onStart()

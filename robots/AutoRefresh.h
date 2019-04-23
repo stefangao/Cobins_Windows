@@ -2,6 +2,7 @@
 #define __AUTO_REFRESH_H__
 
 #include "cobins.h"
+#include "probes/MemSpy.h"
 
 NS_COB_BEGIN
 
@@ -11,10 +12,15 @@ public:
     AutoRefresh();
     virtual ~AutoRefresh();
 
+protected:
+    virtual void onStart() override;
+
+    IMemSpy* mMemSpy;
+
 public:
     enum
     {
-        DAEMON, TEST1, TEST2, TEST3, TEST4
+        DAEMON
     };
 
     class Daemon: public State
@@ -23,6 +29,7 @@ public:
         virtual void onEnter() override;
         virtual void onExit() override;
         virtual bool onEventProc(const std::string& evtName, lianli::EvtStream& evtData) override;
+        virtual void onHeartBeat() override;
 
         DECLARE_STATE_FACTORY(Daemon, AutoRefresh)
     };

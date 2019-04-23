@@ -178,20 +178,20 @@ HWND CmmiexeDlg::GetWndByCursor()
 
 void CmmiexeDlg::OnBnClickedButton1()
 {
-	std::string str = "hello post ABC123";
-
-	EvtStream data;
-	data << str;
-	m_pAppDelegate->postEvent("PostDataEvt", data);
+    EvtStream dataS;
+    std::string robotName = "AutoRefresh";
+    dataS << robotName;
+    m_pAppDelegate->postEvent("StartRobotEvt", dataS);
 }
 
 void CmmiexeDlg::OnBnClickedButton2()
 {
-    std::string str = "hello send 12345";
-
-    EvtStream data;
-    data << str;
-    m_pAppDelegate->sendEvent("SendDataEvt", data);
+    EvtStream dataS;
+    std::string robotName = "AutoRefresh";
+    dataS << robotName;
+    dataS << "TestEvt1";
+    dataS << 1234 << "Thinking widely instead of deeply";
+    m_pAppDelegate->postEvent("PostRobotEvt", dataS);
 
     /*
 	m_MsgCb2.SetWndProc(m_hWnd);
@@ -230,37 +230,15 @@ BOOL UnHookWnd(HHOOK hHook)
 
 void CmmiexeDlg::OnBnClickedButton3()
 {
-    lianli::EvtStream data;
-    //std::stringstream data;
-    data << "hello";
-    COBLOG("size1=%d", data.getDataLen());
-    data << "boy";
-    COBLOG("size2=%d", data.getDataLen());
 
-    std::string str1, str2;
-    data >> str1;
-    data >> str2;
-    COBLOG("str=%s, %s\n", str1.c_str(), str2.c_str());
 }
 
 void CmmiexeDlg::OnBnClickedButton4()
 {
-    /*
-	EvtStream data;
-	data << "cmd_unhook";
-	m_pAppDelegate->postEvent("SendDataEvt", data);*/
-
-    std::stringstream ss;
-    ss << "hello";
-    std::string str1 = ss.str();
-
-    EvtStream data;
-    data << "hello";
-    std::string str2 = data.str();
-
-    int a = 3;
-
-
+    EvtStream dataS;
+    std::string robotName = "AutoRefresh";
+    dataS << robotName;
+    m_pAppDelegate->postEvent("StopRobotEvt", dataS);
 }
 
 afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)

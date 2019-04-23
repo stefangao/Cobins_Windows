@@ -12,8 +12,14 @@ void AppDelegate::onCreate(const lianli::Context& context)
 {
     mBin.create(m_hMainWnd);
 
+    //create all necessary probes
     IMemSpy* memSpy = new IMemSpy("memspy");
-    mBin.install(*memSpy);
+    mBin.add(*memSpy);
+
+    //create all needed robots
+    auto autoRefresh = new AutoRefresh();
+    autoRefresh->create("AutoRefresh");
+    mBin.add(*autoRefresh);
 }
 
 void AppDelegate::onStart()
@@ -57,7 +63,22 @@ bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtStream& evt
             COBLOG("readValue: value=%d\n", value);
         }
 	}
-
+    else if (evtName == "AutoRefresh_Start")
+	{
+        auto robot = getRobot("AutoRefresh");
+        if (robot)
+        {
+            robot->start();
+        }
+	}
+    else if (evtName == "AutoRefresh_Stop")
+	{
+        auto robot = getRobot("AutoRefresh");
+        if (robot)
+        {
+            robot->stop();
+        }
+	}
 
     return true;
 }
@@ -77,4 +98,6 @@ BEGIN_TRANS_TABLE(AppDelegate, FSM)
     TRANS_ENTRY(S_ROOT, "UnbindtEvt", S_NONE)
 	TRANS_ENTRY(S_ROOT, "SendDataEvt", S_NONE)
     TRANS_ENTRY(S_ROOT, "PostDataEvt", S_NONE)
+    TRANS_ENTRY(S_ROOT, "AutoRefresh_Start", S_NONE)
+    TRANS_ENTRY(S_ROOT, "AutoRefresh_Stop", S_NONE)
 END_TRANS_TABLE()

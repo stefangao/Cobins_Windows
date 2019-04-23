@@ -9,12 +9,26 @@ class AutoRefresh : public Robot
 {
 public:
     AutoRefresh();
+    virtual ~AutoRefresh();
 
-protected:
+public:
+    enum
+    {
+        DAEMON, TEST1, TEST2, TEST3, TEST4
+    };
 
+    class Daemon: public State
+    {
+    protected:
+        virtual void onEnter() override;
+        virtual void onExit() override;
+        virtual bool onEventProc(const std::string& evtName, lianli::EvtStream& evtData) override;
 
-private:
+        DECLARE_STATE_FACTORY(Daemon, AutoRefresh)
+    };
 
+    DECLARE_STATE_TABLE()
+    DECLARE_TRANS_TABLE()
 };
 
 NS_COB_END

@@ -79,6 +79,7 @@ class Bin
 {
 public:
     Bin();
+    virtual ~Bin();
 
     bool create(HWND hWnd);
     void destroy();
@@ -90,8 +91,11 @@ public:
     bool pipeConnect(DWORD dwPortId); //for pipe client
     bool pipeDisconnect();
 
-    bool install(Probe& probe);
-    bool uninstall(const std::string& probeName);
+    bool addProbe(Probe& probe);
+    bool removeProbe(const std::string& probeName);
+
+    bool addRobot(Robot& robot);
+    bool removeRobot(const std::string& robotName);
 
     Probe* getProbe(const std::string& probeName);
     Robot* getRobot(const std::string& robotName);
@@ -106,6 +110,7 @@ public:
 
 protected:
     std::map<const std::string, Probe*> mProbeMap;
+    std::map<const std::string, Robot*> mRobotMap;
 
     void onPipeReceiveData(int nErrCode);
     virtual void onRpcReceived(PBYTE pMsgInfo);

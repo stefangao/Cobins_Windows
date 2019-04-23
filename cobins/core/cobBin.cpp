@@ -11,6 +11,23 @@ Bin::Bin()
     m_nRpcFrameNo = 0;
 }
 
+Bin::~Bin()
+{
+    for (auto iter = mProbeMap.begin(); iter != mProbeMap.end(); iter++)
+    {
+        auto probe = iter->second;
+        delete probe;
+    }
+    mProbeMap.clear();
+
+    for (auto iter = mRobotMap.begin(); iter != mRobotMap.end(); iter++)
+    {
+        auto roobt = iter->second;
+        delete roobt;
+    }
+    mRobotMap.clear();
+}
+
 bool Bin::create(HWND hWnd)
 {
     m_hMainWnd = hWnd;
@@ -203,23 +220,43 @@ bool Bin::unbind()
     return true;
 }
 
-bool Bin::install(Probe& probe)
+bool Bin::addProbe(Probe& probe)
 {
     auto iter = mProbeMap.find(probe.getName());
-    COBASSERT(iter == mProbeMap.end(), "install failed: existed already");
+    COBASSERT(iter == mProbeMap.end(), "install failed: probe existed already");
 
 	mProbeMap.insert(std::make_pair(probe.getName(), &probe));
     probe.mBin = this;
 	return true;
 }
 
-bool Bin::uninstall(const std::string& probeName)
+bool Bin::removeProbe(const std::string& probeName)
 {
-    auto iter = mProbeMap.find("probeName");
+    auto iter = mProbeMap.find(probeName);
     if (iter == mProbeMap.end())
         return false;
 
     mProbeMap.erase(iter);
+	return true;
+}
+
+bool Bin::addRobot(Robot& robot)
+{
+    auto iter = mRobotMap.find(robot.getName());
+    COBASSERT(iter == mRobotMap.end(), "install failed: robot existed already");
+
+    mRobotMap.insert(std::make_pair(robot.getName(), &robot));
+    robot.mBin = this;
+	return true;
+}
+
+bool Bin::removeRobot(const std::string& robotName)
+{
+    auto iter = mRobotMap.find(robotName);
+    if (iter == mRobotMap.end())
+        return false;
+
+    mRobotMap.erase(iter);
 	return true;
 }
 
@@ -234,7 +271,11 @@ Probe* Bin::getProbe(const std::string& probeName)
 
 Robot* Bin::getRobot(const std::string& robotName)
 {
-	return nullptr;
+    auto iter = mRobotMap.find(robotName);
+    if (iter == mRobotMap.end())
+        return nullptr;
+
+	return iter->second;
 }
 
 bool Bin::RpcSend(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, lianli::EvtStream& resultData)

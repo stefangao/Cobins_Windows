@@ -63,20 +63,37 @@ bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtStream& evt
             COBLOG("readValue: value=%d\n", value);
         }
 	}
-    else if (evtName == "AutoRefresh_Start")
+    else if (evtName == "StartRobotEvt")
 	{
-        auto robot = getRobot("AutoRefresh");
+        std::string robotName;
+        evtData >> robotName;
+        auto robot = getRobot(robotName);
         if (robot)
         {
             robot->start();
         }
 	}
-    else if (evtName == "AutoRefresh_Stop")
+    else if (evtName == "StopRobotEvt")
 	{
-        auto robot = getRobot("AutoRefresh");
+        std::string robotName;
+        evtData >> robotName;
+        auto robot = getRobot(robotName);
         if (robot)
         {
             robot->stop();
+        }
+	}
+    else if (evtName == "PostRobotEvt")
+	{
+        std::string robotName;
+        evtData >> robotName;
+        auto robot = getRobot(robotName);
+        if (robot)
+        {
+            std::string embEvtName;
+            EvtData embEvtData;
+            evtData >> embEvtName >> embEvtData;
+            robot->PostEvent(embEvtName, embEvtData);
         }
 	}
 
@@ -96,8 +113,9 @@ void AppDelegate::onDestroy(const lianli::Context& context)
 BEGIN_TRANS_TABLE(AppDelegate, FSM)
     TRANS_ENTRY(S_ROOT, "BindEvt", S_NONE)
     TRANS_ENTRY(S_ROOT, "UnbindtEvt", S_NONE)
-	TRANS_ENTRY(S_ROOT, "SendDataEvt", S_NONE)
+    TRANS_ENTRY(S_ROOT, "SendDataEvt", S_NONE)
     TRANS_ENTRY(S_ROOT, "PostDataEvt", S_NONE)
-    TRANS_ENTRY(S_ROOT, "AutoRefresh_Start", S_NONE)
-    TRANS_ENTRY(S_ROOT, "AutoRefresh_Stop", S_NONE)
+    TRANS_ENTRY(S_ROOT, "StartRobotEvt", S_NONE)
+    TRANS_ENTRY(S_ROOT, "StopRobotEvt", S_NONE)
+    TRANS_ENTRY(S_ROOT, "PostRobotEvt", S_NONE)
 END_TRANS_TABLE()

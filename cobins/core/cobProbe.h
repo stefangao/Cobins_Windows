@@ -37,7 +37,6 @@ public:
     bool unbind();
 
     virtual bool request(const std::string& evtName, const lianli::EvtStream& evtData, lianli::EvtStream& retData);
-	virtual bool response(const lianli::EvtStream& resultData);
     virtual bool notify(const std::string& evtName, const lianli::EvtStream& evtData);
 
 protected:

@@ -7,7 +7,6 @@ NS_COB_BEGIN
 
 Bin::Bin()
 {
-    memset(&m_RpcReturnCntx, 0, sizeof(m_RpcReturnCntx));
     m_nRpcFrameNo = 0;
 }
 
@@ -124,6 +123,7 @@ void Bin::onPipeReceiveData(int nErrCode)
         {
             m_MsgCb.post([this, pMsgInfo]() {
                 onRpcReceived(pMsgInfo);
+                delete pMsgInfo;
             });
         }
         else
@@ -136,8 +136,6 @@ void Bin::onPipeReceiveData(int nErrCode)
 void Bin::onRpcReceived(PBYTE pMsgInfo)
 {
     RpcMsgHeader_t msgHeader;
-    int nLen = 0;
-
     memcpy(&msgHeader, pMsgInfo, sizeof(msgHeader));
 
     const char* recvName = MSGRCVR(pMsgInfo);
@@ -151,17 +149,10 @@ void Bin::onRpcReceived(PBYTE pMsgInfo)
         auto probe = iter->second;
         if (msgHeader.ctrcode == RMFL_SYNC)
         {
-            m_RpcReturnCntx.bNeed = true;
-            m_RpcReturnCntx.bDone = false;
-            m_RpcReturnCntx.pData[0] = 0;
-            m_RpcReturnCntx.nDataLen = 0;
-            m_RpcReturnCntx.nFrameNo = msgHeader.frameno;
-            strncpy(m_RpcReturnCntx.lpEngName, MSGRCVR(pMsgInfo), ENGNAME_MAXLEN + 1);
-            strncpy(m_RpcReturnCntx.lpMsgName, MSGNAME(pMsgInfo), MSGNAME_MAXLEN + 1);
-
             lianli::EvtStream evtData, retData;
             evtData.write(recvData, msgHeader.datalen);
             probe->onRequest(evtName, evtData, retData);
+            RpcSendEvent(MSGRCVR(pMsgInfo), MSGNAME(pMsgInfo), retData, RMFL_ANSWER, msgHeader.frameno);
         }
         else
         {
@@ -170,24 +161,6 @@ void Bin::onRpcReceived(PBYTE pMsgInfo)
             probe->onNotify(evtName, evtData);
         }
     }
-
-#if 0
-    auto prober = getProbe("prober1");
-    if (prober)
-    {
-        lianli::EvtStream evtData, retData;
-        evtData << msgData;
-
-        m_RpcReturnCntx.bNeed = true;
-        m_RpcReturnCntx.bDone = false;
-        m_RpcReturnCntx.pData[0] = 0;
-        m_RpcReturnCntx.nDataLen = 0;
-        m_RpcReturnCntx.nFrameNo = msgHeader.frameno;
-        strncpy(m_RpcReturnCntx.lpEngName, MSGRCVR(pMsgInfo), ENGNAME_MAXLEN + 1);
-        strncpy(m_RpcReturnCntx.lpMsgName, MSGNAME(pMsgInfo), MSGNAME_MAXLEN + 1);
-        prober->onRequest(msgName, evtData, retData);
-    }
-#endif
 }
 
 bool Bin::pipeDisconnect()
@@ -325,6 +298,7 @@ int Bin::RpcRecvAnswer(const std::string& probeName, const std::string& evtName,
             COBLOG("RpcRecvAnswer: error (%s)!=%s (%s)!=%s\n (%d)!=%d ctr=%x\n", MSGRCVR(pMsgInfo), probeName.c_str(),
                 MSGNAME(pMsgInfo), evtName.c_str(), pMsgHeader->frameno, m_nRpcFrameNo, pMsgHeader->ctrcode);
         }
+        delete pMsgInfo;
     }
 
     return 0;
@@ -342,27 +316,6 @@ bool Bin::RpcPost(const std::string& probeName, const std::string& evtName, cons
 
 int Bin::RpcReturn(const lianli::EvtStream& evtData, bool bRightNow)
 {
-    if (!evtData.empty())
-    {
-        if (m_RpcReturnCntx.nDataLen + evtData.size() <= RPCRETURNBUF_MAXLEN)
-        {
-            ((lianli::EvtStream&)evtData).read((char*)m_RpcReturnCntx.pData + m_RpcReturnCntx.nDataLen, RPCRETURNBUF_MAXLEN - m_RpcReturnCntx.nDataLen);
-            m_RpcReturnCntx.nDataLen += evtData.size();
-        }
-        else
-        {
-            COBLOG("Bin::RpcReturn: Buffer error\n");
-            return -1;
-        }
-    }
-
-    if (bRightNow && m_RpcReturnCntx.bNeed && !m_RpcReturnCntx.bDone)
-    {
-        RpcSendEvent(m_RpcReturnCntx.lpEngName, m_RpcReturnCntx.lpMsgName, m_RpcReturnCntx.pData, m_RpcReturnCntx.nDataLen, RMFL_ANSWER, m_RpcReturnCntx.nFrameNo);
-        m_RpcReturnCntx.nDataLen = 0;
-        m_RpcReturnCntx.bDone = TRUE;
-    }
-
     return evtData.size();
 }
 

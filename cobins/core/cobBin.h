@@ -108,6 +108,8 @@ public:
 
 	int  RpcSendEvent(const std::string& probeName, const std::string& evtName, PBYTE data, int dataLen, DWORD ctrCode, DWORD frameNo);
 
+    inline HWND getMainWnd() const { return m_hMainWnd; }
+
 protected:
     std::map<const std::string, Probe*> mProbeMap;
     std::map<const std::string, Robot*> mRobotMap;
@@ -116,9 +118,7 @@ protected:
     virtual void onRpcReceived(PBYTE pMsgInfo);
 
 private:
-	GmbsReturnCntx_t m_RpcReturnCntx;
 	int m_nRpcFrameNo;
-
 
 protected:
 	Pipe m_RpcPipe;

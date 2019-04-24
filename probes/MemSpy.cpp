@@ -23,6 +23,10 @@ void MemSpy::hello(lianli::EvtStream& evtData)
     std::string words;
     evtData >> words;
     COBLOG("words=%s\n", words.c_str());
+
+    MessageBox(getBin()->getMainWnd(), words.c_str(), "Cobins", MB_OK);
+
+    //SetWindowText(getBin()->getMainWnd(), words.c_str());
 }
 
 /////////////////////////////////////////////////////////////////////

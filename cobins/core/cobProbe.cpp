@@ -36,14 +36,6 @@ bool Probe::request(const std::string& evtName, const lianli::EvtStream& evtData
 	return true;
 }
 
-bool Probe::response(const lianli::EvtStream& resultData)
-{
-    COBASSERT(mBin, "bin is null");
-
-    mBin->RpcReturn(resultData);
-    return true;
-}
-
 bool Probe::notify(const std::string& evtName, const lianli::EvtStream& evtData)
 {
     COBASSERT(mBin, "bin is null");
@@ -59,7 +51,6 @@ void Probe::onRequest(const std::string& evtName, lianli::EvtStream& evtData, li
     {
         auto& evtRequestProc = iter->second;
         evtRequestProc(evtData, retData);
-        response(retData);
     }
 }
 

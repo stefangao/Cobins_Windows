@@ -178,11 +178,8 @@ bool Bin::bind(HWND hWnd, const ValueMap& params)
 	COBLOG("Bin::bind: inject ret = %d\n", ret);
     if (ret)
     {
-        m_MsgCb.wait(2000, [this, hWnd]()
-        {
-            bool ret = pipeConnect(0x1234);
-            COBLOG("Bin::bind: connect ret = %d\n", ret);
-        });
+        ret = pipeConnect((DWORD)hWnd);
+        COBLOG("Bin::bind: connect ret = %d\n", ret);
     }
     return ret;
 }

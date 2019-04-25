@@ -189,8 +189,10 @@ void CmmiexeDlg::OnBnClickedButton2()
     EvtStream dataS;
     std::string robotName = "AutoRefresh";
     dataS << robotName;
-    dataS << "TestEvt1";
-    dataS << 1234 << "Thinking widely instead of deeply";
+
+    EvtStream embedDataS;
+    embedDataS << 6789 << "Thinking widely instead of deeply";
+    dataS << "TestEvt1" << embedDataS;
     m_pAppDelegate->postEvent("PostRobotEvt", dataS);
 
     /*

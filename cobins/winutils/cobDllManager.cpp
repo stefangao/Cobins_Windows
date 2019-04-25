@@ -9,22 +9,23 @@ DllManager::DllManager()
 
 BOOL DllManager::inject(HWND hTargetWnd, const std::string& dllPath)
 {
+    HHOOK hHook = NULL;
     if (hTargetWnd && m_hHook == NULL)
      {
-         HINSTANCE hInst = LoadLibraryA("spy_dll.dll");
+         HINSTANCE hInst = LoadLibraryA(dllPath.c_str());
          if (hInst)
          {
              typedef HHOOK(*HookWndFunc) (HWND);
              HookWndFunc hookWnd = (HookWndFunc)GetProcAddress(hInst, "HookWnd");
              if (hookWnd)
              {
-                 m_hHook = hookWnd(hTargetWnd);
-                 COBLOG("HookWnd result=%x\n", m_hHook);
+                 hHook = hookWnd(hTargetWnd);
              }
              FreeLibrary(hInst);
          }
      }
-    return true;
+    m_hHook = hHook;
+    return hHook != NULL;
 }
 
 BOOL DllManager::eject()

@@ -19,8 +19,7 @@ void AppDelegate::onCreate(const lianli::Context& context)
 
 void AppDelegate::onStart()
 {
-    mBin.pipeListen(0x1234);
-
+    mBin.pipeListen((DWORD)m_hMainWnd);
 }
 
 void AppDelegate::onStop()

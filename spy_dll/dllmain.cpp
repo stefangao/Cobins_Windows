@@ -3,32 +3,33 @@
 #include "cobins.h"
 #include "AppDelegate.h"
 
+#define WM_HOOKWND_DONE  (WM_USER + 0x123)
+
 extern "C"
 {
-static HHOOK g_hHook = NULL;	    //the handle to the hook procedure
-static HINSTANCE g_hinstDll = NULL;     //the handle to DLL module
-static BOOL g_hostFlag = FALSE;
-static BOOL g_hooked = FALSE;
-static cob::Pipe g_pipe;
+static HHOOK g_hHook = NULL;	     //the handle to the hook procedure
+static HINSTANCE g_hinstDll = NULL;  //the handle to DLL module
+static HANDLE g_hEvent = NULL;
+static const char* g_sEventName = "__HookWndEvent__";
 static AppDelegate* g_pAppDelegate = NULL;
 static HWND g_hMainWnd = NULL;
 
-//消息回调函数
 LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-    if (!g_hooked)
+    if (g_hMainWnd == NULL)
     {
-        g_hooked = true;
-        if (!g_hostFlag)
+        MSG *lpMsg = (MSG*)lParam;
+        if (lpMsg->message == WM_HOOKWND_DONE)
         {
-            MSG *lpMsg;
-            lpMsg = (MSG*)lParam;
-            if (lpMsg->hwnd != NULL)
-            {
-				WT_Trace("OnHooked: process=%x, gameWnd=%x\n", GetCurrentProcessId(), lpMsg->hwnd);
-				g_pAppDelegate = new AppDelegate();
-				g_pAppDelegate->create(lpMsg->hwnd, "embed123").start();
-            }
+            WT_Trace("OnHooked: process=%x, gameWnd=%x\n", GetCurrentProcessId(), lpMsg->hwnd);
+
+            g_hMainWnd = lpMsg->hwnd;
+            g_pAppDelegate = new AppDelegate();
+            g_pAppDelegate->create(lpMsg->hwnd, "embed123").start();
+
+            g_hEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, g_sEventName);
+            if (g_hEvent != NULL)
+                SetEvent(g_hEvent);
         }
     }
     return CallNextHookEx(g_hHook, nCode, wParam, lParam);
@@ -36,6 +37,7 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 _declspec(dllexport) void triggerAppliation()
 {
+#if 0
     if (!g_hooked)
     {
         WT_Trace("OnHooked: process=%x,hinstDLL=%x,g_hostFlag=%d\n", GetCurrentProcessId(), g_hinstDll, g_hostFlag);
@@ -45,6 +47,7 @@ _declspec(dllexport) void triggerAppliation()
 			g_pAppDelegate->create(g_hMainWnd, "embed123");
         }
     }
+#endif
 }
 
 _declspec(dllexport) HHOOK HookWnd(HWND hDestWnd)
@@ -54,27 +57,31 @@ _declspec(dllexport) HHOOK HookWnd(HWND hDestWnd)
     DWORD dwThreadId = NULL;
 
     if (g_hHook != NULL || hDestWnd == NULL)
-    return NULL;
+        return NULL;
 
     dwThreadId = GetWindowThreadProcessId(hDestWnd, &dwProcessId);
     if (dwThreadId == NULL)
-    return NULL;
-
-    COBLOG("Target window thread = 0x%08x, g_hinstDll=%x\r\n", dwThreadId, g_hinstDll);
-
-    g_hostFlag = TRUE;
-    g_hMainWnd = hDestWnd;
-    hHook = SetWindowsHookEx(WH_GETMESSAGE, GetMsgProc, g_hinstDll, dwThreadId);
-    if (hHook == NULL)
-    {
-        COBLOG("Hook error!\n");
         return NULL;
+
+    COBLOG("HookWnd: Target thread=0x%08x, hDestWnd=%x\n", dwThreadId, hDestWnd);
+
+    g_hEvent = CreateEvent(NULL, FALSE, FALSE, g_sEventName);
+    hHook = SetWindowsHookEx(WH_GETMESSAGE, GetMsgProc, g_hinstDll, dwThreadId);
+    if (hHook != NULL)
+    {
+        COBLOG("HookWnd: Hook Done!\n");
+        PostMessage(hDestWnd, WM_HOOKWND_DONE, 0, 0);
+        if (g_hEvent)
+        {
+            WaitForSingleObject(g_hEvent, INFINITE);
+            CloseHandle(g_hEvent);
+            g_hEvent = NULL;
+        }
     }
     else
     {
-        COBLOG("Hook target thread Successfully\r\n");
+        COBLOG("HookWnd: Hook falied!\n");
     }
-
     g_hHook = hHook;
     return hHook;
 }
@@ -98,11 +105,14 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
         break;
 
     case DLL_PROCESS_DETACH:
-		if (g_hooked && !g_hostFlag && g_pAppDelegate)
-		{
-			g_pAppDelegate->destroy();
-		}
-		COBLOG("DLL_PROCESS_DETACH: process=%x, hinstDLL=%x\n", GetCurrentProcessId(), hinstDLL);
+        COBLOG("DLL_PROCESS_DETACH: process=%x, g_hMainWnd=%x\n", GetCurrentProcessId(), g_hMainWnd);
+        if (g_hMainWnd && g_pAppDelegate)
+        {
+            g_pAppDelegate->destroy();
+            CloseHandle(g_hEvent);
+            g_pAppDelegate = NULL;
+            g_hMainWnd = NULL;
+        }
         break;
 
     default:

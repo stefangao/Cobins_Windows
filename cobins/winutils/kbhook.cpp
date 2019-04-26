@@ -79,7 +79,7 @@ LRESULT WINAPI KeyboardProc(int nCode,WPARAM wparam,LPARAM lparam)
             PostMessage(ghHostWnd, WSH_MSG_KEY, (WPARAM)pKeyInfo->vkCode, lParam);
         }
 
-        WT_Trace("scancode=%x,flags=%x,time=%x, dwMsg=%x\n", pKeyInfo->scanCode, pKeyInfo->flags, pKeyInfo->time, lParam);
+        //WT_Trace("scancode=%x,flags=%x,time=%x, dwMsg=%x\n", pKeyInfo->scanCode, pKeyInfo->flags, pKeyInfo->time, lParam);
     }
 
 	return CallNextHookEx(glhKeyboardHook, nCode, wparam, lparam);

@@ -24,7 +24,7 @@ void AutoRefresh::Daemon::onEnter()
 {
     State::onEnter();
 
-    startHeartBeat(3000);
+    //startHeartBeat(3000);
 
     self()->mMemSpy->hello();
 }

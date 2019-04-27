@@ -250,9 +250,6 @@ Robot* Bin::getRobot(const std::string& robotName)
 
 bool Bin::RpcSend(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, lianli::EvtStream& resultData)
 {
-    MSG msg;
-
-    int lResult = -1;
     if (RpcSendEvent(probeName, evtName, evtData, RMFL_SYNC, ++m_nRpcFrameNo) > 0)
     {
         if (RpcRecvAnswer(probeName, evtName, resultData) == 0)
@@ -260,8 +257,7 @@ bool Bin::RpcSend(const std::string& probeName, const std::string& evtName, cons
 
         }
     }
-
-    return lResult;
+    return true;
 }
 
 int Bin::RpcRecvAnswer(const std::string& probeName, const std::string& evtName, lianli::EvtStream& retData)

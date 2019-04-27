@@ -35,21 +35,6 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
     return CallNextHookEx(g_hHook, nCode, wParam, lParam);
 }
 
-_declspec(dllexport) void triggerAppliation()
-{
-#if 0
-    if (!g_hooked)
-    {
-        WT_Trace("OnHooked: process=%x,hinstDLL=%x,g_hostFlag=%d\n", GetCurrentProcessId(), g_hinstDll, g_hostFlag);
-        g_hooked = true;
-        if (!g_hostFlag)
-        {
-			g_pAppDelegate->create(g_hMainWnd, "embed123");
-        }
-    }
-#endif
-}
-
 _declspec(dllexport) HHOOK HookWnd(HWND hDestWnd)
 {
     HHOOK hHook = NULL;

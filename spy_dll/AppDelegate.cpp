@@ -1,9 +1,10 @@
 #include "AppDelegate.h"
 #include "probes/MemSpy.h"
 
+#pragma comment(lib,"Ws2_32.lib ")
+
 AppDelegate::AppDelegate()
 {
-
 }
 
 void AppDelegate::onCreate(const lianli::Context& context)

@@ -2,10 +2,11 @@
 
 NS_COB_BEGIN
 
-Prober::Prober(const std::string& name)
-  : Probe(name)
+Prober& Prober::create(const std::string& name, lianli::Context& context)
 {
-
+    Probe::mName = name;
+    FSM::create(name, context);
+    return *this;
 }
 
 NS_COB_END

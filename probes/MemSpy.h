@@ -8,21 +8,37 @@ NS_COB_BEGIN
 
 class MemSpy : public Prober
 {
-public:
-    MemSpy(const std::string& name);
-
 protected:
+    void onCreate(const lianli::Context& context) override;
     void readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData);
-    void hello(lianli::EvtStream& evtData);
+    void on_hello(lianli::EvtStream& evtData);
+
+public:
+    enum {DAEMON};
+
+    class Daemon : public State
+    {
+    protected:
+        virtual void onEnter() override;
+        virtual void onExit() override;
+        virtual bool onEventProc(const std::string& evtName, lianli::EvtStream& evtData) override;
+        virtual void onHeartBeat() override;
+
+        DEFINE_STATE_FACTORY_OF_FSM(Daemon, MemSpy)
+    };
+
+    DECLARE_STATE_TABLE()
+    DECLARE_TRANS_TABLE()
 };
 
 class IMemSpy : public IProbe
 {
 public:
-    IMemSpy(const std::string& name) : IProbe(name) {}
+    IMemSpy(const std::string& name);
     
     int readValue(unsigned long address);
     void hello();
+    void on_embed_voice(lianli::EvtStream& evtData);
 };
 
 NS_COB_END

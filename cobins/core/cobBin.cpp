@@ -249,6 +249,9 @@ Robot* Bin::getRobot(const std::string& robotName)
 
 bool Bin::RpcSend(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, lianli::EvtStream& resultData)
 {
+    if (!m_RpcPipe.IsConnected())
+        return false;
+
     if (RpcSendEvent(probeName, evtName, evtData, RMFL_SYNC, ++m_nRpcFrameNo) > 0)
     {
         if (RpcRecvAnswer(probeName, evtName, resultData) == 0)
@@ -261,6 +264,9 @@ bool Bin::RpcSend(const std::string& probeName, const std::string& evtName, cons
 
 int Bin::RpcRecvAnswer(const std::string& probeName, const std::string& evtName, lianli::EvtStream& retData)
 {
+    if (!m_RpcPipe.IsConnected())
+        return false;
+
     MSG   msg;
     while (GetMessage(&msg, NULL, WM_GMBS_RPCANSWER, WM_GMBS_RPCANSWER + 1))
     {
@@ -300,6 +306,9 @@ bool Bin::RpcPost(const std::string& probeName, const std::string& evtName, cons
 {
 	int lResult = 0;
 
+    if (!m_RpcPipe.IsConnected())
+        return false;
+
 	if (RpcSendEvent(probeName, evtName, evtData, 0, 0))
 		lResult = -1;
 
@@ -315,6 +324,9 @@ int Bin::RpcSendEvent(const std::string& probeName, const std::string& evtName, 
 {
     RpcMsgHeader_t MsgHeader;
     int nMsgLen = 0;
+
+    if (!m_RpcPipe.IsConnected())
+        return false;
 
     MsgHeader.start = 0xA2B3C4E5;
     MsgHeader.rcvrlen = probeName.size() + 1;
@@ -354,6 +366,9 @@ int Bin::RpcSendEvent(const std::string& probeName, const std::string& evtName, 
 	RpcMsgHeader_t MsgHeader;
 	int nMsgLen = 0;
 
+    if (!m_RpcPipe.IsConnected())
+        return false;
+
 	MsgHeader.start = 0xA2B3C4E5;
 	MsgHeader.rcvrlen = probeName.size() + 1;
 	MsgHeader.namelen = evtName.size() + 1;
@@ -390,6 +405,9 @@ int Bin::RpcSendData(PBYTE pData, int nDataLen)
 {
 	int nTotalLen = 0, nLen = 0;
 
+    if (!m_RpcPipe.IsConnected())
+        return false;
+
 	while (nTotalLen < nDataLen)
 	{
 		nLen = m_RpcPipe.Send(pData + nTotalLen, nDataLen - nTotalLen);
@@ -414,6 +432,9 @@ int Bin::RpcRecvData(PBYTE pDataBuf, int nBufLen)
 {
 	int nRecvLen = 0;
 
+    if (!m_RpcPipe.IsConnected())
+        return false;
+
 	if (m_RpcPipe.GetDataSize() <= 0)
 	{
 		COBLOG("RpcRecvData error\n");
@@ -426,6 +447,9 @@ int Bin::RpcRecvData(PBYTE pDataBuf, int nBufLen)
 int Bin::RpcRecvDataEx(PBYTE pDataBuf, int nBufLen)
 {
 	int nLen = 0, nRecvLen = 0;
+
+    if (!m_RpcPipe.IsConnected())
+        return false;
 
 	do
 	{

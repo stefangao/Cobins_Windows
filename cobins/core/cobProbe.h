@@ -28,7 +28,7 @@ class Probe
 {
     friend class Bin;
 public:
-	Probe(const std::string& name);
+	Probe(const std::string& name = "");
 
     Bin* getBin() {return mBin;}
     const std::string& getName() const {return mName;}

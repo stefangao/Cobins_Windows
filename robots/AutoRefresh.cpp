@@ -24,7 +24,7 @@ void AutoRefresh::Daemon::onEnter()
 {
     State::onEnter();
 
-    //startHeartBeat(3000);
+    //startHeartBeat(20);
 
     self()->mMemSpy->hello();
 }
@@ -60,7 +60,13 @@ bool AutoRefresh::Daemon::onEventProc(const std::string& evtName, EvtStream& evt
 
 void AutoRefresh::Daemon::onHeartBeat()
 {
-
+    auto bin = self()->getBin();
+    auto memSpy = (IMemSpy*)bin->getProbe("memspy");
+    if (memSpy)
+    {
+        int value = memSpy->readValue(0x12345678);
+        COBLOG("AutoRefresh: readValue: value=%d\n", value);
+    }
 }
 
 BEGIN_STATE_TABLE(AutoRefresh)

@@ -15,7 +15,7 @@ class Pipe
 	friend DWORD WINAPI PipeClientListenProc(LPVOID lParam);
 	friend DWORD WINAPI PipeServerListenProc(LPVOID lParam);
 
-public:
+protected:
     HANDLE  m_hPipe;
     std::function<void(int)> m_OnPipeReceiveDataProc;
 
@@ -37,9 +37,6 @@ public:
    	virtual ~Pipe();
 
     BOOL IsPipe() {return (m_hPipe != INVALID_HANDLE_VALUE);};
-
-// Attributes
-public:
 	BOOL CreatePipe(const char* pipename);
 	BOOL OpenPipe(const char* pipename);
 
@@ -50,10 +47,9 @@ public:
 	int  Send(BYTE* pBuf,int nSize);
 	int  Receive(BYTE *pBuf,int nBufLen);
 
-    //BOOL DestroyPipe();
     BOOL ClosePipe();
 
-	BOOL IsConnected() {return m_bConnected;};
+	BOOL IsConnected() {return m_hPipe != INVALID_HANDLE_VALUE && m_bConnected;}
 
     int  GetDataSize( );
 
@@ -61,8 +57,6 @@ public:
 
     void ReceiveEnd();
 
-
-// Operations
 protected:
 	virtual void OnReceive(int nErrorCode);
 	virtual void OnClose(int nErrorCode) {};

@@ -76,8 +76,7 @@ void Bin::onPipeReceiveData(int nErrCode)
 {
     if (nErrCode == 0)
     {
-        COBLOG("Bin::onPipeReceiveData E thread=%x [%x]\n", GetCurrentThreadId(), GetCurrentProcessId());
-
+        //COBLOG("Bin::onPipeReceiveData E thread=%x [%x]\n", GetCurrentThreadId(), GetCurrentProcessId());
         RpcMsgHeader_t msgHeader;
         int headerLen = RpcRecvDataEx((PBYTE)&msgHeader, sizeof(msgHeader));
         if (headerLen != sizeof(msgHeader) || msgHeader.start != 0xA2B3C4E5)
@@ -93,7 +92,7 @@ void Bin::onPipeReceiveData(int nErrCode)
             return;
         }
 
-        COBLOG("msgHeader=(%d,%d)", msgHeader.ctrcode, msgHeader.frameno);
+        //COBLOG("msgHeader=(%d,%d)", msgHeader.ctrcode, msgHeader.frameno);
 
         PBYTE pMsgInfo = NULL;
         int nMsgInfoLen = 0;
@@ -141,7 +140,7 @@ void Bin::onRpcReceived(PBYTE pMsgInfo)
     const char* recvName = MSGRCVR(pMsgInfo);
     const char* evtName = MSGNAME(pMsgInfo);
     const char* recvData = MSGDATA(pMsgInfo);
-    COBLOG("Bin::onRpcReceived: recv=%s, msg=%s, data=%s\n", recvName, evtName, recvData);
+    //COBLOG("Bin::onRpcReceived: recv=%s, msg=%s, data=%s\n", recvName, evtName, recvData);
 
     auto iter = mProbeMap.find(recvName);
     if (iter != mProbeMap.end())

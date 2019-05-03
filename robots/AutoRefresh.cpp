@@ -46,20 +46,21 @@ bool AutoRefresh::Daemon::onEventProc(const std::string& evtName, EvtStream& evt
 
     evtData >> value >> text;
 
-    COBLOG("evtName=%s value=%d text=%s\n", evtName.c_str(), value, text.c_str());
+    COBLOG("AutoRefresh: evtName=%s value=%d text=%s\n", evtName.c_str(), value, text.c_str());
 
-    return true;
-}
-
-void AutoRefresh::Daemon::onHeartBeat()
-{
     auto bin = self()->getBin();
     auto memSpy = (IMemSpy*)bin->getProbe("memspy");
     if (memSpy)
     {
         int value = memSpy->readValue(0x12345678);
-        COBLOG("onHeartBeat: readValue: value=%d\n", value);
+        COBLOG("AutoRefresh: readValue: value=%d\n", value);
     }
+    return true;
+}
+
+void AutoRefresh::Daemon::onHeartBeat()
+{
+
 }
 
 BEGIN_STATE_TABLE(AutoRefresh)

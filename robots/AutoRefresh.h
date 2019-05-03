@@ -31,7 +31,7 @@ public:
         virtual bool onEventProc(const std::string& evtName, lianli::EvtStream& evtData) override;
         virtual void onHeartBeat() override;
 
-        DECLARE_STATE_FACTORY(Daemon, AutoRefresh)
+        DEFINE_STATE_FACTORY_OF_FSM(Daemon, AutoRefresh)
     };
 
     DECLARE_STATE_TABLE()

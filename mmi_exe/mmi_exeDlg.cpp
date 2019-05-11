@@ -8,7 +8,7 @@
 #include "afxdialogex.h"
 #include "llfsm/lianli.h"
 #include "cobins.h"
-#include "winutils/kbhook.h"
+#include "winutils/cobKbHook.h"
 #include "winutils/wndbase.h"
 
 #ifdef _DEBUG
@@ -109,7 +109,7 @@ BOOL CmmiexeDlg::OnInitDialog()
     SetIcon(m_hIcon, FALSE);		// 设置小图标
 
     // TODO: 在此添加额外的初始化代码
-    KB_StartHook(m_hWnd);
+    Kb_StartHook(m_hWnd);
 	m_pAppDelegate = new AppDelegate();
 	m_pAppDelegate->create(m_hWnd, "HostApp").start();
 

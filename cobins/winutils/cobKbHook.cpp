@@ -1,6 +1,8 @@
-#include "kbhook.h"
-#include "wtermin.h"
+#include "cobKbHook.h"
+#include "base/cobUtils.h"
 #include "wndbase.h"
+
+NS_COB_BEGIN
 
 static HINSTANCE glhInstance=NULL;   //DLL实例句柄 
 static HHOOK glhKeyboardHook = NULL; //安装的鼠标勾子句柄
@@ -26,40 +28,8 @@ DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 	return 1;
 }
 
-//普通键盘钩子
-/*
-LRESULT WINAPI KeyboardProc(int nCode,WPARAM wParam,LPARAM lParam)
-{
-    if (nCode>=0)
-    {
-        if (WSH_GetMimWnd() != NULL)
-            WSH_PostCmd2Emb(WSH_MSG_KEY, wParam, lParam);
-        else
-            PostMessage(ghHostWnd, WSH_MSG_KEY, wParam, lParam);
-    }
-    
-    return CallNextHookEx(glhKeyboardHook, nCode, wParam, lParam);
-    //继续传递消息
-}
-
-BOOL KB_StartHook(HWND hHostWnd)
-{
-   	DWORD ThreadId = 0;
-
-    WT_Trace( "KB_StartHook: instance = %x\n", glhInstance );
-
-	if( !(glhKeyboardHook = SetWindowsHookEx(WH_KEYBOARD, KeyboardProc, glhInstance, ThreadId)) )
-	{
-		WT_Trace( "Hook keyboard err = %d", GetLastError() );
-		return FALSE;
-	}
-
-    ghHostWnd = hHostWnd;
-	return TRUE; 
-}*/
-
 //Hook 底层键盘钩子(2009.10.1发现普通键盘钩子在家里台式机的联众四国军旗中失效)
-LRESULT WINAPI KeyboardProc(int nCode,WPARAM wparam,LPARAM lparam)
+static LRESULT WINAPI KeyboardProc(int nCode,WPARAM wparam,LPARAM lparam)
 {
 	PKBDLLHOOKSTRUCT pKeyInfo  = (PKBDLLHOOKSTRUCT)lparam;
     if (nCode >= 0)
@@ -85,7 +55,7 @@ LRESULT WINAPI KeyboardProc(int nCode,WPARAM wparam,LPARAM lparam)
 	return CallNextHookEx(glhKeyboardHook, nCode, wparam, lparam);
 }
 
-BOOL KB_StartHook(HWND hHostWnd)
+BOOL Kb_StartHook(HWND hHostWnd)
 {
    	DWORD ThreadId = 0;
     
@@ -108,7 +78,7 @@ BOOL KB_StartHook(HWND hHostWnd)
     return TRUE; 
 }
 
-BOOL KB_StopHook(HWND hHostWnd)
+BOOL Kb_StopHook(HWND hHostWnd)
 {
     if(glhKeyboardHook && UnhookWindowsHookEx(glhKeyboardHook))
     {
@@ -122,3 +92,5 @@ BOOL KB_StopHook(HWND hHostWnd)
     
     return FALSE;
 }
+
+NS_COB_END

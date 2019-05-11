@@ -25,11 +25,12 @@ private:
     HANDLE  m_hSendEvent;
     HANDLE  m_hRecvEvent;
     HANDLE  m_hListenEvent;
+    HANDLE  m_hAcceptEvent;
     HANDLE  m_hListenThread;
 
 protected:
-    BOOL Listen();
-	BOOL ConnectPipe();
+    BOOL ListenData();
+	BOOL AcceptConnect();
 	BOOL PipeCheck();
 
 public:

@@ -17,7 +17,7 @@ void MemSpy::readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData)
 {
     unsigned long address;
     evtData >> address;
-    //COBLOG("addr=%x\n", address);
+    COBLOG("addr=%x\n", address);
     retData << 23;
 }
 

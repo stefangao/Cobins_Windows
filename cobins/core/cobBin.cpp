@@ -304,15 +304,13 @@ int Bin::RpcRecvAnswer(const std::string& probeName, const std::string& evtName,
 
 bool Bin::RpcPost(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData)
 {
-	int lResult = 0;
-
     if (!m_RpcPipe.IsConnected())
         return false;
 
-	if (RpcSendEvent(probeName, evtName, evtData, 0, 0))
-		lResult = -1;
+    if (!RpcSendEvent(probeName, evtName, evtData, 0, 0))
+        return false;
 
-	return lResult;
+	return true;
 }
 
 int Bin::RpcReturn(const lianli::EvtStream& evtData, bool bRightNow)
@@ -320,7 +318,7 @@ int Bin::RpcReturn(const lianli::EvtStream& evtData, bool bRightNow)
     return evtData.size();
 }
 
-int Bin::RpcSendEvent(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, DWORD ctrCode, DWORD frameNo)
+bool Bin::RpcSendEvent(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, DWORD ctrCode, DWORD frameNo)
 {
     RpcMsgHeader_t MsgHeader;
     int nMsgLen = 0;
@@ -355,10 +353,9 @@ int Bin::RpcSendEvent(const std::string& probeName, const std::string& evtName, 
     if (nSentLen != nMsgLen)
     {
         COBLOG("RpcSendMessage: error (%d != %d\n", nSentLen, nMsgLen);
-        nSentLen = -1;
+        return false;
     }
-
-    return nSentLen;
+    return true;
 }
 
 int Bin::RpcSendEvent(const std::string& probeName, const std::string& evtName, PBYTE data, int dataLen, DWORD ctrCode, DWORD frameNo)

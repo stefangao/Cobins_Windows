@@ -102,7 +102,7 @@ public:
 
     bool RpcSend(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, lianli::EvtStream& resultData);
     bool RpcPost(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData);
-    int  RpcSendEvent(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, DWORD ctrCode, DWORD frameNo);
+    bool RpcSendEvent(const std::string& probeName, const std::string& evtName, const lianli::EvtStream& evtData, DWORD ctrCode, DWORD frameNo);
     int  RpcRecvAnswer(const std::string& probeName, const std::string& evtName, lianli::EvtStream& retData);
     int  RpcReturn(const lianli::EvtStream& evtData, bool bRightNow = true);
 

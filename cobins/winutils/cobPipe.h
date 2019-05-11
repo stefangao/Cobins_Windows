@@ -60,7 +60,6 @@ public:
 
 protected:
 	virtual void OnReceive(int nErrorCode);
-	virtual void OnClose(int nErrorCode) {};
 };
 
 NS_COB_END

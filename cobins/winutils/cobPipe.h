@@ -7,7 +7,7 @@
 
 NS_COB_BEGIN
 
-#define PIPENAME "\\\\.\\pipe\\GameBs_Ptfm_Pipe%x"       /* Default pipe name */
+#define PIPENAME "\\\\.\\pipe\\cobins_wnd_%x"       /* pipe name template */
 #define OVERLAPPED_IO  TRUE
 
 class Pipe
@@ -38,8 +38,8 @@ public:
    	virtual ~Pipe();
 
     BOOL IsPipe() {return (m_hPipe != INVALID_HANDLE_VALUE);};
-	BOOL CreatePipe(const char* pipename);
-	BOOL OpenPipe(const char* pipename);
+	BOOL CreatePipe(const char* pipeName);
+	BOOL OpenPipe(const char* pipeName);
 
 	BOOL CreatePipe(DWORD dwPortId);
 	BOOL OpenPipe(DWORD dwPortId);

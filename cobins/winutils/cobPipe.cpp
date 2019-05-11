@@ -12,7 +12,7 @@ Pipe::Pipe()
     m_hSendEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
     m_hRecvEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
     m_hListenEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-    m_hAcceptEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
+    m_hAcceptEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
     m_bConnected = FALSE;
     m_hListenThread = NULL;
     m_OnPipeReceiveDataProc = NULL;
@@ -186,7 +186,7 @@ BOOL Pipe::AcceptConnect()
     BOOL bResult = FALSE;
     DWORD lasterr = 0;
 
-    COBLOG("AcceptConnect111 E\n");
+    COBLOG("AcceptConnect E\n");
 
     if (m_hPipe == INVALID_HANDLE_VALUE)
         return FALSE;
@@ -198,8 +198,6 @@ BOOL Pipe::AcceptConnect()
     }
 
     bSuccess = ConnectNamedPipe(m_hPipe, OVERLAPPED_IO ? &ol : NULL);
-    bool completed = HasOverlappedIoCompleted(&ol);
-    COBLOG("AcceptConnect222:succ=%d (%d)\n", bSuccess, completed);
     if (bSuccess)
     {
         m_bConnected = TRUE;
@@ -208,23 +206,14 @@ BOOL Pipe::AcceptConnect()
     else
     {
         DWORD dwLastErr = GetLastError();
-        COBLOG("---AcceptConnect333:dwLastErr=%d\n", dwLastErr);
         if (dwLastErr == ERROR_IO_PENDING)
         {
-            DWORD dwWait = WaitForSingleObjectEx(
-                m_hAcceptEvent,  // event object to wait for 
-                INFINITE,       // waits indefinitely 
-                TRUE);          // alertable wait enabled 
-            COBLOG("---Pipe::AcceptConnect()333-abc: dwWait=%d\n", dwWait);
-            if (dwWait == 0)
+            bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwRead, TRUE);
+            COBLOG("Pipe::AcceptConnect(): bSuccess=%d\n", bSuccess);
+            if (bSuccess)
             {
-                bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwRead, FALSE);
-                COBLOG("---Pipe::AcceptConnect()444: bSuccess=%d\n", bSuccess);
-                if (bSuccess)
-                {
-                    m_bConnected = TRUE;
-                    bResult = TRUE;
-                }
+                m_bConnected = TRUE;
+                bResult = TRUE;
             }
         }
         else if (dwLastErr == ERROR_PIPE_CONNECTED)
@@ -234,7 +223,7 @@ BOOL Pipe::AcceptConnect()
         }
         else
         {
-            COBLOG("Pipe::AcceptConnect()555: dwLastErr=%d\n", dwLastErr);
+            COBLOG("Pipe::AcceptConnect(): dwLastErr=%d\n", dwLastErr);
         }
     }
 
@@ -256,28 +245,25 @@ BOOL Pipe::ListenData()
 
     while (m_bConnected)
     {
-        COBLOG("ListenData 111: [%x](%x)\n", GetCurrentProcessId(), GetCurrentThreadId());
         bSuccess = ReadFile(m_hPipe, NULL, 0, &dwReadLen, OVERLAPPED_IO ? &ol : NULL);
-        COBLOG("ListenData 111: [%x](%x) succ=%d\n", GetCurrentProcessId(), GetCurrentThreadId(), bSuccess);
+        //COBLOG("ReadFile: [%x](%x) succ=%d\n", GetCurrentProcessId(), GetCurrentThreadId(), bSuccess);
         if (bSuccess && GetDataSize() > 0)
         {
-            COBLOG("ListenData 222: [%x](%x) succ=%d\n", GetCurrentProcessId(), GetCurrentThreadId());
             OnReceive(0);
             WaitForSingleObject(m_hEvent, 10000);
         }
         else if (GetLastError() == ERROR_IO_PENDING)
         {
-            COBLOG("ListenData 333: [%x](%x)\n", GetCurrentProcessId(), GetCurrentThreadId());
+            //COBLOG("GetOverlappedResult E: [%x](%x)\n", GetCurrentProcessId(), GetCurrentThreadId());
             bSuccess = GetOverlappedResult(m_hPipe, &ol, &dwReadLen, TRUE);
-            COBLOG("GetOverlappedResult: bSucc=%d, len=%d [%x](%x)\n",
-                    bSuccess, GetDataSize(), GetCurrentProcessId(),GetCurrentThreadId());
+            //COBLOG("GetOverlappedResult X: bSucc=%d, len=%d [%x](%x)\n",
+            //        bSuccess, GetDataSize(), GetCurrentProcessId(), GetCurrentThreadId());
             if (bSuccess && GetDataSize() > 0)
             {
                 OnReceive(0);
                 WaitForSingleObject(m_hEvent, 10000);
             }
         }
-        COBLOG("ListenData 444: [%x](%x)\n", GetCurrentProcessId(), GetCurrentThreadId());
 
         if (dwReadLen > 0)
         {
@@ -303,7 +289,7 @@ int Pipe::GetDataSize()
 	return dwSizeLow;
 }
 
-BOOL Pipe::CreatePipe(const char* pipename)
+BOOL Pipe::CreatePipe(const char* pipeName)
 {
     if (m_hPipe != INVALID_HANDLE_VALUE)
     {
@@ -311,7 +297,7 @@ BOOL Pipe::CreatePipe(const char* pipename)
         m_hPipe = INVALID_HANDLE_VALUE;
     }
 
-    m_hPipe = CreateNamedPipe(pipename,
+    m_hPipe = CreateNamedPipe(pipeName,
             PIPE_ACCESS_DUPLEX | (OVERLAPPED_IO ? FILE_FLAG_OVERLAPPED : 0),
             PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,
             PIPE_UNLIMITED_INSTANCES, 1024, 1024, 5000, NULL);
@@ -329,7 +315,7 @@ BOOL Pipe::CreatePipe(const char* pipename)
     return TRUE;
 }
 
-BOOL Pipe::OpenPipe(const char* pipename)
+BOOL Pipe::OpenPipe(const char* pipeName)
 {
     if (m_hPipe != INVALID_HANDLE_VALUE)
     {
@@ -337,7 +323,7 @@ BOOL Pipe::OpenPipe(const char* pipename)
         m_hPipe = INVALID_HANDLE_VALUE;
     }
 
-    m_hPipe = ::CreateFile(pipename, GENERIC_READ | GENERIC_WRITE, 0, NULL,
+    m_hPipe = ::CreateFile(pipeName, GENERIC_READ | GENERIC_WRITE, 0, NULL,
                     OPEN_EXISTING, OVERLAPPED_IO ? FILE_FLAG_OVERLAPPED : 0, NULL);
     if (m_hPipe == INVALID_HANDLE_VALUE)
     {

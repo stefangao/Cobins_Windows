@@ -9,7 +9,7 @@ NS_COB_BEGIN
 class MemSpy : public Prober
 {
 protected:
-    void onCreate(const lianli::Context& context) override;
+    void onCreate(void* params) override;
     void readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData);
     void on_hello(lianli::EvtStream& evtData);
 

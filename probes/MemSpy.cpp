@@ -6,7 +6,7 @@ NS_COB_BEGIN
 
 static ApiHook m_Send_Hook;
 
-void MemSpy::onCreate(const lianli::Context& context)
+void MemSpy::onCreate(void* params)
 {
     addEvtRequestProc("readValue", COB_BIND2(MemSpy::readValue, this));
 

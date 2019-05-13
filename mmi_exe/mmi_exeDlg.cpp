@@ -110,8 +110,8 @@ BOOL CmmiexeDlg::OnInitDialog()
 
     // TODO: 在此添加额外的初始化代码
     Kb_StartHook(m_hWnd);
-	m_pAppDelegate = new AppDelegate();
-	m_pAppDelegate->create(m_hWnd, "HostApp").start();
+    m_pAppDelegate = new AppDelegate();
+    m_pAppDelegate->create(m_hWnd, "HostApp").start();
 
     return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }

@@ -1,5 +1,4 @@
 ﻿#include "windows.h"
-#include "winutils/cobPipe.h"
 #include "cobins.h"
 #include "AppDelegate.h"
 
@@ -14,7 +13,7 @@ static const char* g_sEventName = "__HookWndEvent__";
 static AppDelegate* g_pAppDelegate = NULL;
 static HWND g_hMainWnd = NULL;
 
-LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
     if (g_hMainWnd == NULL)
     {
@@ -35,27 +34,27 @@ LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
     return CallNextHookEx(g_hHook, nCode, wParam, lParam);
 }
 
-_declspec(dllexport) HHOOK HookWnd(HWND hDestWnd)
+_declspec(dllexport) HHOOK HookWnd(HWND hTargetWnd)
 {
     HHOOK hHook = NULL;
     DWORD dwProcessId = NULL;
     DWORD dwThreadId = NULL;
 
-    if (g_hHook != NULL || hDestWnd == NULL)
+    if (g_hHook != NULL || hTargetWnd == NULL)
         return NULL;
 
-    dwThreadId = GetWindowThreadProcessId(hDestWnd, &dwProcessId);
+    dwThreadId = GetWindowThreadProcessId(hTargetWnd, &dwProcessId);
     if (dwThreadId == NULL)
         return NULL;
 
-    COBLOG("HookWnd: Target thread=0x%08x, hDestWnd=%x\n", dwThreadId, hDestWnd);
+    COBLOG("HookWnd: Target thread=0x%08x, hTargetWnd=%x\n", dwThreadId, hTargetWnd);
 
     g_hEvent = CreateEvent(NULL, FALSE, FALSE, g_sEventName);
     hHook = SetWindowsHookEx(WH_GETMESSAGE, GetMsgProc, g_hinstDll, dwThreadId);
     if (hHook != NULL)
     {
         COBLOG("HookWnd: Hook Done!\n");
-        PostMessage(hDestWnd, WM_HOOKWND_DONE, 0, 0);
+        PostMessage(hTargetWnd, WM_HOOKWND_DONE, 0, 0);
         if (g_hEvent)
         {
             WaitForSingleObject(g_hEvent, INFINITE);

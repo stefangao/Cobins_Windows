@@ -291,16 +291,16 @@ public:
     {
         *this = (ValueMap&)other;
     }
-    void createWithJsonString(const std::string& content);
-    void createWithJsonFile(const std::string& filename);
-    std::string makeJsonString();
+
     const Value& get(const std::string &path) const;
     Value& at(const std::string &path);
+
+    bool fromJson(const std::string& jsonContent);
+    std::string toJson() const;
 
     bool get(const std::string &path, ValueVector& vv) const;
     bool set(const std::string &path, const Value& value);
     bool set(const std::string &path, const std::string& value);
-    bool replaceEmbeddedValue();
 
     ValueMap& operator+= (const ValueMap& other);
 

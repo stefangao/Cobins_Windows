@@ -1663,23 +1663,6 @@ bool ValueMapUtil::replaceEmbeddedValue(ValueVector& valueVector)
     return true;
 }
 
-void ValueMap::createWithJsonString(const std::string& content)
-{
-    auto vm = (ValueMap*)this;
-    *vm = ValueMapUtil::getValueMapFromJsonString(content);
-}
-
-void ValueMap::createWithJsonFile(const std::string& filename)
-{
-    auto vm = (ValueMap*)this;
-    *vm = ValueMapUtil::getValueMapFromJsonFile(filename);
-}
-
-std::string ValueMap::makeJsonString()
-{
-    return ValueMapUtil::makeJsonFromValueMap(*this);
-}
-
 const Value& ValueMap::get(const std::string &path) const
 {
     return ValueMapUtil::get(*this, path);
@@ -1718,11 +1701,6 @@ bool ValueMap::set(const std::string &path, const Value& value)
 bool ValueMap::set(const std::string &path, const std::string& value)
 {
     return ValueMapUtil::set(*this, path, Value(value));
-}
-
-bool ValueMap::replaceEmbeddedValue()
-{
-    return ValueMapUtil::replaceEmbeddedValue(*this);
 }
 
 bool ValueMap::isExist(const std::string& key)
@@ -1772,6 +1750,31 @@ ValueMap& ValueMap::operator+= (const ValueMap& other)
         }
     }
     return *this;
+}
+
+bool ValueMap::fromJson(const std::string& jsonContent)
+{
+    rapidjson::Document doc;
+    doc.Parse<0>(content.c_str());
+    if (! doc.HasParseError())
+    {
+        // check that root is object not array
+        auto val = ValueMapUtils::parseValueFromJsonValue(doc);
+        if(val.getType() == Value::Type::MAP) {
+            *this = val.asValueMap();
+            return true;
+        }
+        COBLOG("JSON wasn't a ValueMap/Dict");
+    }
+
+    COBLOG("JSON Parse Error: %d\n", doc.GetParseError());
+
+    return false;
+}
+
+std::string ValueMap::toJson() const
+{
+	return ValueMapUtil::makeJsonFromValueMap(*this);
 }
 
 void ValueVector::split(const std::string& str, char separator)

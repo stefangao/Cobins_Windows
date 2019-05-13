@@ -8,7 +8,7 @@ AppDelegate::AppDelegate()
 
 }
 
-void AppDelegate::onCreate(const lianli::Context& context)
+void AppDelegate::onCreate(void* params)
 {
     mBin.create(m_hMainWnd);
 
@@ -105,7 +105,7 @@ void AppDelegate::onStop()
 	mBin.destroy();
 }
 
-void AppDelegate::onDestroy(const lianli::Context& context)
+void AppDelegate::onDestroy()
 {
 
 }

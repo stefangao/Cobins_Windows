@@ -13,11 +13,11 @@ public:
 	virtual ~AppDelegate() {};
 
 protected:
-    virtual void onCreate(const lianli::Context& context) override;
+    virtual void onCreate(void* params) override;
     virtual void onStart() override;
     virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override;
     virtual void onStop() override;
-    virtual void onDestroy(const lianli::Context& context) override;
+    virtual void onDestroy() override;
 
 protected:
     cob::Bin mBin;

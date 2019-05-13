@@ -1755,11 +1755,11 @@ ValueMap& ValueMap::operator+= (const ValueMap& other)
 bool ValueMap::fromJson(const std::string& jsonContent)
 {
     rapidjson::Document doc;
-    doc.Parse<0>(content.c_str());
+    doc.Parse<0>(jsonContent.c_str());
     if (! doc.HasParseError())
     {
         // check that root is object not array
-        auto val = ValueMapUtils::parseValueFromJsonValue(doc);
+        auto val = ValueMapUtil::parseValueFromJsonValue(doc);
         if(val.getType() == Value::Type::MAP) {
             *this = val.asValueMap();
             return true;

@@ -47,11 +47,6 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-
-// CmmiexeDlg 对话框
-
-
-
 CmmiexeDlg::CmmiexeDlg(CWnd* pParent /*=nullptr*/)
     : CDialogEx(IDD_MMI_EXE_DIALOG, pParent)
 {
@@ -167,12 +162,9 @@ HCURSOR CmmiexeDlg::OnQueryDragIcon()
 
 HWND CmmiexeDlg::GetWndByCursor()
 {
-    HWND hGameWnd = NULL;
-
     POINT point;
     GetCursorPos(&point);
-    hGameWnd = WBS_GetWindowFromPoint(NULL, point, 0);
-
+    HWND hGameWnd = WBS_GetWindowFromPoint(NULL, point, 0);
     return hGameWnd;
 }
 
@@ -194,45 +186,16 @@ void CmmiexeDlg::OnBnClickedButton2()
     embedDataS << 6789 << "Thinking widely instead of deeply";
     dataS << "TestEvt1" << embedDataS;
     m_pAppDelegate->postEvent("PostRobotEvt", dataS);
-
-    /*
-	m_MsgCb2.SetWndProc(m_hWnd);
-	m_MsgCb2.wait(1000, []()
-	{
-		COBLOG("m_MsgCb2.post got222\n");
-	});*/
-
-    /*
-	m_MsgCb1.SetWndProc(m_hWnd);
-	m_MsgCb1.post([&]()
-	{
-		COBLOG("m_MsgCb1.post got111\n");
-        m_MsgCb1.post([]()
-        {
-            COBLOG("m_MsgCb1.post got222\n");
-        });
-	});
-
-    m_MsgCb1.post([]()
-    {
-        COBLOG("m_MsgCb1.post got333\n");
-    });*/
-}
-
-BOOL UnHookWnd(HHOOK hHook)
-{
-    BOOL ret = false;
-    if (hHook != NULL)
-    {
-        ret = UnhookWindowsHookEx(hHook);
-        return FALSE;
-    }
-    return ret;
 }
 
 void CmmiexeDlg::OnBnClickedButton3()
 {
-
+    ValueMap vm;
+    vm.at("a/b") = 12;
+    vm.at("a/c") = "hello";
+    vm.at("a/d/e") = 789;
+    auto str = vm.toJson();
+    COBLOG("str=%s\n", str.c_str());
 }
 
 void CmmiexeDlg::OnBnClickedButton4()
@@ -256,29 +219,12 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
             if (GetKeyState(VK_CONTROL) & 0x8000)
             {
                 HWND hGameWnd = GetWndByCursor();
-                COBLOG("hGameWnd=%x\n", hGameWnd);
-
-                EvtStream data;
-                data << (DWORD)hGameWnd;
-				m_pAppDelegate->postEvent("BindEvt", data);
-
-#if 0
-                if (hGameWnd && m_hHook == NULL)
+                if (hGameWnd)
                 {
-                    HINSTANCE handle = LoadLibraryA("spy_dll.dll");
-                    if (handle) //判读句柄内dll是否可用
-                    {
-                        typedef HHOOK(*HookWnd_t) (HWND);
-                        HookWnd_t HookWnd = (HookWnd_t)GetProcAddress(handle, "HookWnd");
-                        if (HookWnd) //还是判断一下函数指针是否有效
-                        {
-                            m_hHook = HookWnd(hGameWnd);
-                            WT_Trace("HookWnd result=%x\n", m_hHook);
-                        }
-                        FreeLibrary(handle); //卸载
-                    }
+                    EvtStream data;
+                    data << (DWORD)hGameWnd;
+                    m_pAppDelegate->postEvent("BindEvt", data);
                 }
-#endif
             }
         }
         break;
@@ -306,7 +252,6 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-
 void CmmiexeDlg::OnBnClickedButton5()
 {
     // TODO: 在此添加控件通知处理程序代码
@@ -320,7 +265,6 @@ void CmmiexeDlg::OnBnClickedButton5()
         COBLOG("Game Caption=%s\n", wszTitle);
     }
 }
-
 
 void CmmiexeDlg::OnDestroy()
 {

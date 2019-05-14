@@ -1,5 +1,5 @@
+#include "base/cobUtils.h"
 #include "cobMouseHook.h"
-#include "wtermin.h"
 #include "cobWndBase.h"
 
 NS_COB_BEGIN
@@ -38,14 +38,14 @@ BOOL Mouse_StartHook(HWND hHostWnd)
 {
    	DWORD ThreadId = 0;
 
-    WT_Trace( "Mouse_StartHook: instance = %x\n", glhInstance );
+    COBLOG( "Mouse_StartHook: instance = %x\n", glhInstance );
 
     if (glhMouseHook != NULL)
         return TRUE;
 
 	if (!(glhMouseHook = SetWindowsHookEx(WH_MOUSE, MouseProc, glhInstance, ThreadId)))
 	{
-		WT_Trace( "Mouse_StartHook: err = %d", GetLastError() );
+		COBLOG( "Mouse_StartHook: err = %d", GetLastError() );
 		return FALSE;
 	}
 

@@ -116,7 +116,7 @@ PBYTE WBS_MagicSearch(DWORD dwProcessId, MagicCode_t *pMagicCode, DWORD dwStartA
         return NULL;
     }
 
-	//WT_Trace("MinAddress = %X, MaxAddress = %X\n",  dwStartAddr, dwEndAddr);
+	//COBLOG("MinAddress = %X, MaxAddress = %X\n",  dwStartAddr, dwEndAddr);
 
     nPatternSize = GetMagicPattenSize(pMagicCode);
     dwBaseAddress = dwStartAddr;
@@ -163,7 +163,7 @@ PBYTE WBS_MagicSearch(DWORD dwProcessId, MagicCode_t *pMagicCode, DWORD dwStartA
                     pFoundAddr = (PBYTE)mbi.BaseAddress + dwOffset + nTargetPosition;
 					nStartPos = nPatternPos + nPatternSize;
 
-                    //WT_Trace("foundaddr=%x\n", pFoundAddr);
+                    //COBLOG("foundaddr=%x\n", pFoundAddr);
 
                   	CloseHandle(hProcess);
                     return (PBYTE)pFoundAddr;

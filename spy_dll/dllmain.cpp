@@ -20,7 +20,7 @@ static LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
         MSG *lpMsg = (MSG*)lParam;
         if (lpMsg->message == WM_HOOKWND_DONE)
         {
-            WT_Trace("OnHooked: process=%x, gameWnd=%x\n", GetCurrentProcessId(), lpMsg->hwnd);
+            COBLOG("OnHooked: process=%x, gameWnd=%x\n", GetCurrentProcessId(), lpMsg->hwnd);
 
             g_hMainWnd = lpMsg->hwnd;
             g_pAppDelegate = new AppDelegate();

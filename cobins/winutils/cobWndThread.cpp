@@ -1,5 +1,5 @@
 #include "cobWndThread.h"
-#include "wtermin.h"
+#include "base/cobUtils.h"
 
 NS_COB_BEGIN
 
@@ -59,7 +59,7 @@ static DWORD WINAPI ThreadProc(PVOID pArg)
         DispatchMessage(&msg);
     }
 
-    WT_Trace("WndThread::ThreadProc() exit\n");
+    COBLOG("WndThread::ThreadProc() exit\n");
     return 0;
 }
 
@@ -72,7 +72,7 @@ HWND WndThread::create()
     WaitForSingleObject(m_hEvent, INFINITE);
     CloseHandle(m_hEvent);
 
-    WT_Trace("WndThread::create() End: hMainWnd=%x\n", m_hMainWnd);
+    COBLOG("WndThread::create() End: hMainWnd=%x\n", m_hMainWnd);
     return m_hMainWnd;
 }
 

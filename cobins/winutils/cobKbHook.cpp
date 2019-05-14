@@ -14,7 +14,7 @@ DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 	// Remove this if you use lpReserved
 	UNREFERENCED_PARAMETER(lpReserved);
 
-	WT_Trace("kbhook: DllMain glhInstance = %x", hInstance);
+	COBLOG("kbhook: DllMain glhInstance = %x", hInstance);
 
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
@@ -42,14 +42,14 @@ static LRESULT WINAPI KeyboardProc(int nCode,WPARAM wparam,LPARAM lparam)
             lParam += 1 << 30; //Specifies the previous key state. The value is always 1 for a WM_KEYUP message. (MSDN)
         }
 
-        //WT_Trace("KeyHook: curprocess=%x\n", GetCurrentProcessId());
+        //COBLOG("KeyHook: curprocess=%x\n", GetCurrentProcessId());
 
         if (ghHostWnd != NULL)
         {
             PostMessage(ghHostWnd, WSH_MSG_KEY, (WPARAM)pKeyInfo->vkCode, lParam);
         }
 
-        //WT_Trace("scancode=%x,flags=%x,time=%x, dwMsg=%x\n", pKeyInfo->scanCode, pKeyInfo->flags, pKeyInfo->time, lParam);
+        //COBLOG("scancode=%x,flags=%x,time=%x, dwMsg=%x\n", pKeyInfo->scanCode, pKeyInfo->flags, pKeyInfo->time, lParam);
     }
 
 	return CallNextHookEx(glhKeyboardHook, nCode, wparam, lparam);
@@ -61,19 +61,19 @@ BOOL Kb_StartHook(HWND hHostWnd)
     
     if (glhKeyboardHook != NULL)
     {
-        WT_Trace( "KB_StartHook: ¹³×ÓÒÑ´æÔÚ\n");
+        COBLOG( "KB_StartHook: already hooked\n");
         return FALSE;
     }
     
     if (NULL == (glhKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, glhInstance, ThreadId)))
     {
-        WT_Trace( "KB_StartHook: Hook Keyboard error = %d", GetLastError() );
+        COBLOG( "KB_StartHook: Hook Keyboard error = %d", GetLastError() );
         return FALSE;
     }
     
     ghHostWnd = hHostWnd;
     
-    WT_Trace("glhKeyboardHook=%x\n", glhKeyboardHook);
+    COBLOG("glhKeyboardHook=%x\n", glhKeyboardHook);
     
     return TRUE; 
 }
@@ -87,9 +87,8 @@ BOOL Kb_StopHook(HWND hHostWnd)
     }
     else
     {
-        WT_Trace("Ð¶ÔØ¼üÅÌ¹³×ÓÊ§°Ü\n");
+        COBLOG("stop hook failed\n");
     }
-    
     return FALSE;
 }
 

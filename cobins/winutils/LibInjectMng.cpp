@@ -1,6 +1,6 @@
 #include <windows.h>
 #include "processmng.h"
-#include "wtermin.h"
+#include "base/cobUtils.h"
 #include "LibinjectMng.h"
 
 BOOL LIM_EnableDebugPrivilege(HANDLE hProcess)
@@ -10,7 +10,7 @@ BOOL LIM_EnableDebugPrivilege(HANDLE hProcess)
 	
 	if (!OpenProcessToken(hProcess, TOKEN_ADJUST_PRIVILEGES|TOKEN_QUERY,&hToken)) 
 	{ 
-		WT_Trace("OpenProcessToken failed!");
+		COBLOG("OpenProcessToken failed!");
 		return FALSE;
 	}
 	

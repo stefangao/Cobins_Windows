@@ -1,6 +1,6 @@
 #include "cobKbHook.h"
 #include "base/cobUtils.h"
-#include "wndbase.h"
+#include "cobWndBase.h"
 
 NS_COB_BEGIN
 

@@ -1,15 +1,8 @@
-#include "MagicSearch.h"
-#include "wtermin.h"
+#include "cobMagicSearch.h"
+#include "base/cobUtils.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
+NS_COB_BEGIN
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 static int GetMagicPattenSize(MagicCode_t *pMagicCode)
 {
     int nPattenSize = 0;
@@ -119,7 +112,7 @@ PBYTE WBS_MagicSearch(DWORD dwProcessId, MagicCode_t *pMagicCode, DWORD dwStartA
 	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwProcessId);
 	if(hProcess == NULL)
     {
-        WT_Error("WBS_MagicSearch: OpenProcess Failed");
+        COBLOG("WBS_MagicSearch: OpenProcess Failed");
         return NULL;
     }
 
@@ -153,7 +146,7 @@ PBYTE WBS_MagicSearch(DWORD dwProcessId, MagicCode_t *pMagicCode, DWORD dwStartA
 			dwCurrentPos = (DWORD)mbi.BaseAddress + dwOffset;
             if(!ReadProcessMemory(hProcess, (PVOID)dwCurrentPos, CacheBuffer, min(dwBytesLeft, MAX_BUF_SIZE), &dwReadedBytes))
             {
-                WT_Error("WBS_MagicSearch: ReadProcessMemory Failed");
+                COBLOG("WBS_MagicSearch: ReadProcessMemory Failed");
                	CloseHandle(hProcess);
                 return NULL;
             }
@@ -211,3 +204,5 @@ int WBS_MemFind(int iStartPosition, LPBYTE pDestBuffer, int iDestBufferLength, L
     }
 	return iFoundPosition;
 }
+
+NS_COB_END

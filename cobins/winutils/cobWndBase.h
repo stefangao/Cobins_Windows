@@ -3,16 +3,9 @@
 
 #include <windows.h>
 #include <stdio.h>
-//#include "cntt_timer.h"
-//#include <libxml\parser.h> 
-//#include <libxml\xpath.h>
+#include "cobMacros.h"
 
-/** @defgroup groupwndbase wndbase
- *  This is a module implementing utilities related to windows.
-\n\n<b>Header:</b> Declared in wndbase.h, wndproc.h or wndshm.h.\n
-    <b>Import Library:</b> Use wndbase.lib.\n
- *  @{
- */
+NS_COB_BEGIN
 
 #define WBS_KEY_SHIFT    0x0001
 #define WBS_KEY_CTL      0x0002
@@ -42,9 +35,7 @@ typedef struct
 }HSV_t;
 
 typedef BOOL (*MatchFunc_T)(unsigned long);
-
 typedef BOOL (*WaitMFunc_T)(DWORD, DWORD, DWORD);
-
 
 typedef struct
 {
@@ -136,7 +127,6 @@ HBITMAP WBS_CopyScreenToBitmap(LPRECT lpRect); //lpRect 代表选定区域
 BOOL    WBS_SaveBitmapToFile(HBITMAP hBitmap, LPCSTR lpFileName);   //hBitmap 为刚才的屏幕位图句柄
 BOOL    WBS_SaveBitmap8ToFile(HBITMAP hBitmap, LPCSTR lpFileName);  //hBitmap 为刚才的屏幕位图句柄
 
-
-/** @} */ // end of groupwndbase
+NS_COB_END
 
 #endif

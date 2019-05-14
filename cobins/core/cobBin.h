@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "llfsm/lianli.h"
 #include "winutils/cobPipe.h"
-#include "winutils/MsgCallback.h"
+#include "winutils/cobMsgCallback.h"
 #include "winutils/cobDllManager.h"
 #include "base/cobUtils.h"
 #include "base/cobValue.h"
@@ -40,7 +40,6 @@ typedef struct
 	int   datalen;
 	int   ctrcode;
 	int   frameno;
-
 } RpcMsgHeader_t;
 #define RPCMSGHEADERLEN    sizeof(RpcMsgHeader_t)
 
@@ -56,7 +55,7 @@ class Robot;
 class Bin : public lianli::Context
 {
 public:
-    Bin();
+    Bin(const std::string& name);
     virtual ~Bin();
 
     bool create(HWND hWnd);

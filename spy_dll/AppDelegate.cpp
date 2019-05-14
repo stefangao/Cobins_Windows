@@ -4,6 +4,7 @@
 #pragma comment(lib,"Ws2_32.lib ")
 
 AppDelegate::AppDelegate()
+    : mBin("embed")
 {
 }
 

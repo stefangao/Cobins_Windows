@@ -5,7 +5,8 @@
 
 NS_COB_BEGIN
 
-Bin::Bin()
+Bin::Bin(const std::string& name)
+    :lianli::Context(name)
 {
     m_nRpcFrameNo = 0;
 }

@@ -1,28 +1,17 @@
-// Mp3Player.cpp: implementation of the CMusicPlayer class.
-//
-//////////////////////////////////////////////////////////////////////
 #include <windows.h>
-#include "MusicPlayer.h"
+#include "cobMusicPlayer.h"
 #include  "vfw.h."
+
+NS_COB_BEGIN
 
 #pragma comment(lib, "winmm.lib")
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-CMusicPlayer::CMusicPlayer()
+MusicPlayer::MusicPlayer()
 {
     m_wDeviceID = -1;
 }
 
-CMusicPlayer::~CMusicPlayer()
+MusicPlayer::~MusicPlayer()
 {
     
 }
@@ -32,7 +21,7 @@ static void CALLBACK TimeOutProc(HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTim
  
 }
 
-BOOL CMusicPlayer::Play(LPCSTR strPath)
+BOOL MusicPlayer::Play(LPCSTR strPath)
 {
     MCI_OPEN_PARMS mciopenparms;
     MCI_PLAY_PARMS mciplayparms;
@@ -58,7 +47,7 @@ BOOL CMusicPlayer::Play(LPCSTR strPath)
     return TRUE;
 }
 
-BOOL CMusicPlayer::Pause()
+BOOL MusicPlayer::Pause()
 {
     if (mciSendCommand(m_wDeviceID, MCI_PAUSE, 0, NULL) == 0)
         return TRUE;
@@ -66,7 +55,7 @@ BOOL CMusicPlayer::Pause()
     return FALSE;
 }
 
-BOOL CMusicPlayer::Stop()
+BOOL MusicPlayer::Stop()
 {
     if (mciSendCommand(m_wDeviceID, MCI_CLOSE, 0, NULL) == 0)
         return TRUE;
@@ -74,7 +63,7 @@ BOOL CMusicPlayer::Stop()
     return FALSE;
 }
 
-DWORD CMusicPlayer::GetLength()
+DWORD MusicPlayer::GetLength()
 {
     MCI_STATUS_PARMS mcistatusparms;
 	mcistatusparms.dwCallback = (DWORD)NULL;
@@ -85,7 +74,7 @@ DWORD CMusicPlayer::GetLength()
     return mcistatusparms.dwReturn;
 }
 
-DWORD CMusicPlayer::GetPosition()
+DWORD MusicPlayer::GetPosition()
 {
     MCI_STATUS_PARMS mcistatusparms;
 	mcistatusparms.dwCallback = (DWORD)NULL;
@@ -104,7 +93,7 @@ DWORD CMusicPlayer::GetPosition()
 // MCI_MODE_OPEN
 // MCI_MODE_RECORD
 // MCI_MODE_SEEK
-DWORD CMusicPlayer::GetPlayStatus( )
+DWORD MusicPlayer::GetPlayStatus( )
 {
     if (m_wDeviceID == -1)
         return MCI_MODE_NOT_READY;
@@ -117,3 +106,5 @@ DWORD CMusicPlayer::GetPlayStatus( )
 
     return mcistatusparms.dwReturn;
 }
+
+NS_COB_END

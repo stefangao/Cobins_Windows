@@ -24,8 +24,8 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __COB_Value__
-#define __COB_Value__
+#ifndef __COB_VALUE_H__
+#define __COB_VALUE_H__
 
 #include <string>
 #include <vector>

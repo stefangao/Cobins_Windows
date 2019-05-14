@@ -1,12 +1,11 @@
-//#include "stdafx.h"
 #include <math.h>
-#include "wndbase.h"
-//#include "cntt_util.h"
-//#include "cntt_string.h"
+#include "cobWndBase.h"
 #include "wtermin.h"
-#include "MusicPlayer.h"
+#include "cobMusicPlayer.h"
 
-static CMusicPlayer m_AlertPlayer;
+NS_COB_BEGIN
+
+static MusicPlayer m_AlertPlayer;
 
 BOOL WBS_GetWindowPixel(HWND hWnd, POINT pt, COLORREF& clr)
 {
@@ -1495,3 +1494,5 @@ BOOL WBS_SaveBitmap8ToFile(HBITMAP hBitmap, LPCSTR lpFileName)  //hBitmap Îª¸Õ²Å
 
     return TRUE;
 }
+
+NS_COB_END

@@ -6,3 +6,5 @@
 #include "core/cobProber.h"
 #include "core/cobIProbe.h"
 #include "core/cobRobot.h"
+#include "winutils/cobKbHook.h"
+#include "winutils/cobWndBase.h"

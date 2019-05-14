@@ -3,6 +3,9 @@
 
 #include <windows.h>
 #include <functional>
+#include "cobMacros.h"
+
+NS_COB_BEGIN
 
 class WndThread
 {
@@ -20,4 +23,5 @@ private:
 	HANDLE m_hEvent;
 };
 
+NS_COB_END
 #endif

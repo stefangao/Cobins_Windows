@@ -8,8 +8,6 @@
 #include "afxdialogex.h"
 #include "llfsm/lianli.h"
 #include "cobins.h"
-#include "winutils/cobKbHook.h"
-#include "winutils/wndbase.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

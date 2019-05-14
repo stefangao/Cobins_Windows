@@ -4,6 +4,7 @@
 #include "robots/AutoRefresh.h"
 
 AppDelegate::AppDelegate()
+    : mBin("host")
 {
 
 }

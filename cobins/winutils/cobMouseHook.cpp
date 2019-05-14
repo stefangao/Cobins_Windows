@@ -1,6 +1,8 @@
-#include "mousehook.h"
+#include "cobMouseHook.h"
 #include "wtermin.h"
-#include "wndbase.h"
+#include "cobWndBase.h"
+
+NS_COB_BEGIN
 
 #pragma data_seg("mousehook_mydata")
  	 HHOOK glhMouseHook = NULL;    //安装的鼠标勾子句柄 
@@ -66,3 +68,5 @@ BOOL Mouse_StopHook()
 
 	return FALSE;
 }
+
+NS_COB_END

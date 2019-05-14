@@ -1,5 +1,7 @@
-#include "WndThread.h"
+#include "cobWndThread.h"
 #include "wtermin.h"
+
+NS_COB_BEGIN
 
 WndThread::WndThread()
 {
@@ -73,3 +75,5 @@ HWND WndThread::create()
     WT_Trace("WndThread::create() End: hMainWnd=%x\n", m_hMainWnd);
     return m_hMainWnd;
 }
+
+NS_COB_END

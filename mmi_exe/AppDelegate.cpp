@@ -18,7 +18,7 @@ void AppDelegate::onCreate(void* params)
 
     //create all needed robots
     auto autoRefresh = new AutoRefresh();
-    autoRefresh->create("AutoRefresh");
+    autoRefresh->create("AutoRefresh", mBin);
     mBin.addRobot(*autoRefresh);
 }
 

@@ -49,33 +49,11 @@ typedef struct
 #define RMFL_TOHOST        0x00000004L
 #define RMFL_ANSWER        0x00000008L
 
-typedef struct
-{
-	BOOL  bNeed;
-	BOOL  bDone;
-	int   nFrameNo;
-	BYTE  pData[RPCRETURNBUF_MAXLEN];
-	int   nDataLen;
-	char  lpEngName[ENGNAME_MAXLEN + 1];
-	char  lpMsgName[MSGNAME_MAXLEN + 1];
-
-} GmbsReturnCntx_t;
-
-typedef struct
-{
-	HWND hGameWnd;
-	HWND hHostWnd;
-	HWND hUserWnd;
-	int  nRpcSendState;
-	DWORD dwCardId;
-	DWORD dwProdId;
-} GmbsPlatformCntx_t;
-
 #define cntt_offsetof(member, type)  (unsigned long)&(((type *)0)->member)
 
 class Probe;
 class Robot;
-class Bin
+class Bin : public lianli::Context
 {
 public:
     Bin();

@@ -15,7 +15,7 @@ void AppDelegate::onCreate(void* params)
     //mBin.install(*prober1);
 
     auto memSpy = new MemSpy();
-    memSpy->create("memspy");
+    memSpy->create("memspy", mBin);
     mBin.addProbe(*memSpy);
 }
 

@@ -34,12 +34,9 @@ using namespace rapidjson;
 
 NS_COB_BEGIN
 
-#define COB_SAFE_DELETE(p)    do { delete (p); (p) = nullptr; } while(0)
-
 const ValueVector ValueVectorNull;
 const ValueMap ValueMapNull;
 const ValueMapIntKey ValueMapIntKeyNull;
-
 const Value Value::Null;
 
 Value::Value()

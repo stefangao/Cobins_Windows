@@ -25,7 +25,7 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         if (wrapper)
         {
             if (wrapper->callback)
-                wrapper->callback();
+                wrapper->callback(uMsg);
 
             delete wrapper;
             return 0;
@@ -95,29 +95,49 @@ void MsgCallback::send(const CallbackFunc& callback)
     ::SendMessage(m_hMainWnd, WM_SEND_CALLBACK, (WPARAM)wrapper, 0);
 }
 
-void MsgCallback::wait(UINT uTimeout, const CallbackFunc& callback, UINT uTargetMsg)
+void MsgCallback::wait(UINT uTimeout)
 {
-	if (uTimeout != INFINITE)
-	{
-        SetTimer(m_hMainWnd, 1, uTimeout, TimerProc);
-	}
+    SetTimer(m_hMainWnd, 1, uTimeout, TimerProc);
 
     MSG msg;
     while(GetMessage(&msg, NULL, 0, 0))
     {
-    	if (msg.message == WM_WAIT_TIMEOUT)
-    	{
-    		callback();
-    		break;
-    	}
-        else if (msg.message == uTargetMsg)
+        if (msg.message == WM_WAIT_TIMEOUT)
         {
-            callback();
             break;
         }
 
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+}
+
+bool MsgCallback::waitMessage(UINT uTargetMsg, const CallbackFunc& callback, UINT uTimeout = INFINITE)
+{
+	bool ret = false;
+    MSG msg;
+
+	if (uTimeout != INFINITE)
+	{
+        SetTimer(m_hMainWnd, 1, uTimeout, TimerProc);
+	}
+
+    while(GetMessage(&msg, NULL, 0, 0))
+    {
+        if (uTimeout != INFINITE && msg.message == WM_WAIT_TIMEOUT)
+        {
+            break;
+        }
+        else if (msg.message == uTargetMsg)
+        {
+            callback(msg.message);
+            ret = true;
+            break;
+        }
+
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    return ret;
 }
 

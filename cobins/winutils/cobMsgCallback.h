@@ -4,12 +4,13 @@
 #include <windows.h>
 #include <functional>
 #include <map>
+#inlcude "cobConst.h"
 
-#define WM_POST_CALLBACK    WM_USER + 1001
-#define WM_SEND_CALLBACK    WM_USER + 1002
-#define WM_WAIT_TIMEOUT     WM_USER + 1003
+#define WM_POST_CALLBACK    WM_COBMSG_MIN + 101
+#define WM_SEND_CALLBACK    WM_COBMSG_MIN + 102
+#define WM_WAIT_TIMEOUT     WM_COBMSG_MIN + 103
 
-typedef std::function<void(void)> CallbackFunc;
+typedef std::function<void(UINT)> CallbackFunc;
 
 class MsgCallback
 {
@@ -24,7 +25,8 @@ public:
 public:
     void post(const CallbackFunc& callback);
     void send(const CallbackFunc& callback);
-    void wait(UINT uTimeout, const CallbackFunc& callback, UINT uTargetMsg = 0);
+    void wait(UINT uTimeout);
+    bool waitMessage(UINT uTargetMsg, const CallbackFunc& callback, UINT uTimeout = INFINITE);
 
     void SetWndProc(HWND hWnd);
     void ResetWndProc();

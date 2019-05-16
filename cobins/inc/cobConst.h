@@ -9,8 +9,13 @@
 #ifndef __COB_CONST_H__
 #define __COB_CONST_H__
 
+#include <windows.h>
+
 static const int WM_COBMSG_MIN = (WM_USER + 0x300);
 static const int WM_COBMSG_MAX = (WM_USER + 0x350);
+
+static const int WM_UI_WAIT = (WM_COBMSG_MIN + 1);
+
 
 static const int WM_GMBS_INIT = (WM_COBMSG_MIN + 1);
 

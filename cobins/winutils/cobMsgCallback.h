@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <functional>
 #include <map>
-#inlcude "cobConst.h"
+#include "cobConst.h"
 
 #define WM_POST_CALLBACK    WM_COBMSG_MIN + 101
 #define WM_SEND_CALLBACK    WM_COBMSG_MIN + 102

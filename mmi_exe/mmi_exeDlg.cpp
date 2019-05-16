@@ -198,10 +198,15 @@ void CmmiexeDlg::OnBnClickedButton3()
 
 void CmmiexeDlg::OnBnClickedButton4()
 {
+    COBLOG("Wait E\n");
+    WBS_Wait(2000);
+    COBLOG("Wait X\n");
+
+    /*
     EvtStream dataS;
     std::string robotName = "AutoRefresh";
     dataS << robotName;
-    m_pAppDelegate->postEvent("StopRobotEvt", dataS);
+    m_pAppDelegate->postEvent("StopRobotEvt", dataS);*/
 }
 
 afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
@@ -238,7 +243,7 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
                 {
                     //char exeGame[] = "GmbsManager.dll";
                     char exeGame[] = "spy_dll.dll";
-                    //bool exist = LIM_IsDllExist(exeGame, hGameWnd);
+                    //bool exist = WBS_WaitWBS_WExist(exeGame, hGameWnd);
                     //COBLOG("hGameWnd: isExist=%d\n", exist);
                 }
             }
@@ -252,16 +257,7 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
 
 void CmmiexeDlg::OnBnClickedButton5()
 {
-    // TODO: 在此添加控件通知处理程序代码
-    HWND hGameWnd = GetWndByCursor();
 
-    COBLOG("hGameWnd=%x\n", hGameWnd);
-    if (hGameWnd)
-    {
-        char wszTitle[256];
-        GetWindowTextA(hGameWnd, wszTitle, 256);
-        COBLOG("Game Caption=%s\n", wszTitle);
-    }
 }
 
 void CmmiexeDlg::OnDestroy()

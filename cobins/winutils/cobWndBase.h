@@ -127,6 +127,9 @@ HBITMAP WBS_CopyScreenToBitmap(LPRECT lpRect); //lpRect 代表选定区域
 BOOL    WBS_SaveBitmapToFile(HBITMAP hBitmap, LPCSTR lpFileName);   //hBitmap 为刚才的屏幕位图句柄
 BOOL    WBS_SaveBitmap8ToFile(HBITMAP hBitmap, LPCSTR lpFileName);  //hBitmap 为刚才的屏幕位图句柄
 
+void WBS_DelayPostMessage(UINT uMilliSecs, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void WBS_Wait(UINT uMilliSecs);
+
 NS_COB_END
 
 #endif

@@ -112,7 +112,7 @@ void MsgCallback::wait(UINT uTimeout)
     }
 }
 
-bool MsgCallback::waitMessage(UINT uTargetMsg, const CallbackFunc& callback, UINT uTimeout = INFINITE)
+bool MsgCallback::waitMessage(UINT uTargetMsg, const CallbackFunc& callback, UINT uTimeout)
 {
 	bool ret = false;
     MSG msg;

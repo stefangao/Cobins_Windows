@@ -121,7 +121,7 @@ void Bin::onPipeReceiveData(int nErrCode)
 
         if (msgHeader.ctrcode != RMFL_ANSWER)
         {
-            m_MsgCb.post([this, pMsgInfo]() {
+            m_MsgCb.post([this, pMsgInfo](UINT) {
                 onRpcReceived(pMsgInfo);
                 delete pMsgInfo;
             });
@@ -253,7 +253,7 @@ bool Bin::RpcSend(const std::string& probeName, const std::string& evtName, cons
     if (!m_RpcPipe.IsConnected())
         return false;
 
-    if (RpcSendEvent(probeName, evtName, evtData, RMFL_SYNC, ++m_nRpcFrameNo) > 0)
+    if (RpcSendEvent(probeName, evtName, evtData, RMFL_SYNC, ++m_nRpcFrameNo))
     {
         if (RpcRecvAnswer(probeName, evtName, resultData) == 0)
         {

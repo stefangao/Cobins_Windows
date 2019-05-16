@@ -1,6 +1,8 @@
 #include <math.h>
+#include "llfsm/lianli.h"
+#include "cobConst.h"
 #include "cobWndBase.h"
-#include "wtermin.h"
+#include "base/cobUtils.h"
 #include "cobMusicPlayer.h"
 
 NS_COB_BEGIN
@@ -718,7 +720,7 @@ static DWORD WINAPI GUIBlock_CheckProc(LPVOID lpParameter)
 	GUIWaitThread_T* pThread = (GUIWaitThread_T*)lpParameter;
 	DWORD dwResult = FALSE;
 
-    WT_Trace("GUIWait_CheckProc Begin\n");
+    COBLOG("GUIWait_CheckProc Begin\n");
 
 	//Assert(pThread);
 
@@ -733,10 +735,10 @@ static DWORD WINAPI GUIBlock_CheckProc(LPVOID lpParameter)
 
 		Sleep(100);
 
-        WT_Trace("GUIWait_Checking...\n");
+        COBLOG("GUIWait_Checking...\n");
 	}
 
-	WT_Trace("GUIWait_CheckProc End\n");
+	COBLOG("GUIWait_CheckProc End\n");
 	
 	return dwResult;
 }
@@ -1493,6 +1495,35 @@ BOOL WBS_SaveBitmap8ToFile(HBITMAP hBitmap, LPCSTR lpFileName)  //hBitmap Îª¸Õ²Å
     GlobalFree(hDib);
 
     return TRUE;
+}
+
+void WBS_DelayPostMessage(UINT uMilliSecs, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    lianli::setTimer(uMilliSecs, [uMsg, wParam, lParam](int tid, const void* userData) {
+        PostThreadMessage(GetCurrentThreadId(), uMsg, wParam, lParam);
+        lianli::killTimer(tid);
+    });
+}
+
+void WBS_Wait(UINT uMilliSecs)
+{
+    MSG msg;
+
+    if (uMilliSecs != INFINITE)
+    {
+        WBS_DelayPostMessage(uMilliSecs, WM_UI_WAIT, 0, 0);
+    }
+
+    while (GetMessage(&msg, NULL, 0, 0))
+    {
+        if (uMilliSecs != INFINITE && msg.message == WM_UI_WAIT)
+        {
+            break;
+        }
+
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
 }
 
 NS_COB_END

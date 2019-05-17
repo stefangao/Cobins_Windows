@@ -95,23 +95,6 @@ void MsgCallback::send(const CallbackFunc& callback)
     ::SendMessage(m_hMainWnd, WM_SEND_CALLBACK, (WPARAM)wrapper, 0);
 }
 
-void MsgCallback::wait(UINT uTimeout)
-{
-    SetTimer(m_hMainWnd, 1, uTimeout, TimerProc);
-
-    MSG msg;
-    while(GetMessage(&msg, NULL, 0, 0))
-    {
-        if (msg.message == WM_WAIT_TIMEOUT)
-        {
-            break;
-        }
-
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-}
-
 bool MsgCallback::waitMessage(UINT uTargetMsg, const CallbackFunc& callback, UINT uTimeout)
 {
 	bool ret = false;

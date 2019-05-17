@@ -25,7 +25,6 @@ public:
 public:
     void post(const CallbackFunc& callback);
     void send(const CallbackFunc& callback);
-    void wait(UINT uTimeout);
     bool waitMessage(UINT uTargetMsg, const CallbackFunc& callback, UINT uTimeout = INFINITE);
 
     void SetWndProc(HWND hWnd);

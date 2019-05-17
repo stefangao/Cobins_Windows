@@ -10,8 +10,8 @@ class MemSpy : public Prober
 {
 protected:
     void onCreate(void* params) override;
-    void readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData);
-    void on_hello(lianli::EvtStream& evtData);
+    bool readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData);
+    bool on_hello(lianli::EvtStream& evtData);
 
 public:
     enum {DAEMON};
@@ -35,10 +35,12 @@ class IMemSpy : public IProbe
 {
 public:
     IMemSpy(const std::string& name);
-    
     int readValue(unsigned long address);
     void hello();
-    void on_embed_voice(lianli::EvtStream& evtData);
+    bool on_embed_voice(lianli::EvtStream& evtData);
+
+protected:
+    void onCreate(void* params);
 };
 
 NS_COB_END

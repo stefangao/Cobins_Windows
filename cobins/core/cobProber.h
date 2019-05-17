@@ -6,7 +6,7 @@
 
 NS_COB_BEGIN
 
-class Prober : public Probe, public lianli::FSM
+class Prober : public Probe
 {
 public:
     Prober& create(const std::string& name, lianli::Context& context = lianli::Context::DEFAULT);

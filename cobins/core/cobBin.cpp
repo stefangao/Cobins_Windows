@@ -151,14 +151,14 @@ void Bin::onRpcReceived(PBYTE pMsgInfo)
         {
             lianli::EvtStream evtData, retData;
             evtData.write(recvData, msgHeader.datalen);
-            probe->onRequest(evtName, evtData, retData);
+            probe->sendRequest(evtName, evtData, retData);
             RpcSendEvent(MSGRCVR(pMsgInfo), MSGNAME(pMsgInfo), retData, RMFL_ANSWER, msgHeader.frameno);
         }
         else
         {
             lianli::EvtStream evtData;
             evtData.write(recvData, msgHeader.datalen);
-            probe->onNotify(evtName, evtData);
+            probe->sendEvent(evtName, evtData);
         }
     }
 }

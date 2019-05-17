@@ -8,17 +8,30 @@ static ApiHook m_Send_Hook;
 
 void MemSpy::onCreate(void* params)
 {
-    addEvtRequestProc("readValue", COB_BIND2(MemSpy::readValue, this));
-
-    addEvtNotifyProc("hello", COB_BIND1(MemSpy::on_hello, this));
+    setEventHandler(lianli::S_ROOT, "hello", LL_BIND_EVENT(MemSpy::on_hello, this));
+    setRequestHandler(lianli::S_ROOT, "readValue", LL_BIND_REQUEST(MemSpy::readValue, this));
 }
 
-void MemSpy::readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData)
+bool MemSpy::readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData)
 {
     unsigned long address;
     evtData >> address;
     COBLOG("addr=%x\n", address);
     retData << 23;
+    return true;
+}
+
+bool MemSpy::on_hello(lianli::EvtStream& evtData)
+{
+    std::string words;
+    evtData >> words;
+    COBLOG("on_hello: words=%s\n", words.c_str());
+
+    //MessageBox(getBin()->getMainWnd(), words.c_str(), "Cobins", MB_OK);
+    //SetWindowText(getBin()->getMainWnd(), words.c_str());
+    //m_Send_Hook.HookFunc("Ws2_32.dll", "send", (PROC)GetMemberFuncAddr(hook_send), 10);
+
+    return true;
 }
 
 static int WINAPI hook_send(SOCKET s, const char FAR *buf, int len, int flags)
@@ -48,19 +61,6 @@ static int WINAPI hook_send(SOCKET s, const char FAR *buf, int len, int flags)
 
     return result;
 }
-
-void MemSpy::on_hello(lianli::EvtStream& evtData)
-{
-    std::string words;
-    evtData >> words;
-    COBLOG("on_hello: words=%s\n", words.c_str());
-
-    //MessageBox(getBin()->getMainWnd(), words.c_str(), "Cobins", MB_OK);
-    //SetWindowText(getBin()->getMainWnd(), words.c_str());
-
-    //m_Send_Hook.HookFunc("Ws2_32.dll", "send", (PROC)GetMemberFuncAddr(hook_send), 10);
-}
-
 
 void MemSpy::Daemon::onEnter()
 {
@@ -118,14 +118,20 @@ END_TRANS_TABLE()
 IMemSpy::IMemSpy(const std::string& name)
     : IProbe(name)
 {
-    addEvtNotifyProc("embed_voice", COB_BIND1(IMemSpy::on_embed_voice, this));
+
 }
 
-void IMemSpy::on_embed_voice(lianli::EvtStream& evtData)
+void IMemSpy::onCreate(void* params)
+{
+    setEventHandler(lianli::S_ROOT, "embed_voice", LL_BIND_EVENT(IMemSpy::on_embed_voice, this));
+}
+
+bool IMemSpy::on_embed_voice(lianli::EvtStream& evtData)
 {
     std::string words;
     evtData >> words;
     COBLOG("on_embed_voice: voice=%s\n", words.c_str());
+    return true;
 }
 
 int IMemSpy::readValue(unsigned long address)

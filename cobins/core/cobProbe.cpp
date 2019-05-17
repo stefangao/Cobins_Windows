@@ -44,34 +44,4 @@ bool Probe::notify(const std::string& evtName, const lianli::EvtStream& evtData)
     return true;
 }
 
-void Probe::onRequest(const std::string& evtName, lianli::EvtStream& evtData, lianli::EvtStream& retData)
-{
-    auto iter = mEvtRequestProcMap.find(evtName);
-    if (iter != mEvtRequestProcMap.end())
-    {
-        auto& evtRequestProc = iter->second;
-        evtRequestProc(evtData, retData);
-    }
-}
-
-void Probe::onNotify(const std::string& evtName, lianli::EvtStream& evtData)
-{
-    auto iter = mEvtNotifyProcMap.find(evtName);
-    if (iter != mEvtNotifyProcMap.end())
-    {
-        auto& evtNotifyProc = iter->second;
-        evtNotifyProc(evtData);
-    }
-}
-
-void Probe::addEvtRequestProc(const std::string& evtName, const OnEvtRequestProc& evtRequestProc)
-{
-    mEvtRequestProcMap.insert(std::make_pair(evtName, evtRequestProc));
-}
-
-void Probe::addEvtNotifyProc(const std::string& evtName, const OnEvtNotifyProc& evtNotifyProc)
-{
-    mEvtNotifyProcMap.insert(std::make_pair(evtName, evtNotifyProc));
-}
-
 NS_COB_END

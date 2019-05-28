@@ -12,6 +12,7 @@ private:
 	PROC  m_pfnOrigin;					//Original function aaddress in callee
     PBYTE m_pOriginCode;
     int   m_nOriginCodeLen;
+	BOOL  m_bHooked;
 
 public:
 	ApiHook();
@@ -26,6 +27,8 @@ public:
 
     BOOL HookPause();
     BOOL HookResume();
+
+	BOOL IsHooked() { return m_bHooked; };
 
 public:
     int   Rehook(PBYTE pOriginAddr, void *pCbFunc, PBYTE pOriginCode, int nOriginCodeBufLen, int nHookSize);

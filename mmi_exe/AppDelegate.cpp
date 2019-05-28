@@ -69,7 +69,7 @@ bool AppDelegate::onEventProc(const std::string& evtName, lianli::EvtStream& evt
         std::string robotName;
         evtData >> robotName;
         auto robot = mBin.getRobot(robotName);
-        if (robot)
+        if (robot && robot->getS() == S::IDLE)
         {
             robot->start();
         }

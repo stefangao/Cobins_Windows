@@ -10,6 +10,7 @@ ApiHook::ApiHook()
 {
     m_pOriginCode = NULL;
     m_pfnOrigin = NULL;
+	m_bHooked = FALSE;
 }
 
 ApiHook::~ApiHook()
@@ -320,6 +321,7 @@ BOOL ApiHook::UnhookFunc()
         Unhook((PBYTE)m_pfnOrigin, m_pOriginCode, m_nOriginCodeLen);
         free(m_pOriginCode);
         m_pOriginCode = NULL;
+		m_bHooked = FALSE;
 
         auto iter = m_ApiHookMap.find((DWORD)m_pfnOrigin);
         if (iter != m_ApiHookMap.end())
@@ -446,6 +448,7 @@ int ApiHook::Rehook(PBYTE pOriginAddr, void *pCbFunc, PBYTE pOriginCode, int nOr
     memset(&pOriginAddr[5], 0x90, hooksize - 5);
 
     bResult = VirtualProtect(pOriginAddr, hooksize, dwOldProtect, &dwOldProtect);
+	m_bHooked = TRUE;
 
     return hooksize;
 }
@@ -457,6 +460,7 @@ BOOL ApiHook::Unhook(PBYTE pOriginAddr, PBYTE pOriginCode, int nOriginCodeLen)
     VirtualProtect(pOriginAddr, nOriginCodeLen, PAGE_READWRITE, &dwOldProtect);
     memcpy(pOriginAddr, pOriginCode, nOriginCodeLen);
     VirtualProtect(pOriginAddr, nOriginCodeLen, dwOldProtect, &dwOldProtect);
+	m_bHooked = FALSE;
 
     return TRUE;
 }

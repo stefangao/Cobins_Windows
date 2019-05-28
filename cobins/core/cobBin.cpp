@@ -13,19 +13,19 @@ Bin::Bin(const std::string& name)
 
 Bin::~Bin()
 {
+	for (auto iter = mRobotMap.begin(); iter != mRobotMap.end(); iter++)
+	{
+		auto roobt = iter->second;
+		roobt->destroy();
+	}
+	mRobotMap.clear();
+
     for (auto iter = mProbeMap.begin(); iter != mProbeMap.end(); iter++)
     {
         auto probe = iter->second;
-        delete probe;
+        probe->destroy();
     }
     mProbeMap.clear();
-
-    for (auto iter = mRobotMap.begin(); iter != mRobotMap.end(); iter++)
-    {
-        auto roobt = iter->second;
-        delete roobt;
-    }
-    mRobotMap.clear();
 }
 
 bool Bin::create(HWND hWnd)

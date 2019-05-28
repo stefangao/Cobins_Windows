@@ -8,8 +8,18 @@ static ApiHook m_Send_Hook;
 
 void MemSpy::onCreate(void* params)
 {
-    setEventHandler(lianli::S_ROOT, "hello", LL_BIND_EVENT(MemSpy::on_hello, this));
-    setRequestHandler(lianli::S_ROOT, "readValue", LL_BIND_REQUEST(MemSpy::readValue, this));
+    inteceptEventHandler("hello", LL_BIND_EVENT(MemSpy::on_hello, this));
+	inteceptEventHandler("pressKey", LL_BIND_EVENT(MemSpy::on_pressKey, this));
+    inteceptRequestHandler("readValue", LL_BIND_REQUEST(MemSpy::readValue, this));
+}
+
+void MemSpy::onDestroy()
+{
+	if (m_Send_Hook.IsHooked())
+	{
+		m_Send_Hook.UnhookFunc();
+		COBLOG("m_Send_Hook.UnhookFunc()\n");
+	}
 }
 
 bool MemSpy::readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData)
@@ -21,6 +31,36 @@ bool MemSpy::readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData)
     return true;
 }
 
+static int WINAPI hook_send(SOCKET s, const char FAR *buf, int len, int flags)
+{
+	int result = -1;
+
+	COBLOG("hook_send: s=%x, buf=%x, len=%x, flags=%x\n", s, buf, len, flags);
+
+	WT_PutData(WT_BYTETYPE_SEND, (void*)buf, len);
+
+	m_Send_Hook.HookPause();
+	result = send(s, buf, len, flags);
+	m_Send_Hook.HookResume();
+
+	/*
+	void *func = m_Send_Hook.GetOriginFunc();
+	if (func != NULL)
+	{
+		__asm
+		{
+			push flags
+			push len
+			push buf
+			push s
+			call func                     //call orginal api
+			mov  result, eax
+		}
+	}*/
+
+	return result;
+}
+
 bool MemSpy::on_hello(lianli::EvtStream& evtData)
 {
     std::string words;
@@ -29,37 +69,19 @@ bool MemSpy::on_hello(lianli::EvtStream& evtData)
 
     //MessageBox(getBin()->getMainWnd(), words.c_str(), "Cobins", MB_OK);
     //SetWindowText(getBin()->getMainWnd(), words.c_str());
-    //m_Send_Hook.HookFunc("Ws2_32.dll", "send", (PROC)GetMemberFuncAddr(hook_send), 10);
+    m_Send_Hook.HookFunc("Ws2_32.dll", "send", (PROC)GetMemberFuncAddr(hook_send), 10);
 
     return true;
 }
 
-static int WINAPI hook_send(SOCKET s, const char FAR *buf, int len, int flags)
+bool MemSpy::on_pressKey(lianli::EvtStream& evtData)
 {
-    int result = -1;
-
-    COBLOG("hook_send: s=%x, buf=%x, len=%x, flags=%x\n", s, buf, len, flags);
-
-    m_Send_Hook.HookPause();
-    result = send(s, buf, len, flags);
-    m_Send_Hook.HookResume();
-
-    /*
-    void *func = m_Send_Hook.GetOriginFunc();
-    if (func != NULL)
-    {
-        __asm
-        {
-            push flags
-            push len
-            push buf
-            push s
-            call func                     //call orginal api
-            mov  result, eax
-        }
-    }*/
-
-    return result;
+	char key;
+	evtData >> key;
+	COBLOG("on_pressKey: key=%c\n", key);
+	//SetFocus(mBin->getMainWnd());
+	WBS_PressKey(key, WBS_KEY_CTL);
+	return true;
 }
 
 void MemSpy::Daemon::onEnter()
@@ -123,7 +145,7 @@ IMemSpy::IMemSpy(const std::string& name)
 
 void IMemSpy::onCreate(void* params)
 {
-    setEventHandler(lianli::S_ROOT, "embed_voice", LL_BIND_EVENT(IMemSpy::on_embed_voice, this));
+    inteceptEventHandler("embed_voice", LL_BIND_EVENT(IMemSpy::on_embed_voice, this));
 }
 
 bool IMemSpy::on_embed_voice(lianli::EvtStream& evtData)
@@ -153,6 +175,14 @@ void IMemSpy::hello()
 
     evtData << "Hello World!";
     notify("hello", evtData);
+}
+
+void IMemSpy::pressKey(char key)
+{
+	lianli::EvtStream evtData;
+
+	evtData << key;
+	notify("pressKey", evtData);
 }
 
 

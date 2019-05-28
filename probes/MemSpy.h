@@ -10,8 +10,11 @@ class MemSpy : public Prober
 {
 protected:
     void onCreate(void* params) override;
+	void onDestroy() override;
+
     bool readValue(lianli::EvtStream& evtData, lianli::EvtStream& retData);
     bool on_hello(lianli::EvtStream& evtData);
+	bool on_pressKey(lianli::EvtStream& evtData);
 
 public:
     enum {DAEMON};
@@ -38,6 +41,7 @@ public:
     int readValue(unsigned long address);
     void hello();
     bool on_embed_voice(lianli::EvtStream& evtData);
+	void pressKey(char key);
 
 protected:
     void onCreate(void* params);

@@ -188,12 +188,22 @@ void CmmiexeDlg::OnBnClickedButton2()
 
 void CmmiexeDlg::OnBnClickedButton3()
 {
+	EvtStream dataS;
+	std::string robotName = "AutoRefresh";
+	dataS << robotName;
+
+	EvtStream embedDataS;
+	embedDataS << 'T';
+	dataS << "PressKeyEvt" << embedDataS;
+	m_pAppDelegate->postEvent("PostRobotEvt", dataS);
+
+	/*
     ValueMap vm;
     vm.at("a/b") = 12;
     vm.at("a/c") = "hello";
     vm.at("a/d/e") = 789;
     auto str = vm.toJson();
-    COBLOG("str=%s\n", str.c_str());
+    COBLOG("str=%s\n", str.c_str());*/
 }
 
 void CmmiexeDlg::OnBnClickedButton4()
@@ -232,20 +242,21 @@ afx_msg LRESULT CmmiexeDlg::OnWshMsgKey(WPARAM wParam, LPARAM lParam)
         }
         break;
 
-        case 'T':
+        case 'K':
         {
             if (GetKeyState(VK_CONTROL) & 0x8000)
             {
                 HWND hGameWnd = GetWndByCursor();
+				COBLOG("hGameWnd=%x\n", hGameWnd);
 
-                COBLOG("hGameWnd=%x\n", hGameWnd);
-                if (hGameWnd)
-                {
-                    //char exeGame[] = "GmbsManager.dll";
-                    char exeGame[] = "spy_dll.dll";
-                    //bool exist = WBS_WaitWBS_WExist(exeGame, hGameWnd);
-                    //COBLOG("hGameWnd: isExist=%d\n", exist);
-                }
+				EvtStream dataS;
+				std::string robotName = "AutoRefresh";
+				dataS << robotName;
+
+				EvtStream embedDataS;
+				embedDataS << 'F';
+				dataS << "PressKeyEvt" << embedDataS;
+				m_pAppDelegate->postEvent("PostRobotEvt", dataS);
             }
         }
         break;
